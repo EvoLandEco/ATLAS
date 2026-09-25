@@ -178,3 +178,15 @@ def test_parser_revision_does_not_reuse_stale_conditional_text(store,monkeypatch
     monkeypatch.setattr(sources,'ADAPTER_VERSION','new-parser')
     new=sources.retrieve_entry(store,source,{'url':url},pages)
     assert old!=new and store.get(new)['payload']['parse_status']=='text_ready'
+
+
+def test_rivm_publication_date_is_separate_from_modification_date(store):
+    from pathlib import Path
+    from epiweekly.config import load_config
+    config=load_config(Path('config/backfill.yaml'))
+    source=next(s for s in config['sources'] if s['id']=='rivm')
+    url='https://www.rivm.nl/nieuws/example'
+    pages=Pages({url:'<h1>News</h1><main><span class="content-date-created">Publicatiedatum 07-05-2026 | 17:15</span><p>'+('Evidence. '*20)+'</p></main>'})
+    did=sources.retrieve_entry(store,source,{'url':url,'modified_at':'2026-09-24'},pages)
+    p=store.get(did)['payload']
+    assert p['published_at']=='2026-05-07' and p['modified_at']=='2026-09-24'
