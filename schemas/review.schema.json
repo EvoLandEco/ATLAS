@@ -31,6 +31,14 @@
       "default": null,
       "title": "Event Key"
     },
+    "numeric_evidence_reviews": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "maxProperties": 30,
+      "title": "Numeric Evidence Reviews",
+      "type": "object"
+    },
     "public_rationale": {
       "default": "Editorial review",
       "maxLength": 300,

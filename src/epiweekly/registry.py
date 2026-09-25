@@ -39,7 +39,11 @@ def apply_reviews(store: Store, reviews: list[Review], at: str) -> list[str]:
         doc=store.get(row["payload"]["document_id"])
         if doc["recorded_at"]>at: raise ValueError("Review predates its source")
         if review.action=="accept":
-            if row["payload"]["validation_errors"]:
+            errors=set(row["payload"]["validation_errors"])
+            verified=set(review.numeric_evidence_reviews)
+            if verified-errors or any(not flag.startswith("Numeric evidence needs review:") for flag in verified):
+                raise ValueError("An editor can verify only existing numeric anchoring flags")
+            if errors-verified:
                 raise ValueError("Correct evidence/number anchoring through a new editorial extraction before acceptance")
             mention=row["payload"]["mention"]
             if not mention["disease"]["value"]:

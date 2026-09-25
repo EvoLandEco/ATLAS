@@ -1,6 +1,6 @@
 # EpiWeekly
 
-**Experimental release v0.1.0-alpha.4** · Python package `0.1.0a4` · Data schema `0.1.0`
+**Experimental release v0.1.0-alpha.5** · Python package `0.1.0a5` · Data schema `0.1.1`
 
 EpiWeekly produces a Wednesday research-group briefing from configured outbreak intelligence sources. It maintains a longitudinal event registry, records changes in the evidence, and surfaces questions and resources relevant to the group's research. Each briefing includes a fixed-layout report and a documented analytical dataset.
 

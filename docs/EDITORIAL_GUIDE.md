@@ -20,6 +20,8 @@ Examine the proposed event matches and prior event history. Accept into an exist
 ]
 ```
 
+A numeric anchoring flag can arise when the source spells out a number or uses a different decimal notation. After checking the complete quote, an editor can add `numeric_evidence_reviews` to an acceptance decision: a mapping from the exact numeric flag in the queue to a source-specific explanation. Every numeric flag needs its own verification. Missing quotes, incorrect values, and other extraction errors require a corrected extraction; they cannot be cleared through this field. The ledger retains both the original flag and the editor’s explanation.
+
 Save this list as `decisions.json`, then run `epiweekly review-apply decisions.json`. The private ledger retains the rationale and effective time. Create a corrected editorial extraction when a quoted value or schema field is wrong; the original extraction remains preserved.
 
 ## Corrections and evolving events

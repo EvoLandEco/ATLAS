@@ -5,6 +5,7 @@ import io
 import json
 import zipfile
 from pathlib import Path
+from . import SCHEMA_VERSION
 from .models import Status
 from .render import render_markdown, render_html
 from .tables import TABLES, dictionary, fields_for, complete_row
@@ -150,7 +151,7 @@ def csv_bytes(name: str, rows: list[dict]) -> bytes:
 
 
 def dictionary_markdown() -> str:
-    parts=["# EpiWeekly data dictionary","Schema version: 0.1.0. Nullable fields have an explicit reason column."]
+    parts=["# EpiWeekly data dictionary",f"Schema version: {SCHEMA_VERSION}. Nullable fields have an explicit reason column."]
     for name in TABLES:
         parts.extend(["## "+name,"| Field | Type | Meaning |","| --- | --- | --- |"])
         for f in fields_for(name):

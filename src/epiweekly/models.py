@@ -37,6 +37,9 @@ class TextValue(StrictModel):
 
 
 class DateValue(TextValue):
+    value: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$",
+                             description="Complete date in YYYY-MM-DD form. Use null when the day is not reported.")
+
     @model_validator(mode="after")
     def iso_date(self):
         if self.value is not None:
@@ -157,6 +160,7 @@ class Review(StrictModel):
     public_rationale: str = Field(default="Editorial review", min_length=3, max_length=300)
     supersedes_candidate_ids: list[str] = Field(default_factory=list)
     allow_disease_reclassification: bool = False
+    numeric_evidence_reviews: dict[str, str] = Field(default_factory=dict, max_length=30)
 
     @model_validator(mode="after")
     def target(self):
@@ -164,6 +168,10 @@ class Review(StrictModel):
             raise ValueError("An accepted candidate requires a stable event_key")
         if self.action != "accept" and (self.event_key or self.supersedes_candidate_ids):
             raise ValueError("Only acceptance assigns an event and supersedes claims")
+        if self.numeric_evidence_reviews and self.action != "accept":
+            raise ValueError("Numeric evidence verification accompanies acceptance")
+        if any(not 10 <= len(note.strip()) <= 500 for note in self.numeric_evidence_reviews.values()):
+            raise ValueError("Each numeric verification needs a source-specific explanation of 10 to 500 characters")
         return self
 
 

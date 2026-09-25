@@ -9,12 +9,14 @@
         "value": {
           "anyOf": [
             {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
               "type": "string"
             },
             {
               "type": "null"
             }
           ],
+          "description": "Complete date in YYYY-MM-DD form. Use null when the day is not reported.",
           "title": "Value"
         }
       },

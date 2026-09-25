@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.0-alpha.5 — 2026-09-25
+
+- Constrain extraction dates to complete ISO dates in the model schema. Retain month-only source dates as unknown day values with their precision described in the extraction.
+- Record explicit editorial verification of numeric anchoring flags, including number words, while retaining the original flags. Missing source quotes remain blocking.
+- Data schema version: 0.1.1.
+
 ## v0.1.0-alpha.4 — 2026-09-25
 
 Source adapter 0.2.1 follows dated ECDC and EFSA archive pagination, selects ECDC PDFs by attachment title, and scopes EFSA collection through publisher topic labels. RIVM backfill uses its published sitemaps. FAO captures select the situation report body and retain edition dates and identify the historical coverage limit. Robots handling preserves query rules, wildcard precedence, merged groups, and crawl delays. Collection suspends hosts after authorization or rate-limit responses. The missing-only collection mode resumes backfills without downloading captured URLs. Ordinary collection reprocesses documents when the parser version differs from the cached text.

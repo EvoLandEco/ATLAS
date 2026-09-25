@@ -9,6 +9,7 @@ Capture numbers with metric, unit, case classification, date basis, cumulative/i
 population, stratum, qualifier, and originating authority. Source publication dates and epidemiological dates are separate.
 An increase in a cumulative total is a change in reported cumulative count. Extract incident counts only where stated.
 Capture country with ISO 3166-1 alpha-2; for multinational/global scopes use null with not_applicable.
+Date fields require a complete YYYY-MM-DD date. When only a month or year is reported, use null with not_reported and preserve the stated precision in the summary or ambiguity reasons. Do not supply an invented day.
 The code NA means Namibia. Use N/A only in human-readable rendering, and null plus a reason in this schema.
 Use null with not_reported when the source is silent, unknown when the source explicitly states uncertainty,
 not_applicable for inapplicable fields, and pending_verification for unresolved extraction.

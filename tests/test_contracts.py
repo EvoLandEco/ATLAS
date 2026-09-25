@@ -219,3 +219,31 @@ def test_bound_differences_are_not_comparable(demo_run):
     a=copy.deepcopy(demo_run[2][1]['tables']['event_metrics'][0]);b=copy.deepcopy(a)
     a['qualifier']=b['qualifier']='at_least'
     assert cumulative_change(a,b)==(None,'not_comparable')
+
+
+def test_extraction_schema_rejects_partial_dates():
+    import jsonschema
+    from epiweekly.models import DateValue
+    schema = DateValue.model_json_schema()
+    with pytest.raises(jsonschema.ValidationError):
+        jsonschema.validate({'value': '2026-08', 'status': 'reported'}, schema)
+    jsonschema.validate({'value': '2026-08-17', 'status': 'reported'}, schema)
+    jsonschema.validate({'value': None, 'status': 'not_reported'}, schema)
+
+
+def test_editor_verifies_number_words_but_not_absent_quotes(store, config):
+    m = sample_mention(3)
+    m['observations'][0]['evidence']['quote'] = 'Three confirmed cases were reported.'
+    cid = add_example(store, config, m, at=AT)
+    flag = 'Numeric evidence needs review: cases=3'
+    with pytest.raises(ValueError):
+        apply_reviews(store, [Review(candidate_id=cid, action='accept', event_key='words',
+                                   reviewer='Editor', rationale='Source reviewed.')], AT)
+    decision = dict(candidate_id=cid, action='accept', event_key='words', reviewer='Editor',
+                    rationale='The source spells out the count.',
+                    numeric_evidence_reviews={flag: 'Three denotes exactly 3 confirmed cases in the quoted sentence.'})
+    apply_reviews(store, [Review(**decision)], AT)
+    assert store.records('review')[-1]['payload']['numeric_evidence_reviews'][flag]
+    bad = {**decision, 'numeric_evidence_reviews': {'Evidence text absent: cases': 'Cannot replace a missing source quotation.'}}
+    with pytest.raises(ValueError):
+        apply_reviews(store, [Review(**bad)], AT)
