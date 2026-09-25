@@ -18,7 +18,7 @@ def load_config(path: Path) -> dict:
     if len(ids) != len(set(ids)):
         raise ValueError("Source IDs must be unique")
     for s in data["sources"]:
-        if s["adapter"] not in {"who_odata","rss_discovery","html_index","static","manual"}:
+        if s["adapter"] not in {"who_odata","rss_discovery","html_index","sitemap","static","manual"}:
             raise ValueError("Unknown source adapter")
         if not s.get("allowed_hosts"):
             raise ValueError(f"{s['id']} requires an explicit host allowlist")

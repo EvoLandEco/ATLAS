@@ -1,6 +1,6 @@
 """Create a local reading archive from captured source documents."""
 import argparse
-from collections import defaultdict
+from collections import defaultdict, Counter
 from datetime import date
 from html import escape
 from pathlib import Path
@@ -25,7 +25,7 @@ def render_reports(state, out, start, end):
                 continue
             groups[published[:7]].append(row)
         out.mkdir(parents=True, exist_ok=True)
-        css = 'body{font:17px/1.6 system-ui;max-width:960px;margin:40px auto;padding:0 20px;color:#183441}a{color:#006880}article{border-top:1px solid #ccd8dd;padding:20px 0}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}summary{cursor:pointer}table{border-collapse:collapse}td,th{padding:8px;text-align:left;border-bottom:1px solid #ccd8dd}'
+        css = 'body{font:17px/1.6 system-ui;max-width:960px;margin:40px auto;padding:0 20px;color:#183441}a{color:#006880}article{border-top:1px solid #ccd8dd;padding:20px 0}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}summary{cursor:pointer}table{border-collapse:collapse}td,th{padding:8px;text-align:left;border-bottom:1px solid #ccd8dd;vertical-align:top;overflow-wrap:anywhere}'
         def page(title, body):
             return '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+escape(title)+'</title><style>'+css+'</style><main><h1>'+escape(title)+'</h1>'+body+'</main></html>'
         note = '<p>Captured source reading archive. These documents have not undergone structured extraction or editorial event review. Publication dates determine the month; capture dates record when EpiWeekly retrieved the text. Entries are publications, not counts of distinct outbreaks.</p>'
@@ -41,12 +41,18 @@ def render_reports(state, out, start, end):
         checks = {}
         for row in store.records('source_check'):
             checks[row['payload']['source_id']] = row['payload']
-        coverage = '<table><tr><th>Source</th><th>Status</th><th>Retrieved</th><th>Limits and errors</th></tr>'
+        counts=Counter(r['payload']['source_id'] for rows in groups.values() for r in rows)
+        coverage = '<table><tr><th>Source</th><th>Latest collection</th><th>Publications in archive</th><th>Limits and errors</th></tr>'
         for p in checks.values():
-            coverage += '<tr>'+''.join('<td>'+escape(str(v))+'</td>' for v in [p['source_id'],p['status'],p['retrieved'],'; '.join(p['notes'])])+'</tr>'
+            notes='<details><summary>'+str(len(p['notes']))+' coverage notes</summary><ul>'+''.join('<li>'+escape(n)+'</li>' for n in p['notes'])+'</ul></details>' if p['notes'] else 'No collection errors reported'
+            if p.get('scope_excluded'):
+                notes+='<p>'+str(p['scope_excluded'])+' documents excluded by publisher topic labels.</p>'
+            coverage += '<tr>'+''.join('<td>'+escape(str(v))+'</td>' for v in [p['source_id'],p['status'],counts[p['source_id']]])+'<td>'+notes+'</td></tr>'
         coverage += '</table>'
         total = sum(map(len, groups.values()))
         body = '<p>'+str(start)+' through '+str(end)+'</p>'+note+'<p>'+str(total)+' dated publications; '+str(excluded)+' documents outside the publication window or without a publication date are excluded from the monthly archive. Months without captured publications are omitted; their absence does not establish that no outbreaks occurred.</p><h2>Monthly reading reports</h2><ul>'+''.join(links)+'</ul><h2>Collection coverage</h2>'+coverage
+        if (out/'coverage-review.html').exists():
+            body='<p><a href="coverage-review.html">Coverage review and investigation instructions</a></p>'+body
         (out/'index.html').write_text(page('EpiWeekly · Two-year source scan',body))
         return {'publications':total,'months':len(groups),'excluded':excluded,'index':str(out/'index.html')}
     finally:

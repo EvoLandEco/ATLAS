@@ -230,12 +230,13 @@ def build_snapshot(store: Store, config: dict, as_of: str, *, report_date: str |
     for source in config["sources"]:
         check=checks.get(source["id"])
         p=check["payload"] if check else {}
+        notes=p.get("notes",[])+[f"{key}:{p[key]}" for key in ("scope_excluded","reused_documents") if p.get(key)]
         data["source_coverage"].append({"source_id":source["id"],"source_name":source["name"],
             "source_role":source["role"],"enabled":source.get("enabled",False),"required":source.get("required",False),
             "status":p.get("status","not_checked" if source.get("enabled") else "disabled"),
             "checked_at":check["recorded_at"] if check else None,"window_start":p.get("window_start"),
             "discovered":p.get("discovered",0),"retrieved":p.get("retrieved",0),"new_documents":p.get("new_documents",0),
-            "oldest_publication":p.get("oldest_publication"),"newest_publication":p.get("newest_publication"),"notes":p.get("notes",[])})
+            "oldest_publication":p.get("oldest_publication"),"newest_publication":p.get("newest_publication"),"notes":notes})
     data["event_history"]=(previous or {}).get("tables",{}).get("event_history",[])+[
         {"report_id":run_id,"report_date":report_date,"knowledge_cutoff":as_of,"event_id":e["event_id"],
          "lifecycle_status":e["lifecycle_status"],"update_class":e["update_class"],"summary":e["summary"]} for e in data["events"]]

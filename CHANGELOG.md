@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.1.0-alpha.4 — 2026-09-25
+
+Source adapter 0.2.0 follows dated ECDC and EFSA archive pagination, selects ECDC PDFs by attachment title, and scopes EFSA collection through publisher topic labels. RIVM backfill uses its published sitemaps. FAO captures retain edition dates and identify the historical coverage limit. Robots handling preserves query rules, wildcard precedence, merged groups, and crawl delays. Collection suspends hosts after authorization or rate-limit responses. The missing-only collection mode resumes backfills without downloading captured URLs.
+
 ## v0.1.0-alpha.3 — 2026-09-25
 
 Local Codex subscription extraction shares the chunk queue, evidence validation, and editorial review flow. Extraction cache identities include the provider.

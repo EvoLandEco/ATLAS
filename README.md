@@ -1,6 +1,6 @@
 # EpiWeekly
 
-**Experimental release v0.1.0-alpha.3** · Python package `0.1.0a3` · Data schema `0.1.0`
+**Experimental release v0.1.0-alpha.4** · Python package `0.1.0a4` · Data schema `0.1.0`
 
 EpiWeekly produces a Wednesday research-group briefing from configured outbreak intelligence sources. It maintains a longitudinal event registry, records changes in the evidence, and surfaces questions and resources relevant to the group's research. Each briefing includes a fixed-layout report and a documented analytical dataset.
 
@@ -113,10 +113,10 @@ epiweekly verify --bundle replay-output
 | Source | Workflow role | Initial access route |
 | --- | --- | --- |
 | WHO Disease Outbreak News | International official reporting | Experimental website OData adapter |
-| ECDC CDTR | European and international threat synthesis | Discovered official RSS and primary report PDF |
-| EFSA | One Health evidence, publications, and data calls | Discovered official RSS |
+| ECDC CDTR | European and international threat synthesis | Dated archive and primary report PDF |
+| EFSA | One Health evidence, publications, and data calls | Topic archives and publisher topic labels |
 | FAO avian influenza updates | Animal-health and zoonotic context | Versioned situation-update page |
-| RIVM | Dutch national context | Discovered official RSS |
+| RIVM | Dutch national context | Official RSS; published sitemaps for backfill |
 | WOAH WAHIS | Official animal-health notifications | Authorized document or export import |
 | BEACON | Curated discovery and errata | Authorized document or export import |
 
@@ -143,8 +143,8 @@ epiweekly --config config/backfill.yaml seal
 python scripts/reading_reports.py --since 2024-09-25 --until 2026-09-25
 ```
 
-Open `reports/index.html` for monthly source reading reports with captured text and source links.
+Open `reports/index.html` for monthly source reading reports with captured text and source links. To resume an interrupted backfill, use `collect --since 2024-09-25 --missing-only`. This reuses captured URLs without checking them for revisions; ordinary collection revisits source pages.
 
-The backfill configuration permits 40 index pages and 2,000 documents per source. RSS feeds and mutable situation pages may cover only part of the requested period. Inspect source coverage before interpreting the result. Collection alone does not create reviewed outbreak events. Captures retain their actual retrieval time; they do not reconstruct what was known in each historical week.
+The backfill configuration permits 40 pages per index and 2,000 documents per source. EFSA collection covers its Animal health and Biological hazards topics, including foodborne disease, zoonoses, and antimicrobial resistance. Data calls use the topic labels on each call. RIVM sitemap modification dates guide discovery; article publication dates determine the reading month. RSS feeds and mutable situation pages may cover only part of the requested period. Inspect source coverage before interpreting the result. Collection alone does not create reviewed outbreak events. Captures retain their actual retrieval time; they do not reconstruct what was known in each historical week.
 
 Local reports, captured evidence, and installation records are excluded from Git. Hosted collection requires the repository variables and secrets in [Operations](docs/OPERATIONS.md); the schedule is gated by `EPIWEEKLY_SCHEDULE_ENABLED`.

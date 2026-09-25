@@ -1,6 +1,6 @@
 timezone: Europe/Amsterdam
 dataset_mode: operational
-user_agent: "EpiWeekly/0.1.0-alpha.3 (research-group weekly intelligence)"
+user_agent: "EpiWeekly/0.1.0-alpha.4 (research-group weekly intelligence)"
 event_stale_days: 21
 lookback_days: 21
 limits:
@@ -40,24 +40,49 @@ sources:
   - id: ecdc_cdtr
     name: ECDC Communicable Disease Threats Reports
     role: official_regional_synthesis
-    adapter: rss_discovery
+    adapter: html_index
     enabled: true
     required: true
     priority: 2
     allowed_hosts: [www.ecdc.europa.eu, ecdc.europa.eu]
-    index_url: https://www.ecdc.europa.eu/en/rss-feeds
-    feed_labels: [Communicable disease threats report]
-    primary_pdf: 'communicable-disease-threats-report|cdtr'
+    index_url: https://www.ecdc.europa.eu/en/publications-and-data/monitoring/weekly-threats-reports
+    row_selector: article.ct-publication
+    entry_link_selector: .ecdc-card__title a[href]
+    date_selector: time[datetime]
+    date_order: descending
+    next_selector: a[rel=next]
+    link_pattern: /en/publications-data/communicable-disease-threats-report
+    pdf_card_selector: .ecdc-file-download
+    primary_pdf: 'communicable disease threats report'
+    exclude_pdf: 'maps|graphs|visualisation|visualization'
   - id: efsa
     name: European Food Safety Authority
     role: official_one_health_context_and_calls
-    adapter: rss_discovery
+    adapter: html_index
     enabled: true
     required: false
     priority: 3
-    allowed_hosts: [www.efsa.europa.eu, efsa.europa.eu]
-    index_url: https://www.efsa.europa.eu/en/rss
-    feed_labels: [Publications, News, Calls for data]
+    allowed_hosts: [www.efsa.europa.eu, efsa.europa.eu, efsa.onlinelibrary.wiley.com]
+    row_selector: article.scientific-output
+    entry_link_selector: .card-title a[href]
+    date_selector: .field-published-date time[datetime]
+    date_order: descending
+    next_selector: a[aria-label=Next]
+    link_pattern: /en/|/doi/
+    indexes:
+      - index_url: https://www.efsa.europa.eu/en/publications?topic%5B389%5D=389
+      - index_url: https://www.efsa.europa.eu/en/publications?topic%5B357%5D=357
+      - index_url: https://www.efsa.europa.eu/en/news?topic%5B389%5D=389
+        row_selector: .efsa-landing-pages.newsroom article
+      - index_url: https://www.efsa.europa.eu/en/news?topic%5B357%5D=357
+        row_selector: .efsa-landing-pages.newsroom article
+      - index_url: https://www.efsa.europa.eu/en/calls/data
+        row_selector: .calls-for-data article
+        date_order: null
+        topic_selector: main .field-topics a[href]
+        topic_urls:
+          - https://www.efsa.europa.eu/en/topics/topic/animal-health
+          - https://www.efsa.europa.eu/en/topics/topic/biological-hazards
   - id: fao_aiv
     name: FAO global avian influenza situation updates
     role: official_animal_health_synthesis
@@ -66,6 +91,8 @@ sources:
     required: false
     priority: 3
     allowed_hosts: [www.fao.org, fao.org]
+    publication_date_selector: "#Contentplaceholder1_C016_Col00 > div:first-child strong"
+    publication_date_format: "%d %B %Y"
     urls:
       - https://www.fao.org/animal-health/situation-updates/global-aiv-with-zoonotic-potential
   - id: rivm

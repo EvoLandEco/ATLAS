@@ -8,8 +8,8 @@ import socket
 import time
 from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
-from urllib.parse import urljoin, urlsplit, urlencode
-from urllib.robotparser import RobotFileParser
+from urllib.parse import urljoin, urlsplit, urlencode, unquote
+from protego import Protego
 from bs4 import BeautifulSoup
 from defusedxml import ElementTree as ET
 from defusedxml.common import DefusedXmlException
@@ -19,7 +19,7 @@ from pypdf import PdfReader
 from .store import Store
 from .util import canonical_url, digest, stamp, uid, utcnow, canonical
 
-ADAPTER_VERSION = "0.1.0"
+ADAPTER_VERSION = "0.2.0"
 
 
 class SourceError(RuntimeError):
@@ -45,6 +45,7 @@ class Fetcher:
         self.resolve = resolve
         self.robots = {}
         self.last_request = {}
+        self.blocked_hosts = {}
 
     def close(self):
         self.client.close()
@@ -60,9 +61,13 @@ class Fetcher:
     def _request(self,url: str, headers: dict | None = None, *, enforce_robots: bool = False) -> tuple[bytes,dict,str,int]:
         for _ in range(5):
             url = self.validate(url)
+            host=urlsplit(url).hostname
+            if host in self.blocked_hosts:
+                raise SourceError(self.blocked_hosts[host])
             if enforce_robots:self._robots_allowed(url)
-            host = urlsplit(url).hostname
-            delay = self.min_interval - (time.monotonic()-self.last_request.get(host,0))
+            policy=self.robots.get(f"{urlsplit(url).scheme}://{urlsplit(url).netloc}")
+            interval=max(self.min_interval,(policy.crawl_delay(self.ua) or 0) if policy else 0)
+            delay = interval - (time.monotonic()-self.last_request.get(host,0))
             if delay > 0:
                 time.sleep(delay)
             self.last_request[host] = time.monotonic()
@@ -73,6 +78,8 @@ class Fetcher:
                     continue
                 if r.status_code == 304:
                     return b"",dict(r.headers),url,304
+                if r.status_code in (401,403,429):
+                    self.blocked_hosts[host]=f"Host access suspended for this collection: HTTP {r.status_code}; Retry-After={r.headers.get('retry-after','not supplied')}"
                 r.raise_for_status()
                 chunks=[]; total=0
                 for chunk in r.iter_bytes():
@@ -88,14 +95,14 @@ class Fetcher:
         if origin not in self.robots:
             try:
                 raw,_,_,_=self._request(origin+"/robots.txt")
-                parser=RobotFileParser(); parser.parse(raw.decode("utf-8",errors="replace").splitlines())
+                parser=Protego.parse(raw.decode("utf-8",errors="replace"))
                 self.robots[origin]=parser
             except httpx.HTTPStatusError as exc:
                 if exc.response.status_code in (404,410):
                     self.robots[origin]=None
                 else:
                     raise SourceError("robots.txt access requires review") from exc
-        if self.robots[origin] is not None and not self.robots[origin].can_fetch(self.ua,url):
+        if self.robots[origin] is not None and not self.robots[origin].can_fetch(url,self.ua):
             raise SourceError("robots.txt requests a different access route")
     def get(self,url: str, headers: dict | None = None) -> tuple[bytes,dict,str,int]:
         url=self.validate(url)
@@ -224,11 +231,100 @@ def save_document(store: Store, source: dict, *, text: str, raw: bytes, url: str
     return doc_id
 
 
+def discover_archive(source: dict, fetcher: Fetcher, since: str, limits: dict) -> tuple[list[dict],list[str]]:
+    url=source["index_url"]; entries={}; visited=set(); notes=[]; previous_date=None
+    for _ in range(limits.get("max_index_pages",5)):
+        if url in visited:
+            raise SourceError("Archive pagination repeats a page")
+        visited.add(url)
+        raw,_,final,_=fetcher.get(url)
+        soup=BeautifulSoup(raw,"html.parser"); rows=soup.select(source["row_selector"])
+        if not rows:
+            raise SourceError("Archive entry selector returned no rows")
+        dates=[]
+        for row in rows:
+            link=row.select_one(source["entry_link_selector"])
+            if not link or not re.search(source["link_pattern"],link.get("href","")):
+                raise SourceError("Archive entry link requires adapter review")
+            node=row.select_one(source["date_selector"])
+            value=node.get("datetime") or node.get_text(" ",strip=True) if node else None
+            if value and source.get("date_format"):
+                value=datetime.strptime(value,source["date_format"]).date().isoformat()
+            published,precision=parse_date(value)
+            if not published:
+                notes.append("archive_publication_date_missing")
+            else:
+                dates.append(published[:10])
+                if source.get("date_order")=="descending":
+                    if previous_date and published[:10]>previous_date:
+                        raise SourceError("Archive publication ordering changed")
+                    previous_date=published[:10]
+            if not published or published[:10]>=since[:10]:
+                target=urljoin(final,link["href"])
+                entries[target]={"url":target,"title":link.get_text(" ",strip=True),
+                                 "published_at":published,"publication_precision":precision,
+                                 **({"topic_selector":source["topic_selector"],"topic_urls":source["topic_urls"]} if source.get("topic_selector") else {})}
+        if source.get("date_order")=="descending" and len(dates)==len(rows) and min(dates)<since[:10]:
+            break
+        next_link=soup.select_one(source["next_selector"])
+        if not next_link:
+            break
+        url=urljoin(final,next_link["href"])
+    else:
+        notes.append("index_page_cap")
+    return list(entries.values()),sorted(set(notes))
+
+
+def discover_sitemap(source: dict, fetcher: Fetcher, since: str, limits: dict) -> tuple[list[dict],list[str]]:
+    pending=[source["index_url"]]; visited=set(); entries={}; notes=["sitemap_modified_window"]
+    ns={"s":"http://www.sitemaps.org/schemas/sitemap/0.9"}
+    while pending and len(visited)<limits.get("max_index_pages",5):
+        url=pending.pop(0)
+        if url in visited:
+            continue
+        visited.add(url)
+        raw,_,final,_=fetcher.get(url)
+        try:
+            root=ET.fromstring(raw)
+        except (ParseError,DefusedXmlException) as exc:
+            raise SourceError("Source sitemap is not safe, valid XML") from exc
+        if root.tag=="{"+ns["s"]+"}sitemapindex":
+            pending.extend(urljoin(final,node.text) for node in root.findall("s:sitemap/s:loc",ns) if node.text)
+        elif root.tag=="{"+ns["s"]+"}urlset":
+            for row in root.findall("s:url",ns):
+                target=row.findtext("s:loc",namespaces=ns)
+                if not target or not re.search(source["link_pattern"],target):
+                    continue
+                modified,_=parse_date(row.findtext("s:lastmod",namespaces=ns))
+                if not modified or modified[:10]>=since[:10]:
+                    entries[target]={"url":target,"published_at":None,"publication_precision":"unknown","modified_at":modified}
+        else:
+            raise SourceError("Source sitemap format requires review")
+    if pending:
+        notes.append("index_page_cap")
+    return list(entries.values()),notes
+
+
 def discover(source: dict, fetcher: Fetcher, since: str, limits: dict) -> tuple[list[dict],list[str]]:
     adapter=source["adapter"]; notes=[]
     if adapter=="manual":
         return [],["manual_access"]
+    if adapter=="sitemap":
+        return discover_sitemap(source,fetcher,since,limits)
+    if adapter=="html_index" and source.get("row_selector"):
+        if not source.get("indexes"):
+            return discover_archive(source,fetcher,since,limits)
+        entries={}
+        for index in source["indexes"]:
+            try:
+                found,index_notes=discover_archive({**source,**index},fetcher,since,limits)
+                entries.update({entry["url"]:entry for entry in found})
+                notes.extend(f"{index['index_url']}: {note}" for note in index_notes)
+            except (httpx.HTTPError,SourceError,ValueError,KeyError) as exc:
+                notes.append(f"index_error:{index['index_url']}:{type(exc).__name__}:{str(exc)[:180]}")
+        return list(entries.values()),notes
     if adapter=="static":
+        notes.append("current_snapshot_only")
         return [{"url":u,"title":source["name"],"published_at":None,"publication_precision":"unknown"}
                 for u in source["urls"]],notes
     if adapter=="who_odata":
@@ -264,9 +360,10 @@ def discover(source: dict, fetcher: Fetcher, since: str, limits: dict) -> tuple[
     soup=BeautifulSoup(raw,"html.parser")
     if adapter=="rss_discovery":
         labels={x.casefold() for x in source["feed_labels"]}
-        feeds=sorted({urljoin(index_url,a["href"]) for a in soup.select("a[href]")
+        links=soup.select(source.get("feed_link_selector","a[href]"))
+        feeds=sorted({urljoin(index_url,a["href"]) for a in links
                       if a.get_text(" ",strip=True).casefold() in labels})
-        found_labels={a.get_text(" ",strip=True).casefold() for a in soup.select("a[href]")}
+        found_labels={a.get_text(" ",strip=True).casefold() for a in links}
         missing_labels=labels-found_labels
         if missing_labels:notes.append("missing_feed_labels:"+",".join(sorted(missing_labels)))
         if not feeds:
@@ -291,7 +388,7 @@ def discover(source: dict, fetcher: Fetcher, since: str, limits: dict) -> tuple[
     return list(unique.values()), sorted(set(notes))
 
 
-def retrieve_entry(store: Store, source: dict, entry: dict, fetcher: Fetcher) -> str:
+def retrieve_entry(store: Store, source: dict, entry: dict, fetcher: Fetcher) -> str | None:
     if "who_item" in entry:
         item=entry["who_item"]
         pieces=[f"<h1>{item.get('OverrideTitle') or item.get('Title','WHO DON')}</h1>"]
@@ -325,16 +422,34 @@ def retrieve_entry(store: Store, source: dict, entry: dict, fetcher: Fetcher) ->
         text,parse_status=pdf_text(raw); mime="application/pdf"
     else:
         text,parsed_title,parsed_date,parsed_precision=html_text(raw)
-        title=parsed_title if parsed_title!="Untitled source document" else title
+        title=parsed_title if parsed_title!="Untitled source document" and source.get("adapter")!="static" else title
         if parsed_date:
             published,precision=parsed_date,parsed_precision
+        soup=BeautifulSoup(raw,"html.parser")
+        topic_selector=entry.get("topic_selector") or source.get("topic_selector")
+        if topic_selector:
+            topics={canonical_url(urljoin(final,a["href"])) for a in soup.select(topic_selector)}
+            if not topics:
+                raise SourceError("Source topic labels require editorial review")
+            if not topics.intersection(entry.get("topic_urls") or source["topic_urls"]):
+                return None
+        if source.get("publication_date_selector"):
+            node=soup.select_one(source["publication_date_selector"])
+            if not node:
+                raise SourceError("Source edition date requires adapter review")
+            published=datetime.strptime(node.get_text(" ",strip=True),source["publication_date_format"]).date().isoformat()
+            precision="day"
         if source.get("primary_pdf"):
-            soup=BeautifulSoup(raw,"html.parser")
-            pdfs=[urljoin(final,a["href"]) for a in soup.select("a[href]")
-                  if ".pdf" in a["href"].lower() and re.search(source["primary_pdf"],a["href"])
-                  and not re.search(r"maps|graphs",a["href"],re.I)]
-            if not pdfs:
-                raise SourceError("The primary bulletin PDF link needs adapter review")
+            pdfs=set()
+            for card in soup.select(source.get("pdf_card_selector","a[href]")):
+                label=card.get_text(" ",strip=True) if source.get("pdf_card_selector") else unquote(card["href"])
+                if not re.search(source["primary_pdf"],label,re.I) or re.search(source.get("exclude_pdf",r"maps|graphs"),label,re.I):
+                    continue
+                links=card.select("a[href]") if source.get("pdf_card_selector") else [card]
+                pdfs.update(urljoin(final,a["href"]) for a in links if urlsplit(a["href"]).path.lower().endswith(".pdf"))
+            pdfs=sorted(pdfs)
+            if len(pdfs)!=1:
+                raise SourceError("Expected exactly one primary bulletin PDF; links require adapter review")
             raw,headers,final,_=fetcher.get(pdfs[0]); mime="application/pdf"
             text,parse_status=pdf_text(raw)
         if len(text.strip())<120:
@@ -347,12 +462,12 @@ def retrieve_entry(store: Store, source: dict, entry: dict, fetcher: Fetcher) ->
     return doc
 
 
-def collect(store: Store, config: dict, since: str) -> dict:
+def collect(store: Store, config: dict, since: str, *, missing_only: bool = False) -> dict:
     totals={"documents_seen":0,"documents_new":0,"sources":[]}
     for source in config["sources"]:
         check={"source_id":source["id"],"enabled":source.get("enabled",False),
                "required":source.get("required",False),"discovered":0,"retrieved":0,"new_documents":0,
-               "status":"disabled","notes":[],"window_start":since,
+               "status":"disabled","notes":[],"window_start":since,"scope_excluded":0,"reused_documents":0,
                "oldest_publication":None,"newest_publication":None}
         if not source.get("enabled",False):
             store.append("source_check",check,utcnow()); totals["sources"].append(check); continue
@@ -365,10 +480,11 @@ def collect(store: Store, config: dict, since: str) -> dict:
         try:
             entries,notes=discover(source,fetcher,since,config["limits"])
             # Revisit a bounded set of previously seen source URLs to detect old-page revisions.
-            recent={}
+            recent={}; cached={}
             for row in store.records("document"):
                 p=row["payload"]
                 if p["source_id"]==source["id"]:
+                    cached[p["url"]]=row["id"]
                     recent[p["url"]]={"url":p["url"],"title":p["title"],"published_at":p["published_at"],
                                      "publication_precision":p["publication_precision"]}
             if source["adapter"]!="who_odata":
@@ -385,13 +501,22 @@ def collect(store: Store, config: dict, since: str) -> dict:
             for entry in entries[:cap]:
                 before=len(store.records("document"))
                 try:
-                    doc=retrieve_entry(store,source,entry,fetcher)
+                    if missing_only and canonical_url(entry["url"]) in cached:
+                        doc=cached[canonical_url(entry["url"])]; check["reused_documents"]+=1
+                    else:
+                        doc=retrieve_entry(store,source,entry,fetcher)
+                    if doc is None:
+                        check["scope_excluded"]+=1
+                        continue
                     check["retrieved"]+=1
                     check["new_documents"]+=len(store.records("document"))-before
                     published=store.get(doc)["payload"]["published_at"]
                     if published: dates.append(published)
                 except (httpx.HTTPError,SourceError,ValueError,KeyError,OSError) as exc:
-                    check["notes"].append(f"document_error:{type(exc).__name__}:{str(exc)[:180]}")
+                    check["notes"].append(f"document_error:{entry['url']}:{type(exc).__name__}:{str(exc)[:180]}")
+                    if isinstance(exc,httpx.HTTPStatusError) and exc.response.status_code==429:
+                        check["notes"].append(f"rate_limited:Retry-After={exc.response.headers.get('retry-after','not supplied')}")
+                        break
             if dates:
                 check["oldest_publication"]=min(dates);check["newest_publication"]=max(dates)
             check["status"]="ok" if check["retrieved"] and not check["notes"] else "partial" if check["retrieved"] else "failed" if check["notes"] else "empty"
