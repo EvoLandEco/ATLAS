@@ -41,6 +41,10 @@ jobs:
           EPIWEEKLY_PROVIDER: ${{ vars.EPIWEEKLY_PROVIDER || 'none' }}
           EPIWEEKLY_MODEL: ${{ vars.EPIWEEKLY_MODEL }}
         run: |
+          case "$EPIWEEKLY_PROVIDER" in
+            none|openai) ;;
+            *) echo "Hosted collection supports none or openai; use codex on a signed-in local machine." >&2; exit 1 ;;
+          esac
           epiweekly verify
           epiweekly run > .runtime-state/last-run.json
       - name: Persist captured state

@@ -1,6 +1,6 @@
 timezone: Europe/Amsterdam
 dataset_mode: operational
-user_agent: "EpiWeekly/0.1.0-alpha.2 (research-group weekly intelligence)"
+user_agent: "EpiWeekly/0.1.0-alpha.3 (research-group weekly intelligence)"
 event_stale_days: 21
 lookback_days: 21
 limits:
@@ -14,6 +14,8 @@ limits:
   max_model_calls: 36
   max_input_characters: 650000
   max_output_tokens: 10000
+  codex_timeout_seconds: 180
+  codex_output_bytes: 1000000
 research_profile:
   name: One Health transmission, inference, and prevention
   weights:

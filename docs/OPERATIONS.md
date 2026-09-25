@@ -7,6 +7,21 @@ Run commands from the repository root. Global `--config PATH` and `--state PATH`
 
 The initial report has all selected events labeled `new_to_registry`. Seed an initial lookback through collection and review, then begin weekly comparisons. Historical data imported later retain their actual capture time.
 
+## Local subscription runs
+
+Install Codex CLI and run `codex login` with ChatGPT on the machine that runs EpiWeekly. Confirm the account with `codex login status`. The `codex` provider requires ChatGPT authentication and excludes API key environment variables from the subprocess. Credentials remain in Codex's credential store.
+
+```bash
+export EPIWEEKLY_PROVIDER=codex
+epiweekly run
+```
+
+`--model MODEL_ID` or `EPIWEEKLY_MODEL` selects a model available to that account. An empty model setting uses the Codex CLI default. EpiWeekly ignores user Codex configuration so project tools, hooks, and connected services do not participate in extraction. Use a current CLI supporting `exec --ignore-user-config --ephemeral --output-schema`.
+
+The same command can run through a local scheduler under the signed-in user. The machine must be awake and connected. Configure the scheduler's working directory as the repository root and make both `.venv/bin` and the Codex executable available on its PATH. No local schedule is installed by the package.
+
+The supplied GitHub workflow supports `none` and `openai`; it does not provision subscription credentials. Keep ChatGPT credentials out of the public code repository and its Actions secrets. See [Codex automation authentication](https://learn.chatgpt.com/docs/non-interactive-mode) for account and runner requirements.
+
 ## Private deployment repository
 Create a dedicated private repository for state, initialized with a README. Keep its access restricted to the operating group. Its default branch is the persistence branch; use one scheduled deployment writer for that branch. The public code repository can host the reusable implementation and approved published datasets.
 
@@ -34,7 +49,9 @@ The `publish-approved.yml` workflow reads a bundle and approval from private sta
 The CLI approval records a named editor and exact bundle hash; repository permissions and the protected publication environment establish approval authority. Approval JSON is a content-bound receipt rather than a cryptographic identity signature. A revised report gets its own receipt. The canonical report keeps the editorial state it had when sealed; distribute its approval sidecar with it.
 
 ## Budgets and source checks
-Defaults limit each source to 18 documents per run, each response to 16 MB, model calls to 36, extraction input to 650,000 characters, and each model response to 10,000 output tokens. These are upper bounds rather than cost estimates. Actual cost depends on the configured model and project pricing. Store the returned model and usage receipt, configure an API-project spending limit, and start canaries at two calls. Budget-exhausted or incomplete extraction chunks remain in the private extraction queue.
+Defaults limit each source to 18 documents per run, each response to 16 MB, extraction attempts to 36, and source input to 650,000 characters. The API provider requests at most 10,000 output tokens per call. The Codex provider allows 180 seconds per invocation and accepts a final JSON file up to 1,000,000 bytes, configured through `codex_timeout_seconds` and `codex_output_bytes` under `limits`.
+
+For Codex, `max_model_calls` counts CLI invocations, not internal model requests; the CLI can make multiple requests in one invocation. The byte limit validates the returned JSON and is not a token spending cap. Subscription limits still apply. API cost depends on model pricing and usage; set the API project's spending limit separately. Begin with a two-attempt budget and compare extracted claims with source text. Failed and budget-exhausted chunks remain in the extraction queue.
 
 Review core-source failures, extraction backlog, stale source publication dates, contradictory totals, and ambiguous identity matches each Wednesday. `documents_with_some_extraction` indicates that at least one extraction exists; chunk tasks and the extraction-run receipt provide completion detail. An image-only PDF page enters layout review. Editors also inspect visually complex PDF tables where native text order may be misleading.
 

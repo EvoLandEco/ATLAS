@@ -6,6 +6,7 @@ from pathlib import Path
 import httpx
 from .config import assets, vocabulary
 from .models import Extraction, Mention
+from .codex import CodexExtractor
 from .semantics import normalize_mention, evidence_errors
 from .store import Store
 from .util import digest, uid, utcnow, write_json, read_json
@@ -102,7 +103,7 @@ def add_extraction(store: Store, document_id: str, result: Extraction, *, at: st
 
 
 def extract_pending(store: Store, config: dict, provider: str = "none", model: str = "") -> dict:
-    if provider not in {"none","openai"}: raise ValueError("Unknown extraction provider")
+    if provider not in {"none","openai","codex"}: raise ValueError("Unknown extraction provider")
     limits=config["limits"]
     completed={r["payload"]["extraction_key"] for r in store.records("extraction")}
     summary={"provider":provider,"calls":0,"cache_hits":0,"completed_chunks":0,"queued_chunks":0,
@@ -111,6 +112,8 @@ def extract_pending(store: Store, config: dict, provider: str = "none", model: s
     editorial_docs={r["payload"]["document_id"] for r in store.records("extraction")
                     if r["payload"]["provenance"].get("provider")=="editorial"}
     agent=OpenAIExtractor(model,limits["max_output_tokens"]) if provider=="openai" else None
+    if provider=="codex":
+        agent=CodexExtractor(model,limits.get("codex_output_bytes",1000000),limits.get("codex_timeout_seconds",180))
     tasks=[]
     prompt_sha=digest(assets("extract.md").encode());schema_sha=digest(Extraction.model_json_schema())
     try:
@@ -119,7 +122,7 @@ def extract_pending(store: Store, config: dict, provider: str = "none", model: s
             if row["id"] in editorial_docs: continue
             text=(store.home/doc["text_object"]).read_text(encoding="utf-8")
             for start,end,piece in chunks(text,limits["chunk_characters"],limits["chunk_overlap"]):
-                key=digest([row["id"],digest(piece.encode()),model,prompt_sha,schema_sha,vocabulary()])
+                key=digest([row["id"],digest(piece.encode()),provider,model,prompt_sha,schema_sha,vocabulary()])
                 if key in completed: continue
                 task={"document_id":row["id"],"extraction_key":key,"start":start,"end":end}
                 if doc["parse_status"]!="text_ready":

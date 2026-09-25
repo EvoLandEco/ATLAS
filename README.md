@@ -1,6 +1,6 @@
 # EpiWeekly
 
-**Experimental release v0.1.0-alpha.2** · Python package `0.1.0a2` · Data schema `0.1.0`
+**Experimental release v0.1.0-alpha.3** · Python package `0.1.0a3` · Data schema `0.1.0`
 
 EpiWeekly produces a Wednesday research-group briefing from configured outbreak intelligence sources. It maintains a longitudinal event registry, records changes in the evidence, and surfaces questions and resources relevant to the group's research. Each briefing includes a fixed-layout report and a documented analytical dataset.
 
@@ -48,17 +48,37 @@ epiweekly run --provider none
 epiweekly review-export
 ```
 
-`provider=none` supports collection and editorial extraction. The OpenAI adapter performs schema-constrained extraction through the Responses API. Configure a model available to your API project and store the key in the local environment or deployment secret store:
+Choose an extraction provider for `run` or `extract`:
+
+| Provider | Access | Use |
+| --- | --- | --- |
+| `none` | No model account | Collect sources for manual extraction and review |
+| `codex` | Codex CLI signed in with ChatGPT | Local extraction using your subscription allowance |
+| `openai` | OpenAI API key | Extraction billed to your API project |
+
+For Codex, install the [Codex CLI](https://learn.chatgpt.com/docs/non-interactive-mode), sign in with ChatGPT, and run:
 
 ```bash
-export EPIWEEKLY_PROVIDER=openai
-export EPIWEEKLY_MODEL=YOUR_CONFIGURED_MODEL_ID
-# Set OPENAI_API_KEY through your secret manager or shell environment.
-epiweekly extract --provider openai --model "$EPIWEEKLY_MODEL"
+codex login
+codex login status
+epiweekly run --provider codex
+```
+
+To extract sources already collected, use `epiweekly extract --provider codex`. Supply `--model MODEL_ID` to select a model available to your Codex account; otherwise the CLI selects its default. EpiWeekly uses a temporary working directory, schema-constrained output, and a read-only sandbox with shell, browser, apps, and plugins disabled. Subscription usage limits apply. API keys are not passed to this provider.
+
+For API extraction, configure a model available to your API project and set `OPENAI_API_KEY` through your secret manager or shell environment:
+
+```bash
+epiweekly run --provider openai --model YOUR_API_MODEL_ID
+```
+
+`EPIWEEKLY_PROVIDER` and `EPIWEEKLY_MODEL` set the command defaults. Both model providers share the chunk queue, evidence checks, and editorial review process. Extraction does not accept events or approve publication.
+
+```bash
 epiweekly review-export
 ```
 
-Edit the decision template under `.runtime-state/review/`, apply the decisions, and seal the updated report:
+Edit the decision template under `.runtime-state/review/`, apply the decisions, and seal the report:
 
 ```bash
 epiweekly review-apply .runtime-state/review/decisions.json

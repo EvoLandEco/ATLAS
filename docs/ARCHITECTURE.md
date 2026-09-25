@@ -1,12 +1,12 @@
 # Architecture and decision boundaries
 
 ## Workflow graph
-The orchestrator drives collection, extraction, review preparation, and sealing. The collector selects configured source adapters, captures content-addressed versions, records retrieval coverage, and revisits recent URLs. The extraction agent converts bounded text chunks into a strict schema. Mechanical validators check field types, missingness consistency, dates, numerical ranges, and evidence anchors. The linker proposes existing event identities. An editor accepts, rejects, or defers a mention and supplies the persistent event key.
+The orchestrator drives collection, extraction, review preparation, and sealing. The collector selects configured source adapters, captures content-addressed versions, records retrieval coverage, and revisits recent URLs. The extraction agent converts bounded text chunks into a strict schema through the OpenAI API or local Codex CLI. Provider and model selection are part of the cache identity. Mechanical validators check field types, missingness consistency, dates, numerical ranges, and evidence anchors. The linker proposes existing event identities. An editor accepts, rejects, or defers a mention and supplies the persistent event key.
 
 A deterministic reducer constructs the event and measurement view at an explicit knowledge cutoff. Evidence-tag rules generate persistent research opportunities, ranked by the group's versioned relevance profile and explicit resource availability. A fixed renderer creates the human report and analytical bundle. A separate approval binds publication to a checksummed artifact.
 
 ## Components
-`models.py` defines input contracts; `sources.py` implements bounded retrieval and source versions; `extraction.py` implements provider calls and frozen caches; `registry.py` applies editorial decisions; `store.py` provides the immutable ledger; `semantics.py` defines normalization and comparability; `snapshot.py` reduces known evidence; `tables.py` defines output columns; `render.py` and `export.py` create fixed outputs; `workflow.py` and `cli.py` provide operating commands.
+`models.py` defines input contracts; `sources.py` implements bounded retrieval and source versions; `extraction.py` implements provider selection and frozen caches; `codex.py` runs local subscription extraction; `registry.py` applies editorial decisions; `store.py` provides the immutable ledger; `semantics.py` defines normalization and comparability; `snapshot.py` reduces known evidence; `tables.py` defines output columns; `render.py` and `export.py` create fixed outputs; `workflow.py` and `cli.py` provide operating commands.
 
 The workflow uses a bounded extraction agent inside an explicit state machine. The remaining stages use testable deterministic operations. This keeps source selection, measurement arithmetic, identity acceptance, publication, and resource usage inspectable.
 

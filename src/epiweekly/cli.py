@@ -25,8 +25,8 @@ def parser():
     s=p.add_subparsers(dest='command',required=True)
     s.add_parser('init');s.add_parser('doctor')
     c=s.add_parser('collect');c.add_argument('--since',required=True)
-    c=s.add_parser('extract');c.add_argument('--provider',choices=['none','openai'],default=os.getenv('EPIWEEKLY_PROVIDER','none'));c.add_argument('--model',default=os.getenv('EPIWEEKLY_MODEL',''))
-    c=s.add_parser('run');c.add_argument('--provider',choices=['none','openai'],default=os.getenv('EPIWEEKLY_PROVIDER','none'));c.add_argument('--model',default=os.getenv('EPIWEEKLY_MODEL',''));c.add_argument('--report-date');c.add_argument('--force',action='store_true')
+    c=s.add_parser('extract');c.add_argument('--provider',choices=['none','openai','codex'],default=os.getenv('EPIWEEKLY_PROVIDER','none'));c.add_argument('--model',default=os.getenv('EPIWEEKLY_MODEL',''))
+    c=s.add_parser('run');c.add_argument('--provider',choices=['none','openai','codex'],default=os.getenv('EPIWEEKLY_PROVIDER','none'));c.add_argument('--model',default=os.getenv('EPIWEEKLY_MODEL',''));c.add_argument('--report-date');c.add_argument('--force',action='store_true')
     c=s.add_parser('import-document');c.add_argument('path',type=Path)
     c=s.add_parser('import-extraction');c.add_argument('document_id');c.add_argument('path',type=Path);c.add_argument('--editor',required=True)
     s.add_parser('review-export')
@@ -68,6 +68,7 @@ def execute(a):
                 return {'environment':fingerprint(),'ledger':store.verify(),'source_count':len(config['sources']),
                     'enabled_sources':[s['id'] for s in config['sources'] if s.get('enabled')],
                     'provider':os.getenv('EPIWEEKLY_PROVIDER','none'),'model_configured':bool(os.getenv('EPIWEEKLY_MODEL')),
+                    'codex_available':shutil.which('codex') is not None,
                     'api_key_present':bool(os.getenv('OPENAI_API_KEY')),'network_check':'run collect explicitly'}
             if cmd=='collect':return collect(store,config,a.since)
             if cmd=='extract':return extract_pending(store,config,a.provider,a.model)
