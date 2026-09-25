@@ -15,7 +15,7 @@ limits:
   max_model_calls: 36
   max_input_characters: 650000
   max_output_tokens: 10000
-  codex_timeout_seconds: 180
+  codex_timeout_seconds: 1200
   codex_output_bytes: 1000000
 research_profile:
   name: One Health transmission, inference, and prevention
