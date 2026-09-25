@@ -1,0 +1,31 @@
+version: "0.1.0"
+disease:
+  avian flu: avian influenza
+  bird flu: avian influenza
+  avian influenza: avian influenza
+  african swine fever: African swine fever
+  asf: African swine fever
+  foot-and-mouth disease: foot-and-mouth disease
+  fmd: foot-and-mouth disease
+  hepatitis e: hepatitis E
+  mpox: mpox
+  monkeypox: mpox
+  ebola disease: Ebola disease
+  ebola virus disease: Ebola virus disease
+host:
+  humans: human
+  human: human
+  people: human
+  pigs: pig
+  pig: pig
+  swine: pig
+  wild boar: wild boar
+  poultry: poultry
+  cattle: cattle
+  wild birds: wild bird
+  wild bird: wild bird
+pathogen:
+  hev: hepatitis E virus
+  hepatitis e virus: hepatitis E virus
+  mers-cov: MERS-CoV
+  sars-cov-2: SARS-CoV-2

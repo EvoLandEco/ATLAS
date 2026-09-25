@@ -1,0 +1,1976 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "metadata": {
+      "additionalProperties": false,
+      "properties": {
+        "build_fingerprint": {
+          "type": "object"
+        },
+        "config_sha256": {
+          "type": "string"
+        },
+        "dataset_mode": {
+          "type": "string"
+        },
+        "extraction_schema_sha256": {
+          "type": "string"
+        },
+        "knowledge_cutoff": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "ledger_head_sha256": {
+          "type": "string"
+        },
+        "previous_report_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "previous_report_id_status": {
+          "enum": [
+            "reported",
+            "not_applicable"
+          ]
+        },
+        "prompt_sha256": {
+          "type": "string"
+        },
+        "quality": {
+          "additionalProperties": false,
+          "properties": {
+            "captured_documents": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "conflicting_current_series": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "core_source_gaps": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "documents_awaiting_extraction": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "documents_with_some_extraction": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "evidence_flagged_mentions": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "future_dated_candidates_excluded": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "latest_extraction_check": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "pending_review_mentions": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          "required": [
+            "pending_review_mentions",
+            "evidence_flagged_mentions",
+            "captured_documents",
+            "documents_with_some_extraction",
+            "documents_awaiting_extraction",
+            "conflicting_current_series",
+            "future_dated_candidates_excluded",
+            "core_source_gaps",
+            "latest_extraction_check"
+          ],
+          "type": "object"
+        },
+        "release_status": {
+          "type": "string"
+        },
+        "report_date": {
+          "format": "date",
+          "type": "string"
+        },
+        "report_id": {
+          "type": "string"
+        },
+        "research_profile": {
+          "type": "object"
+        },
+        "schema_version": {
+          "type": "string"
+        },
+        "software_version": {
+          "type": "string"
+        },
+        "template_version": {
+          "type": "string"
+        },
+        "timezone": {
+          "type": "string"
+        },
+        "vocabulary_sha256": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "report_id",
+        "report_date",
+        "knowledge_cutoff",
+        "timezone",
+        "release_status",
+        "dataset_mode",
+        "software_version",
+        "schema_version",
+        "template_version",
+        "config_sha256",
+        "ledger_head_sha256",
+        "prompt_sha256",
+        "extraction_schema_sha256",
+        "vocabulary_sha256",
+        "previous_report_id",
+        "previous_report_id_status",
+        "build_fingerprint",
+        "research_profile",
+        "quality"
+      ],
+      "type": "object"
+    },
+    "tables": {
+      "additionalProperties": false,
+      "properties": {
+        "changes": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "change_type": {
+                "description": "new_to_registry, updated_measurements, status_change, additional_reporting, carried_forward, or removed_after_review.",
+                "type": "string"
+              },
+              "description": {
+                "description": "Deterministic explanation of the snapshot difference.",
+                "type": "string"
+              },
+              "event_id": {
+                "description": "Persistent event identity.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "event_id",
+              "change_type",
+              "description"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "documents": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "content_url": {
+                "description": "Actual content URL, including primary PDF when used.",
+                "type": "string"
+              },
+              "document_id": {
+                "description": "Immutable source document version ID.",
+                "type": "string"
+              },
+              "known_at": {
+                "description": "First successful local capture of this version.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "modified_at": {
+                "description": "Source-declared last modification date/instant.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "modified_at_status": {
+                "description": "Value presence or explicit missingness reason for modified_at.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "parse_status": {
+                "description": "text_ready or needs_review.",
+                "type": "string"
+              },
+              "publication_precision": {
+                "description": "day, instant, or unknown; date-only values remain dates.",
+                "type": "string"
+              },
+              "published_at": {
+                "description": "Source publication date or timestamp.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "published_at_status": {
+                "description": "Value presence or explicit missingness reason for published_at.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "raw_sha256": {
+                "description": "SHA-256 of captured original source bytes.",
+                "type": "string"
+              },
+              "source_id": {
+                "description": "Configured source.",
+                "type": "string"
+              },
+              "text_sha256": {
+                "description": "SHA-256 of normalized captured text.",
+                "type": "string"
+              },
+              "title": {
+                "description": "Source document title.",
+                "type": "string"
+              },
+              "url": {
+                "description": "Canonical public landing page.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "document_id",
+              "source_id",
+              "url",
+              "content_url",
+              "title",
+              "published_at",
+              "published_at_status",
+              "publication_precision",
+              "modified_at",
+              "modified_at_status",
+              "known_at",
+              "text_sha256",
+              "raw_sha256",
+              "parse_status"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "event_history": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "event_id": {
+                "description": "Persistent event identity as represented then.",
+                "type": "string"
+              },
+              "knowledge_cutoff": {
+                "description": "Ledger knowledge cutoff for this historical snapshot.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "lifecycle_status": {
+                "description": "Reviewed state in that snapshot.",
+                "type": "string"
+              },
+              "report_date": {
+                "description": "Local editorial report date.",
+                "format": "date",
+                "type": "string"
+              },
+              "report_id": {
+                "description": "Sealed weekly snapshot identity.",
+                "type": "string"
+              },
+              "summary": {
+                "description": "Reviewed source summary as represented then.",
+                "type": "string"
+              },
+              "update_class": {
+                "description": "Weekly change classification at the time.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "report_id",
+              "report_date",
+              "knowledge_cutoff",
+              "event_id",
+              "lifecycle_status",
+              "update_class",
+              "summary"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "event_identities": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "current_candidate_count": {
+                "description": "Currently accepted mentions assigned to this identity.",
+                "type": "integer"
+              },
+              "event_id": {
+                "description": "Persistent identity, including reassigned historical identities.",
+                "type": "string"
+              },
+              "event_key": {
+                "description": "Stable editorial identity key.",
+                "type": "string"
+              },
+              "first_assigned_at": {
+                "description": "First accepted identity assignment.",
+                "format": "date-time",
+                "type": "string"
+              }
+            },
+            "required": [
+              "event_id",
+              "event_key",
+              "first_assigned_at",
+              "current_candidate_count"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "event_metrics": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "case_class": {
+                "description": "Case classification.",
+                "type": "string"
+              },
+              "case_definition": {
+                "description": "Explicit source definition or definition identifier.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "case_definition_status": {
+                "description": "Value presence or explicit missingness reason for case_definition.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "change_in_reported_cumulative": {
+                "description": "Difference from the previous sealed comparable cumulative value; this is a reporting change.",
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "change_in_reported_cumulative_status": {
+                "description": "Value presence or explicit missingness reason for change_in_reported_cumulative.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "change_label": {
+                "description": "increase_in_reported_total, downward_revision, unchanged_reported_total, or N/A.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "change_label_status": {
+                "description": "Value presence or explicit missingness reason for change_label.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "count_kind": {
+                "description": "Cumulative, interval, point, or unknown.",
+                "type": "string"
+              },
+              "country_code": {
+                "description": "Country of this measurement; NA is Namibia.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "country_code_status": {
+                "description": "Value presence or explicit missingness reason for country_code.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "date_basis": {
+                "description": "Time axis of the underlying measurement.",
+                "type": "string"
+              },
+              "denominator": {
+                "description": "Explicit denominator, when supplied.",
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "denominator_status": {
+                "description": "Value presence or explicit missingness reason for denominator.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "disease": {
+                "description": "Disease label for the measurement context.",
+                "type": "string"
+              },
+              "event_id": {
+                "description": "Persistent event identity.",
+                "type": "string"
+              },
+              "geographic_scope": {
+                "description": "Geographic resolution for this measurement.",
+                "type": "string"
+              },
+              "host": {
+                "description": "Host population for this measurement.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "host_status": {
+                "description": "Value presence or explicit missingness reason for host.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "location": {
+                "description": "Geographic label for this measurement.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "location_status": {
+                "description": "Value presence or explicit missingness reason for location.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "metric": {
+                "description": "Measurement type.",
+                "type": "string"
+              },
+              "origin_authority": {
+                "description": "Underlying count origin used for conservative comparability.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "origin_authority_status": {
+                "description": "Value presence or explicit missingness reason for origin_authority.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "period_end": {
+                "description": "End of source measurement period.",
+                "format": "date",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "period_end_status": {
+                "description": "Value presence or explicit missingness reason for period_end.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "period_start": {
+                "description": "Start of source measurement period.",
+                "format": "date",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "period_start_status": {
+                "description": "Value presence or explicit missingness reason for period_start.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "population": {
+                "description": "Population to which the measurement refers.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "population_status": {
+                "description": "Value presence or explicit missingness reason for population.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "qualifier": {
+                "description": "Source numeric qualifier, including at_least and approximately.",
+                "type": "string"
+              },
+              "selected_observation_id": {
+                "description": "Representative source assertion; missing when unresolved.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "selected_observation_id_status": {
+                "description": "Value presence or explicit missingness reason for selected_observation_id.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "selection_basis": {
+                "description": "Period end, explicit as-of, or capture fallback; see methods.",
+                "type": "string"
+              },
+              "series_id": {
+                "description": "Exact measurement-context identity; joins observations.",
+                "type": "string"
+              },
+              "stratum": {
+                "description": "Source stratum.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "stratum_status": {
+                "description": "Value presence or explicit missingness reason for stratum.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "supporting_observation_ids": {
+                "description": "All equal or conflicting claims at the selected time coordinate.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "unit": {
+                "description": "Measurement unit.",
+                "type": "string"
+              },
+              "value": {
+                "description": "Current selected source value; conflicting values remain missing here.",
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "value_status": {
+                "description": "Value presence or explicit missingness reason for value.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "series_id",
+              "event_id",
+              "metric",
+              "disease",
+              "host",
+              "host_status",
+              "country_code",
+              "country_code_status",
+              "location",
+              "location_status",
+              "geographic_scope",
+              "qualifier",
+              "denominator",
+              "denominator_status",
+              "value",
+              "value_status",
+              "unit",
+              "count_kind",
+              "case_class",
+              "case_definition",
+              "case_definition_status",
+              "date_basis",
+              "period_start",
+              "period_start_status",
+              "period_end",
+              "period_end_status",
+              "population",
+              "population_status",
+              "stratum",
+              "stratum_status",
+              "origin_authority",
+              "origin_authority_status",
+              "selected_observation_id",
+              "selected_observation_id_status",
+              "supporting_observation_ids",
+              "selection_basis",
+              "change_in_reported_cumulative",
+              "change_in_reported_cumulative_status",
+              "change_label",
+              "change_label_status"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "events": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "as_of": {
+                "description": "Latest reported epidemiological as-of date.",
+                "format": "date",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "as_of_status": {
+                "description": "Value presence or explicit missingness reason for as_of.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "authority_event_id": {
+                "description": "Explicit persistent ID assigned by the source authority.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "authority_event_id_status": {
+                "description": "Value presence or explicit missingness reason for authority_event_id.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "authority_namespace": {
+                "description": "Issuer namespace for the source event ID.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "authority_namespace_status": {
+                "description": "Value presence or explicit missingness reason for authority_namespace.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "country_code": {
+                "description": "ISO 3166-1 alpha-2; NA is Namibia.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "country_code_status": {
+                "description": "Value presence or explicit missingness reason for country_code.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "disease": {
+                "description": "Versioned canonical disease label.",
+                "type": "string"
+              },
+              "event_id": {
+                "description": "Persistent local event identity.",
+                "type": "string"
+              },
+              "event_key": {
+                "description": "Editor-assigned stable identity key.",
+                "type": "string"
+              },
+              "event_start": {
+                "description": "Latest explicit source-reported event start, separate from registry discovery.",
+                "format": "date",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "event_start_status": {
+                "description": "Value presence or explicit missingness reason for event_start.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "evidence_candidate_ids": {
+                "description": "IDs of current accepted report mentions.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "first_seen_at": {
+                "description": "Earliest evidence capture associated with this event as known now.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "freshness_days": {
+                "description": "Days since latest source publication, not inferred transmission inactivity.",
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "freshness_days_status": {
+                "description": "Value presence or explicit missingness reason for freshness_days.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "freshness_status": {
+                "description": "current, stale, or unknown under configured editorial threshold.",
+                "type": "string"
+              },
+              "geographic_scope": {
+                "description": "subnational, national, multinational, global, or unknown.",
+                "type": "string"
+              },
+              "host": {
+                "description": "Population or host species for this event.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "host_status": {
+                "description": "Value presence or explicit missingness reason for host.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "kind": {
+                "description": "outbreak, cluster, single_case, surveillance_aggregate, signal, or context.",
+                "type": "string"
+              },
+              "last_reviewed_at": {
+                "description": "Latest effective editorial acceptance timestamp.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "last_source_publication": {
+                "description": "Latest source publication date or instant, separate from capture time.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "last_source_publication_status": {
+                "description": "Value presence or explicit missingness reason for last_source_publication.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "lifecycle_status": {
+                "description": "Most recent explicit reviewed source status; silence preserves the prior state.",
+                "type": "string"
+              },
+              "location": {
+                "description": "Source-reported geographic scope label.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "location_status": {
+                "description": "Value presence or explicit missingness reason for location.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "pathogen": {
+                "description": "Source-reported pathogen, with subtype retained.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "pathogen_status": {
+                "description": "Value presence or explicit missingness reason for pathogen.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "summary": {
+                "description": "Reviewed source-derived paraphrase.",
+                "type": "string"
+              },
+              "tags": {
+                "description": "Evidence-backed research relevance tags.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "title": {
+                "description": "Current reviewed event label.",
+                "type": "string"
+              },
+              "update_class": {
+                "description": "Change relative to the preceding sealed report.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "event_id",
+              "event_key",
+              "title",
+              "kind",
+              "disease",
+              "pathogen",
+              "pathogen_status",
+              "host",
+              "host_status",
+              "country_code",
+              "country_code_status",
+              "location",
+              "location_status",
+              "geographic_scope",
+              "lifecycle_status",
+              "update_class",
+              "first_seen_at",
+              "last_reviewed_at",
+              "last_source_publication",
+              "last_source_publication_status",
+              "event_start",
+              "event_start_status",
+              "as_of",
+              "as_of_status",
+              "freshness_days",
+              "freshness_days_status",
+              "freshness_status",
+              "summary",
+              "evidence_candidate_ids",
+              "tags",
+              "authority_event_id",
+              "authority_event_id_status",
+              "authority_namespace",
+              "authority_namespace_status"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "observations": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "as_of": {
+                "description": "Mention-level epidemiological as-of date.",
+                "format": "date",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "as_of_status": {
+                "description": "Value presence or explicit missingness reason for as_of.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "candidate_id": {
+                "description": "Parent reviewed mention.",
+                "type": "string"
+              },
+              "case_class": {
+                "description": "Source case classification; combined classifications remain separate.",
+                "type": "string"
+              },
+              "case_definition": {
+                "description": "Explicit source definition or definition identifier.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "case_definition_status": {
+                "description": "Value presence or explicit missingness reason for case_definition.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "count_kind": {
+                "description": "cumulative, interval, point, or unknown.",
+                "type": "string"
+              },
+              "country_code": {
+                "description": "Country for the claim; NA is Namibia.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "country_code_status": {
+                "description": "Value presence or explicit missingness reason for country_code.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "date_basis": {
+                "description": "onset, notification, specimen, death, report, or unknown.",
+                "type": "string"
+              },
+              "denominator": {
+                "description": "Explicit numeric denominator, when supplied.",
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "denominator_status": {
+                "description": "Value presence or explicit missingness reason for denominator.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "disease": {
+                "description": "Disease label at this source assertion, preserving reclassification history.",
+                "type": "string"
+              },
+              "document_id": {
+                "description": "Parent document version.",
+                "type": "string"
+              },
+              "event_id": {
+                "description": "Persistent event ID.",
+                "type": "string"
+              },
+              "evidence_locator": {
+                "description": "Page/section supplied during extraction and checked in editorial review.",
+                "type": "string"
+              },
+              "geographic_scope": {
+                "description": "Resolution of the source claim.",
+                "type": "string"
+              },
+              "host": {
+                "description": "Host population for the claim.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "host_status": {
+                "description": "Value presence or explicit missingness reason for host.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "known_at": {
+                "description": "First capture of the extracted claim.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "location": {
+                "description": "Geographic scope of the claim.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "location_status": {
+                "description": "Value presence or explicit missingness reason for location.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "metric": {
+                "description": "cases, deaths, hospitalizations, affected_holdings, affected_animals, samples_tested, positive_samples, test_positivity, or other.",
+                "type": "string"
+              },
+              "observation_id": {
+                "description": "Immutable individual source claim identity.",
+                "type": "string"
+              },
+              "origin_authority": {
+                "description": "Source-stated origin of the underlying counts; unknown origins remain missing.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "origin_authority_status": {
+                "description": "Value presence or explicit missingness reason for origin_authority.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "period_end": {
+                "description": "End of the source observation period.",
+                "format": "date",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "period_end_status": {
+                "description": "Value presence or explicit missingness reason for period_end.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "period_start": {
+                "description": "Beginning of the observation period or cumulative baseline.",
+                "format": "date",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "period_start_status": {
+                "description": "Value presence or explicit missingness reason for period_start.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "population": {
+                "description": "Population denominator/scope label.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "population_status": {
+                "description": "Value presence or explicit missingness reason for population.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "qualifier": {
+                "description": "exact, approximately, at_least, at_most, or unknown.",
+                "type": "string"
+              },
+              "selected_current": {
+                "description": "One deterministic representative of a consistent current measurement.",
+                "type": "boolean"
+              },
+              "series_id": {
+                "description": "Hash of event and exact measurement context.",
+                "type": "string"
+              },
+              "source_id": {
+                "description": "Publisher identity, distinct from originating authority.",
+                "type": "string"
+              },
+              "source_publication": {
+                "description": "Source publication date/instant.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "source_publication_status": {
+                "description": "Value presence or explicit missingness reason for source_publication.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "stratum": {
+                "description": "Age, sex, occupational, subtype, or other source-defined stratum.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "stratum_status": {
+                "description": "Value presence or explicit missingness reason for stratum.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "superseded": {
+                "description": "True when its parent claim has been explicitly replaced.",
+                "type": "boolean"
+              },
+              "unit": {
+                "description": "people, holdings, animals, samples, percent, proportion, other, or unknown.",
+                "type": "string"
+              },
+              "value": {
+                "description": "Source claim, with its explicit missingness reason.",
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "value_status": {
+                "description": "Value presence or explicit missingness reason for value.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "observation_id",
+              "series_id",
+              "event_id",
+              "candidate_id",
+              "document_id",
+              "source_id",
+              "disease",
+              "origin_authority",
+              "origin_authority_status",
+              "metric",
+              "value",
+              "value_status",
+              "unit",
+              "count_kind",
+              "case_class",
+              "case_definition",
+              "case_definition_status",
+              "date_basis",
+              "period_start",
+              "period_start_status",
+              "period_end",
+              "period_end_status",
+              "as_of",
+              "as_of_status",
+              "population",
+              "population_status",
+              "stratum",
+              "stratum_status",
+              "denominator",
+              "denominator_status",
+              "qualifier",
+              "host",
+              "host_status",
+              "country_code",
+              "country_code_status",
+              "location",
+              "location_status",
+              "geographic_scope",
+              "known_at",
+              "source_publication",
+              "source_publication_status",
+              "superseded",
+              "selected_current",
+              "evidence_locator"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "opportunities": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "basis": {
+                "description": "analyst_generated or source_reported_call.",
+                "type": "string"
+              },
+              "event_id": {
+                "description": "Related reviewed event.",
+                "type": "string"
+              },
+              "evidence_candidate_ids": {
+                "description": "Reviewed source evidence that motivated the proposal.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "first_surfaced_at": {
+                "description": "First weekly report in which the opportunity was generated.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "last_evidence_at": {
+                "description": "Latest accepted evidence supporting this rule.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "next_action": {
+                "description": "Concrete next step, with analyst ownership after triage.",
+                "type": "string"
+              },
+              "opportunity_id": {
+                "description": "Persistent event-plus-rule or external-resource opportunity identity.",
+                "type": "string"
+              },
+              "owner": {
+                "description": "Assigned group member or team.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "owner_status": {
+                "description": "Value presence or explicit missingness reason for owner.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "question": {
+                "description": "Proposed learning or contribution question.",
+                "type": "string"
+              },
+              "rank_score": {
+                "description": "Transparent sum of configured relevance weights and explicit resource bonus.",
+                "type": "integer"
+              },
+              "resource_access": {
+                "description": "public, registration, controlled, or unknown as stated by source.",
+                "type": "string"
+              },
+              "resource_url": {
+                "description": "Source-linked resource or data call.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "resource_url_status": {
+                "description": "Value presence or explicit missingness reason for resource_url.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "status": {
+                "description": "suggested, triaged, investigating, completed, or declined.",
+                "type": "string"
+              },
+              "theme": {
+                "description": "Research-profile rule that surfaced the opportunity.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "opportunity_id",
+              "event_id",
+              "basis",
+              "theme",
+              "question",
+              "next_action",
+              "status",
+              "owner",
+              "owner_status",
+              "rank_score",
+              "evidence_candidate_ids",
+              "resource_url",
+              "resource_url_status",
+              "resource_access",
+              "first_surfaced_at",
+              "last_evidence_at"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "relationships": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "basis": {
+                "description": "source_reported, analyst_hypothesis, or editorial_identity.",
+                "type": "string"
+              },
+              "evidence_candidate_id": {
+                "description": "Accepted supporting mention.",
+                "type": "string"
+              },
+              "from_event_id": {
+                "description": "Source endpoint.",
+                "type": "string"
+              },
+              "rationale": {
+                "description": "Editor-reviewed public explanation.",
+                "type": "string"
+              },
+              "recorded_at": {
+                "description": "Knowledge time of relationship decision.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "relation": {
+                "description": "part_of, possible_link, reported_link, shared_exposure, cross_host_link, merged_into, or split_from.",
+                "type": "string"
+              },
+              "relationship_id": {
+                "description": "Immutable relationship decision.",
+                "type": "string"
+              },
+              "to_event_id": {
+                "description": "Target endpoint.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "relationship_id",
+              "from_event_id",
+              "to_event_id",
+              "relation",
+              "basis",
+              "evidence_candidate_id",
+              "rationale",
+              "recorded_at"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "source_coverage": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "checked_at": {
+                "description": "Time of last collection check.",
+                "format": "date-time",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "checked_at_status": {
+                "description": "Value presence or explicit missingness reason for checked_at.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "discovered": {
+                "description": "Discovered items within adapter scope, including bounded revisits.",
+                "type": "integer"
+              },
+              "enabled": {
+                "description": "Whether this source participates in automated collection.",
+                "type": "boolean"
+              },
+              "new_documents": {
+                "description": "New immutable document versions captured.",
+                "type": "integer"
+              },
+              "newest_publication": {
+                "description": "Newest source publication among retrieved documents.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "newest_publication_status": {
+                "description": "Value presence or explicit missingness reason for newest_publication.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "notes": {
+                "description": "Coverage gaps, limits, access requirements, or retrieval errors.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "oldest_publication": {
+                "description": "Oldest source publication among retrieved documents.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "oldest_publication_status": {
+                "description": "Value presence or explicit missingness reason for oldest_publication.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "required": {
+                "description": "Whether this source is in the editorial core.",
+                "type": "boolean"
+              },
+              "retrieved": {
+                "description": "Documents successfully read in this check.",
+                "type": "integer"
+              },
+              "source_id": {
+                "description": "Configured source identifier.",
+                "type": "string"
+              },
+              "source_name": {
+                "description": "Publisher/source name.",
+                "type": "string"
+              },
+              "source_role": {
+                "description": "Official synthesis, official national reporting, animal health, or curated discovery.",
+                "type": "string"
+              },
+              "status": {
+                "description": "ok, partial, empty, failed, disabled, manual_access, or not_checked.",
+                "type": "string"
+              },
+              "window_start": {
+                "description": "Requested discovery lookback boundary.",
+                "format": "date",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "window_start_status": {
+                "description": "Value presence or explicit missingness reason for window_start.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "source_id",
+              "source_name",
+              "source_role",
+              "enabled",
+              "required",
+              "status",
+              "checked_at",
+              "checked_at_status",
+              "window_start",
+              "window_start_status",
+              "discovered",
+              "retrieved",
+              "new_documents",
+              "oldest_publication",
+              "oldest_publication_status",
+              "newest_publication",
+              "newest_publication_status",
+              "notes"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "updates": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "as_of": {
+                "description": "Reported epidemiological as-of date.",
+                "format": "date",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "as_of_status": {
+                "description": "Value presence or explicit missingness reason for as_of.",
+                "enum": [
+                  "reported",
+                  "not_reported",
+                  "unknown",
+                  "not_applicable",
+                  "pending_verification",
+                  "conflicting",
+                  "not_extracted",
+                  "not_comparable",
+                  "access_restricted"
+                ],
+                "type": "string"
+              },
+              "candidate_id": {
+                "description": "Immutable extracted or editorial mention identity.",
+                "type": "string"
+              },
+              "document_id": {
+                "description": "Immutable source document version.",
+                "type": "string"
+              },
+              "event_id": {
+                "description": "Current editorial event assignment at the knowledge cutoff.",
+                "type": "string"
+              },
+              "known_at": {
+                "description": "First capture of this extracted mention.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "review_id": {
+                "description": "Immutable decision ID in the private audit ledger.",
+                "type": "string"
+              },
+              "reviewed_at": {
+                "description": "Timestamp of effective review.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "source_id": {
+                "description": "Configured publisher/source identifier.",
+                "type": "string"
+              },
+              "summary": {
+                "description": "Reviewed source-derived paraphrase.",
+                "type": "string"
+              },
+              "superseded": {
+                "description": "True when an accepted correction explicitly replaces this candidate.",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "candidate_id",
+              "event_id",
+              "document_id",
+              "source_id",
+              "known_at",
+              "reviewed_at",
+              "as_of",
+              "as_of_status",
+              "summary",
+              "superseded",
+              "review_id"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "event_identities",
+        "events",
+        "updates",
+        "observations",
+        "event_metrics",
+        "relationships",
+        "opportunities",
+        "documents",
+        "source_coverage",
+        "changes",
+        "event_history"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "metadata",
+    "tables"
+  ],
+  "title": "EpiWeekly report 0.1.0",
+  "type": "object"
+}

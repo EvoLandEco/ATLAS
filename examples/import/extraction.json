@@ -1,0 +1,107 @@
+{
+  "mentions": [
+    {
+      "ambiguity_reasons": [],
+      "as_of": {
+        "status": "reported",
+        "value": "2026-09-08"
+      },
+      "authority_event_id": {
+        "status": "reported",
+        "value": "EX-2026-example-febrile"
+      },
+      "authority_namespace": {
+        "status": "reported",
+        "value": "Example Authority"
+      },
+      "country_code": {
+        "status": "reported",
+        "value": "NL"
+      },
+      "disease": {
+        "status": "reported",
+        "value": "Example febrile syndrome"
+      },
+      "event_start": {
+        "status": "reported",
+        "value": "2026-09-01"
+      },
+      "evidence": [
+        {
+          "field": "event",
+          "locator": "paragraph 1",
+          "quote": "Example Authority reports 12 cumulative confirmed cases as of 2026-09-08."
+        }
+      ],
+      "geographic_scope": "subnational",
+      "host": {
+        "status": "reported",
+        "value": "human"
+      },
+      "kind": "outbreak",
+      "local_key": "example-febrile",
+      "location": {
+        "status": "reported",
+        "value": "Example surveillance area"
+      },
+      "observations": [
+        {
+          "case_class": "confirmed",
+          "case_definition": {
+            "status": "reported",
+            "value": "Example laboratory definition v1"
+          },
+          "count_kind": "cumulative",
+          "date_basis": "notification",
+          "denominator": null,
+          "denominator_status": "not_reported",
+          "evidence": {
+            "field": "cases",
+            "locator": "paragraph 1",
+            "quote": "Example Authority reports 12 cumulative confirmed cases as of 2026-09-08."
+          },
+          "metric": "cases",
+          "origin_authority": {
+            "status": "reported",
+            "value": "Example Authority"
+          },
+          "period_end": {
+            "status": "reported",
+            "value": "2026-09-08"
+          },
+          "period_start": {
+            "status": "reported",
+            "value": "2026-09-01"
+          },
+          "population": {
+            "status": "reported",
+            "value": "Example monitored population"
+          },
+          "qualifier": "exact",
+          "stratum": {
+            "status": "reported",
+            "value": "All ages"
+          },
+          "unit": "people",
+          "value": 12.0,
+          "value_status": "reported"
+        }
+      ],
+      "pathogen": {
+        "status": "not_reported",
+        "value": null
+      },
+      "reported_status": "active",
+      "resources": [],
+      "summary": "Example Authority reports a cumulative total of 12 confirmed cases. This is a fictional training record.",
+      "tags": [
+        "transmission_uncertain"
+      ],
+      "title": "Example febrile syndrome — synthetic example"
+    }
+  ],
+  "notes": [
+    "Synthetic schema example; replace with an authorized source and extraction."
+  ],
+  "outcome": "extracted"
+}

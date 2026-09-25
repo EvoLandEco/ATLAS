@@ -1,0 +1,69 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "enum": [
+        "accept",
+        "reject",
+        "defer"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "allow_disease_reclassification": {
+      "default": false,
+      "title": "Allow Disease Reclassification",
+      "type": "boolean"
+    },
+    "candidate_id": {
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "event_key": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Event Key"
+    },
+    "public_rationale": {
+      "default": "Editorial review",
+      "maxLength": 300,
+      "minLength": 3,
+      "title": "Public Rationale",
+      "type": "string"
+    },
+    "rationale": {
+      "maxLength": 800,
+      "minLength": 3,
+      "title": "Rationale",
+      "type": "string"
+    },
+    "reviewer": {
+      "maxLength": 100,
+      "minLength": 2,
+      "title": "Reviewer",
+      "type": "string"
+    },
+    "supersedes_candidate_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supersedes Candidate Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "candidate_id",
+    "action",
+    "reviewer",
+    "rationale"
+  ],
+  "title": "Review",
+  "type": "object"
+}

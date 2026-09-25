@@ -1,0 +1,10 @@
+# Exact installed dependency closure used for experimental validation.
+# Refresh inside an isolated, tested environment; inspect the diff before committing.
+-r requirements.lock
+coverage==7.13.3
+iniconfig==2.3.0
+packaging==25.0
+pluggy==1.6.0
+Pygments==2.20.0
+pytest==9.0.2
+pytest-cov==7.0.0

@@ -1,0 +1,94 @@
+timezone: Europe/Amsterdam
+dataset_mode: operational
+user_agent: "EpiWeekly/0.1.0-alpha.2 (research-group weekly intelligence)"
+event_stale_days: 21
+lookback_days: 21
+limits:
+  max_response_bytes: 16000000
+  request_interval_seconds: 1.0
+  max_index_pages: 5
+  max_documents_per_source: 18
+  revisit_documents: 8
+  chunk_characters: 28000
+  chunk_overlap: 1200
+  max_model_calls: 36
+  max_input_characters: 650000
+  max_output_tokens: 10000
+research_profile:
+  name: One Health transmission, inference, and prevention
+  weights:
+    temporal_networks: 5
+    one_health: 5
+    spatiotemporal_networks: 4
+    inference: 4
+    phylodynamics: 4
+    observation_process: 4
+    reproducible_analysis: 3
+    data_call: 3
+sources:
+  - id: who_don
+    name: WHO Disease Outbreak News
+    role: official_international_reporting
+    adapter: who_odata
+    enabled: true
+    required: true
+    priority: 1
+    allowed_hosts: [www.who.int]
+    index_url: https://www.who.int/api/news/diseaseoutbreaknews
+  - id: ecdc_cdtr
+    name: ECDC Communicable Disease Threats Reports
+    role: official_regional_synthesis
+    adapter: rss_discovery
+    enabled: true
+    required: true
+    priority: 2
+    allowed_hosts: [www.ecdc.europa.eu, ecdc.europa.eu]
+    index_url: https://www.ecdc.europa.eu/en/rss-feeds
+    feed_labels: [Communicable disease threats report]
+    primary_pdf: 'communicable-disease-threats-report|cdtr'
+  - id: efsa
+    name: European Food Safety Authority
+    role: official_one_health_context_and_calls
+    adapter: rss_discovery
+    enabled: true
+    required: false
+    priority: 3
+    allowed_hosts: [www.efsa.europa.eu, efsa.europa.eu]
+    index_url: https://www.efsa.europa.eu/en/rss
+    feed_labels: [Publications, News, Calls for data]
+  - id: fao_aiv
+    name: FAO global avian influenza situation updates
+    role: official_animal_health_synthesis
+    adapter: static
+    enabled: true
+    required: false
+    priority: 3
+    allowed_hosts: [www.fao.org, fao.org]
+    urls:
+      - https://www.fao.org/animal-health/situation-updates/global-aiv-with-zoonotic-potential
+  - id: rivm
+    name: RIVM news
+    role: official_national_context
+    adapter: rss_discovery
+    enabled: true
+    required: false
+    priority: 1
+    allowed_hosts: [www.rivm.nl, rivm.nl]
+    index_url: https://www.rivm.nl/rss
+    feed_labels: [RSS feed Nieuwsberichten]
+  - id: woah_wahis
+    name: WOAH WAHIS authorized imports
+    role: official_animal_health_notifications
+    adapter: manual
+    enabled: true
+    required: false
+    priority: 1
+    allowed_hosts: [www.woah.org, wahis.woah.org]
+  - id: beacon
+    name: BEACON curated discovery and errata
+    role: curated_signal_discovery
+    adapter: manual
+    enabled: true
+    required: false
+    priority: 5
+    allowed_hosts: [beaconbio.org, www.beaconbio.org]

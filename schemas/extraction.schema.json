@@ -1,0 +1,465 @@
+{
+  "$defs": {
+    "DateValue": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "title": "DateValue",
+      "type": "object"
+    },
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "field": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Field",
+          "type": "string"
+        },
+        "locator": {
+          "default": "text",
+          "maxLength": 120,
+          "title": "Locator",
+          "type": "string"
+        },
+        "quote": {
+          "maxLength": 400,
+          "minLength": 3,
+          "title": "Quote",
+          "type": "string"
+        }
+      },
+      "required": [
+        "field",
+        "quote"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "Mention": {
+      "additionalProperties": false,
+      "properties": {
+        "ambiguity_reasons": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 15,
+          "title": "Ambiguity Reasons",
+          "type": "array"
+        },
+        "as_of": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "authority_event_id": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "authority_namespace": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "country_code": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "disease": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "event_start": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "geographic_scope": {
+          "default": "unknown",
+          "enum": [
+            "subnational",
+            "national",
+            "multinational",
+            "global",
+            "unknown"
+          ],
+          "title": "Geographic Scope",
+          "type": "string"
+        },
+        "host": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "kind": {
+          "enum": [
+            "outbreak",
+            "cluster",
+            "single_case",
+            "surveillance_aggregate",
+            "signal",
+            "context"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "local_key": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Local Key",
+          "type": "string"
+        },
+        "location": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "observations": {
+          "items": {
+            "$ref": "#/$defs/Observation"
+          },
+          "maxItems": 30,
+          "title": "Observations",
+          "type": "array"
+        },
+        "pathogen": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "reported_status": {
+          "default": "unknown",
+          "enum": [
+            "active",
+            "resolved",
+            "monitoring",
+            "unknown"
+          ],
+          "title": "Reported Status",
+          "type": "string"
+        },
+        "resources": {
+          "items": {
+            "$ref": "#/$defs/Resource"
+          },
+          "maxItems": 10,
+          "title": "Resources",
+          "type": "array"
+        },
+        "summary": {
+          "maxLength": 650,
+          "minLength": 3,
+          "title": "Summary",
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "enum": [
+              "cross_border",
+              "one_health_interface",
+              "transmission_uncertain",
+              "genomic_data",
+              "public_data",
+              "reporting_revision",
+              "data_call",
+              "network_question"
+            ],
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array"
+        },
+        "title": {
+          "maxLength": 240,
+          "minLength": 3,
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "local_key",
+        "title",
+        "kind",
+        "summary",
+        "evidence"
+      ],
+      "title": "Mention",
+      "type": "object"
+    },
+    "Observation": {
+      "additionalProperties": false,
+      "properties": {
+        "case_class": {
+          "enum": [
+            "confirmed",
+            "probable",
+            "suspected",
+            "confirmed_and_probable",
+            "all_reported",
+            "unknown"
+          ],
+          "title": "Case Class",
+          "type": "string"
+        },
+        "case_definition": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "count_kind": {
+          "enum": [
+            "cumulative",
+            "interval",
+            "point",
+            "unknown"
+          ],
+          "title": "Count Kind",
+          "type": "string"
+        },
+        "date_basis": {
+          "enum": [
+            "onset",
+            "notification",
+            "specimen",
+            "death",
+            "report",
+            "unknown"
+          ],
+          "title": "Date Basis",
+          "type": "string"
+        },
+        "denominator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Denominator"
+        },
+        "denominator_status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        },
+        "metric": {
+          "enum": [
+            "cases",
+            "deaths",
+            "hospitalizations",
+            "affected_holdings",
+            "affected_animals",
+            "samples_tested",
+            "positive_samples",
+            "test_positivity",
+            "other"
+          ],
+          "title": "Metric",
+          "type": "string"
+        },
+        "origin_authority": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "period_end": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "period_start": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "population": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "qualifier": {
+          "default": "unknown",
+          "enum": [
+            "exact",
+            "approximately",
+            "at_least",
+            "at_most",
+            "unknown"
+          ],
+          "title": "Qualifier",
+          "type": "string"
+        },
+        "stratum": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "unit": {
+          "enum": [
+            "people",
+            "holdings",
+            "animals",
+            "samples",
+            "percent",
+            "proportion",
+            "other",
+            "unknown"
+          ],
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "value_status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        }
+      },
+      "required": [
+        "metric",
+        "unit",
+        "count_kind",
+        "case_class",
+        "date_basis",
+        "evidence"
+      ],
+      "title": "Observation",
+      "type": "object"
+    },
+    "Resource": {
+      "additionalProperties": false,
+      "properties": {
+        "access": {
+          "default": "unknown",
+          "enum": [
+            "public",
+            "registration",
+            "controlled",
+            "unknown"
+          ],
+          "title": "Access",
+          "type": "string"
+        },
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        },
+        "kind": {
+          "enum": [
+            "dataset",
+            "sequences",
+            "software",
+            "paper",
+            "data_call",
+            "other"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 250,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "maxLength": 2048,
+          "minLength": 8,
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "title",
+        "url",
+        "evidence"
+      ],
+      "title": "Resource",
+      "type": "object"
+    },
+    "Status": {
+      "enum": [
+        "reported",
+        "not_reported",
+        "unknown",
+        "not_applicable",
+        "pending_verification",
+        "conflicting",
+        "not_extracted",
+        "not_comparable",
+        "access_restricted"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "TextValue": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "title": "TextValue",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "mentions": {
+      "items": {
+        "$ref": "#/$defs/Mention"
+      },
+      "maxItems": 40,
+      "title": "Mentions",
+      "type": "array"
+    },
+    "notes": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Notes",
+      "type": "array"
+    },
+    "outcome": {
+      "enum": [
+        "extracted",
+        "no_relevant_content",
+        "needs_review"
+      ],
+      "title": "Outcome",
+      "type": "string"
+    }
+  },
+  "required": [
+    "outcome"
+  ],
+  "title": "Extraction",
+  "type": "object"
+}

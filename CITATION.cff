@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "Cite the version used in the report's run manifest."
+title: "EpiWeekly: a versioned weekly outbreak-intelligence workflow"
+version: 0.1.0-alpha.2
+date-released: 2026-09-25
+type: software
+authors:
+  - name: EpiWeekly contributors
+license: MIT
+abstract: "A research-group workflow for longitudinal outbreak evidence, reviewed event identities, deterministic reports, and documented analytical datasets."
