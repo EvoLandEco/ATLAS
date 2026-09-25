@@ -5,12 +5,14 @@ from epiweekly.util import write_json,read_json
 from epiweekly.demo import sample_mention
 
 
-def test_cli_editorial_installation_path(tmp_path):
+def test_cli_editorial_installation_path(tmp_path, monkeypatch):
+    monkeypatch.setattr("epiweekly.config.utcnow",lambda:"2026-09-25T12:00:00Z")
     state=tmp_path/'state'
     def command(*args):return execute(parser().parse_args(['--state',str(state),*args]))
     assert command('init')['ledger']['records']==0
     assert command('doctor')['source_count']==7
     doc=read_json(Path('examples/import/document.json'));m=sample_mention(12)
+    doc['published_at']='2026-09-18'
     path=tmp_path/'document.json';write_json(path,doc)
     did=command('import-document',str(path))['document_id']
     extraction=tmp_path/'extraction.json';write_json(extraction,{'outcome':'extracted','mentions':[m]})

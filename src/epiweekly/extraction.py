@@ -2,6 +2,7 @@
 from __future__ import annotations
 import json
 import os
+import time
 from pathlib import Path
 import httpx
 from .config import assets, vocabulary, publication_window, in_publication_window
@@ -116,6 +117,11 @@ def extract_pending(store: Store, config: dict, provider: str = "none", model: s
     if provider=="codex":
         agent=CodexExtractor(model,limits.get("codex_output_bytes",1000000),limits.get("codex_timeout_seconds",180))
     tasks=[]
+    progress={"state":"running","started_at":utcnow(),"active":None,"last_error":None,
+              "publication_window":window}
+    def report_progress():
+        write_json(store.home/"review"/"extraction_progress.json",{**summary,**progress,"updated_at":utcnow()})
+    report_progress()
     prompt_sha=digest(assets("extract.md").encode());schema_sha=digest(Extraction.model_json_schema())
     try:
         for row in store.records("document"):
@@ -140,19 +146,39 @@ def extract_pending(store: Store, config: dict, provider: str = "none", model: s
                     summary["queued_chunks"]+=1; continue
                 else:
                     summary["calls"]+=1;summary["input_characters"]+=len(piece)
+                    at=utcnow();attempt_id=uid("attempt",key,at)
+                    diagnostics=Path("extraction_attempts")/attempt_id
+                    attempt={**task,"attempt_id":attempt_id,"provider":provider,"diagnostics":str(diagnostics),
+                             "title":doc["title"],"started_at":at}
+                    store.append("extraction_attempt",{**attempt,"state":"started"},at)
+                    progress["active"]=attempt;report_progress();started=time.monotonic()
                     try:
-                        result,receipt=agent.extract(piece,doc)
+                        result,receipt=(agent.extract(piece,doc,store.home/diagnostics) if provider=="codex"
+                                        else agent.extract(piece,doc))
                         write_json(cache,{"result":result.model_dump(mode="json"),"receipt":receipt})
                         provenance.update(receipt)
-                    except (httpx.HTTPError,ValueError,KeyError) as exc:
+                    except BaseException as exc:
+                        error=type(exc).__name__+":"+str(exc)[:2000]
+                        state="failed" if isinstance(exc,Exception) else "interrupted"
+                        store.append("extraction_attempt",{**attempt,"state":state,"error":error,
+                                     "elapsed_seconds":time.monotonic()-started},utcnow())
                         summary["failed_chunks"]+=1
-                        tasks.append({**task,"reason":type(exc).__name__+":"+str(exc)[:180]})
+                        tasks.append({**task,"reason":error})
+                        progress.update(active=None,last_error=error);report_progress()
+                        if not isinstance(exc,(httpx.HTTPError,ValueError,KeyError)):raise
                         continue
+                    store.append("extraction_attempt",{**attempt,"state":"completed","receipt":receipt,
+                                 "elapsed_seconds":time.monotonic()-started},utcnow())
+                    progress["active"]=None
                 ids=add_extraction(store,row["id"],result,at=utcnow(),extraction_key=key,
                                    provenance=provenance,chunk_start=start,chunk_end=end)
                 summary["completed_chunks"]+=1;summary["candidate_count"]+=len(ids)
+                report_progress()
         write_json(store.home/"review"/"extraction_tasks.json",tasks)
         store.append("extraction_check",summary,utcnow())
+        progress["state"]="needs_review" if summary["failed_chunks"] or summary["queued_chunks"] else "complete"
         return summary
     finally:
+        if progress["state"]=="running":progress["state"]="stopped"
+        report_progress()
         if agent: agent.close()

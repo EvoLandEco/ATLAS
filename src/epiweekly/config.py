@@ -2,7 +2,7 @@ from __future__ import annotations
 from importlib.resources import files
 from pathlib import Path
 from calendar import monthrange
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 import yaml
 from .util import digest, utcnow
@@ -10,14 +10,21 @@ from .util import digest, utcnow
 
 def publication_window(config: dict, as_of: str | None = None) -> tuple[str, str] | None:
     months=config.get("publication_window_months")
-    if months is None:return None
-    if type(months) is not int or months < 1:
-        raise ValueError("publication_window_months must be a positive integer")
+    days=config.get("publication_window_days")
+    if months is None and days is None:return None
+    if months is not None and days is not None:
+        raise ValueError("Set one publication window: days or months")
+    value=days if days is not None else months
+    if type(value) is not int or value < 1:
+        raise ValueError("The publication window must be a positive integer")
     value=as_of or utcnow()
     end=(date.fromisoformat(value) if len(value)==10 else
          datetime.fromisoformat(value.replace("Z","+00:00")).astimezone(ZoneInfo(config["timezone"])).date())
-    year,month=divmod(end.year*12+end.month-1-months,12)
-    start=date(year,month+1,min(end.day,monthrange(year,month+1)[1]))
+    if days is not None:
+        start=end-timedelta(days=days-1)
+    else:
+        year,month=divmod(end.year*12+end.month-1-months,12)
+        start=date(year,month+1,min(end.day,monthrange(year,month+1)[1]))
     return start.isoformat(),end.isoformat()
 
 

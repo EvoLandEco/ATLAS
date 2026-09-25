@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 import subprocess
 import tempfile
+from contextlib import nullcontext
 
 from .config import assets
 from .models import Extraction
@@ -23,10 +24,11 @@ class CodexExtractor:
         self.env = {k:v for k,v in os.environ.items()
                     if k not in {'OPENAI_API_KEY','CODEX_API_KEY','CODEX_ACCESS_TOKEN'}}
 
-    def extract(self, text: str, document: dict) -> tuple[Extraction, dict]:
+    def extract(self, text: str, document: dict, diagnostics: Path | None = None) -> tuple[Extraction, dict]:
         from .extraction import strict_schema
-        with tempfile.TemporaryDirectory(prefix='epiweekly-extract-') as directory:
-            root = Path(directory)
+        if diagnostics is not None:diagnostics.mkdir(parents=True,exist_ok=False)
+        with (nullcontext(diagnostics) if diagnostics is not None else tempfile.TemporaryDirectory(prefix='epiweekly-extract-')) as directory:
+            root = Path(directory).resolve()
             schema, output = root/'schema.json', root/'result.json'
             write_json(schema, strict_schema(Extraction.model_json_schema()))
             args = [self.executable, 'exec', '--ignore-user-config', '--ephemeral',
@@ -51,10 +53,12 @@ class CodexExtractor:
                 with (root/'events.jsonl').open('w+') as events, (root/'stderr.txt').open('w') as errors:
                     process = subprocess.run(args, input=source, text=True, cwd=root, env=self.env,
                                              stdout=events, stderr=errors, timeout=self.timeout)
-                    if process.returncode:
-                        raise ValueError('Codex extraction failed; check codex login, model access, and subscription limits')
                     events.seek(0)
                     completed = [json.loads(line) for line in events if line.strip()]
+                failures=[e for e in completed if e.get('type') in {'turn.failed','error'}]
+                if process.returncode or failures:
+                    detail=json.dumps(failures[-1],ensure_ascii=False)[:1000] if failures else f'exit code {process.returncode}; inspect stderr.txt'
+                    raise ValueError('Codex extraction failed: '+detail)
                 turns = [e for e in completed if e.get('type')=='turn.completed']
                 if not turns or any(e.get('type') in {'turn.failed','error'} for e in completed):
                     raise ValueError('Codex did not complete extraction')

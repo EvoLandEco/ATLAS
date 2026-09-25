@@ -1,6 +1,6 @@
 # EpiWeekly
 
-**Experimental release v0.1.0-alpha.6** · Python package `0.1.0a6` · Data schema `0.1.2`
+**Experimental release v0.1.0-alpha.7** · Python package `0.1.0a7` · Data schema `0.1.2`
 
 EpiWeekly produces a Wednesday research-group briefing from configured outbreak intelligence sources. It maintains a longitudinal event registry, records changes in the evidence, and surfaces questions and resources relevant to the group's research. Each briefing includes a fixed-layout report and a documented analytical dataset.
 
@@ -132,20 +132,22 @@ Software, schema, prompts, vocabulary, configuration, and report-template versio
 
 [Architecture](docs/ARCHITECTURE.md) · [Editorial guide](docs/EDITORIAL_GUIDE.md) · [Operations](docs/OPERATIONS.md) · [Sources](docs/SOURCES.md) · [Data semantics](docs/DATA_SEMANTICS.md) · [Evaluation](docs/EVALUATION.md)
 
-## Six-month source scan
+## Two-week source scan
 
 Run from the repository root with the virtual environment active:
 
 ```bash
-epiweekly --config config/backfill.yaml collect --since 2026-03-25
+epiweekly --config config/backfill.yaml collect --since 2026-09-12
 epiweekly --config config/backfill.yaml extract --provider none
 epiweekly --config config/backfill.yaml seal
-python scripts/reading_reports.py --since 2026-03-25 --until 2026-09-25
+python scripts/reading_reports.py --since 2026-09-12 --until 2026-09-25
 ```
 
-Open `reports/index.html` for monthly source reading reports with captured text and source links. To resume an interrupted backfill, use `collect --since 2026-03-25 --missing-only`. This reuses captured URLs without checking them for revisions; ordinary collection revisits source pages.
+Open `reports/index.html` for monthly source reading reports with captured text and source links. To resume an interrupted backfill, use `collect --since 2026-09-12 --missing-only`. This reuses captured URLs without checking them for revisions; ordinary collection revisits source pages.
 
-Both configurations use `publication_window_months: 6`. Extraction, review queues, and report evidence use an inclusive window of six calendar months ending on the reporting date. Undated publications stay outside that view until their dates are established. Earlier captures and decisions remain in the ledger. The weekly discovery overlap is 21 days; the backfill covers the full six-month window.
+Both configurations use `publication_window_days: 14`. Collection, extraction, review queues, and report evidence use 14 publication dates ending on the reporting date, inclusive. Undated publications stay outside that view until their dates are established. Earlier captures and decisions remain in the ledger. A calendar-month window can be set with `publication_window_months` instead of `publication_window_days`.
+
+Each model call records its start and outcome in the ledger. Codex event logs, error output, and model responses remain private under `extraction_attempts/` in the state directory. `review/extraction_progress.json` records the active document, attempted calls, successes, failures, and latest error. A running process alone does not establish progress. `max_output_tokens` applies to the API provider; Codex uses a call timeout and a completed-response byte limit. Model candidates require source review before acceptance.
 
 The backfill configuration permits 40 pages per index and 2,000 documents per source. EFSA collection covers its Animal health and Biological hazards topics, including foodborne disease, zoonoses, and antimicrobial resistance. Data calls use the topic labels on each call. RIVM sitemap modification dates guide discovery; article publication dates determine the reading month. RSS feeds and mutable situation pages may cover only part of the requested period. Inspect source coverage before interpreting the result. Collection alone does not create reviewed outbreak events. Captures retain their actual retrieval time; they do not reconstruct what was known in each historical week.
 

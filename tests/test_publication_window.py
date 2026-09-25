@@ -74,3 +74,12 @@ def test_outside_window_metric_is_not_a_change_baseline(store,config):
         if publication=='2026-03-24':previous=build_snapshot(store,c,'2026-09-24T12:00:00Z')
     result=build_snapshot(store,c,'2026-09-25T12:00:00Z',previous=previous)
     assert result['tables']['event_metrics'][0]['change_in_reported_cumulative'] is None
+
+
+def test_fourteen_inclusive_publication_days():
+    import pytest
+    from epiweekly.config import publication_window
+    c={'timezone':'Europe/Amsterdam','publication_window_days':14}
+    assert publication_window(c,'2026-09-25') == ('2026-09-12','2026-09-25')
+    with pytest.raises(ValueError):publication_window({**c,'publication_window_months':6})
+    with pytest.raises(ValueError):publication_window({**c,'publication_window_days':0})

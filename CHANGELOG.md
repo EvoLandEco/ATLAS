@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.0-alpha.7 — 2026-09-25
+
+- Support an inclusive publication window in days; configure a 14-day workflow.
+- Persist model attempt starts, outcomes, durations, and Codex diagnostic files. Report active work and failures during extraction.
+
 ## v0.1.0-alpha.6 — 2026-09-25
 
 - Apply a six-calendar-month publication window to collection, extraction, review queues, and report evidence without removing ledger history.

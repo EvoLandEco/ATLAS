@@ -17,6 +17,7 @@ def test_codex_process_contract(monkeypatch, failure):
     monkeypatch.setenv('CODEX_API_KEY','secret')
     def run(args, **kwargs):
         assert args[:2]==['/usr/bin/codex','exec']
+        assert Path(args[args.index('--output-schema')+1]).is_absolute()
         assert '--ignore-user-config' in args and '--ephemeral' in args
         assert 'forced_login_method="chatgpt"' in args
         assert args[args.index('--sandbox')+1]=='read-only'
@@ -68,3 +69,38 @@ def test_codex_provider_budget_cache_and_review(store, config, monkeypatch):
 def test_missing_codex_is_actionable(monkeypatch):
     monkeypatch.setattr(codex.shutil,'which',lambda _:None)
     with pytest.raises(ValueError,match='codex login'):codex.CodexExtractor('',1000)
+
+
+def test_failed_attempt_retains_diagnostics_and_progress(store, config, monkeypatch):
+    monkeypatch.setattr(codex.shutil,'which',lambda _: '/usr/bin/codex')
+    def run(args,**kwargs):
+        assert Path(args[args.index('--output-schema')+1]).is_absolute()
+        kwargs['stdout'].write('{"type":"turn.failed","error":{"message":"test failure"}}\n')
+        kwargs['stderr'].write('diagnostic failure\n')
+        return SimpleNamespace(returncode=1)
+    monkeypatch.setattr(codex.subprocess,'run',run)
+    save_document(store,config['sources'][0],text='Captured source',raw=b'text',url='https://example.org/failure',
+                  content_url='https://example.org/failure',title='Document',at='2026-09-25T00:00:00Z')
+    result=extraction.extract_pending(store,config,'codex')
+    assert result['failed_chunks']==1
+    attempts=store.records('extraction_attempt')
+    assert [r['payload']['state'] for r in attempts]==['started','failed']
+    directory=store.home/attempts[0]['payload']['diagnostics']
+    assert 'test failure' in (directory/'events.jsonl').read_text()
+    progress=json.loads((store.home/'review/extraction_progress.json').read_text())
+    assert progress['state']=='needs_review' and progress['active'] is None
+    assert progress['failed_chunks']==1 and 'test failure' in progress['last_error']
+
+
+def test_relative_diagnostics_paths_and_interruption(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(codex.shutil,'which',lambda _: '/usr/bin/codex')
+    def run(args,**kwargs):
+        schema=Path(args[args.index('--output-schema')+1])
+        assert schema.is_absolute() and schema.is_file()
+        kwargs['stderr'].write('Interrupted model call\n')
+        raise KeyboardInterrupt()
+    monkeypatch.setattr(codex.subprocess,'run',run)
+    with pytest.raises(KeyboardInterrupt):
+        codex.CodexExtractor('',1000).extract('source',{'title':'Doc','published_at':None,'url':'https://example.org'},Path('diagnostics'))
+    assert (tmp_path/'diagnostics/stderr.txt').read_text()=='Interrupted model call\n'
