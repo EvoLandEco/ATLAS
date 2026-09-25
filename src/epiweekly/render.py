@@ -39,6 +39,8 @@ def render_markdown(snapshot: dict) -> str:
            f"Knowledge cutoff: `{meta['knowledge_cutoff']}`  \nReport ID: `{meta['report_id']}`"]
     if meta.get("dataset_mode")=="synthetic_demo":
         lines.append("**Synthetic demonstration: all event narratives, organizations, and counts in this report are fictional.**")
+    if meta.get("publication_window"):
+        lines.append("Source publication window: **"+" through ".join(meta["publication_window"])+"**. Earlier evidence remains in the ledger and is excluded from this view. Collection receipts can cover a wider acquisition period.")
     lines += ["## 1. Weekly scan",
        f"Reviewed event records: {len(events)}. New to this registry: {sum(e['update_class']=='new_to_registry' for e in events)}. "
        f"With reviewed changes: {sum(e['update_class'] in {'updated_measurements','status_change','additional_reporting'} for e in events)}. "

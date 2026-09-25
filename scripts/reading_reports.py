@@ -55,7 +55,7 @@ def render_reports(state, out, start, end):
             body='<p><a href="coverage-review.html">Coverage review and investigation instructions</a></p>'+body
         if (out/'workflow-review.html').exists():
             body='<p><a href="workflow-review.html">Model extraction, reviewed events, and draft briefing</a></p>'+body
-        (out/'index.html').write_text(page('EpiWeekly · Two-year source scan',body))
+        (out/'index.html').write_text(page('EpiWeekly · Source reading archive',body))
         return {'publications':total,'months':len(groups),'excluded':excluded,'index':str(out/'index.html')}
     finally:
         store.close()

@@ -15,6 +15,7 @@ from .export import export_snapshot,verify_bundle
 from .registry import review_queue
 from .sources import collect
 from .extraction import extract_pending
+from .config import publication_window, in_publication_window
 
 
 def fingerprint() -> dict:
@@ -54,8 +55,10 @@ def seal(store: Store, config: dict, *, as_of: str | None=None, report_date: str
             'quality':snapshot['metadata']['quality']}
 
 
-def export_review(store: Store) -> dict:
-    queue=review_queue(store)
+def export_review(store: Store, config: dict | None = None, *, as_of: str | None = None) -> dict:
+    window=publication_window(config,as_of) if config else None
+    documents={r['id'] for r in store.records('document') if in_publication_window(r['payload'],window)}
+    queue=review_queue(store,document_ids=documents)
     path=store.home/'review'/'queue.json';write_json(path,queue)
     # Source text is private; local pointers let the reviewing editor inspect full context.
     template=[{'candidate_id':q['candidate_id'],'action':'defer','event_key':None,'reviewer':'EDITOR',
@@ -70,10 +73,12 @@ def run(store: Store, config: dict, *, provider='none',model='',report_date=None
     # A completed run receipt prevents additional network/model work on an automatic retry.
     receipts=[r for r in store.records('run_receipt') if r['payload']['report_date']==today]
     if receipts and not force:return {'status':'already_completed',**receipts[-1]['payload']}
+    window=publication_window(config,today)
     since=(datetime.fromisoformat(today)-timedelta(days=config.get('lookback_days',21))).date().isoformat()
+    if window:since=max(since,window[0]) if 'lookback_days' in config else window[0]
     collection=collect(store,config,since)
-    extraction=extract_pending(store,config,provider,model)
-    review=export_review(store)
+    extraction=extract_pending(store,config,provider,model,as_of=today)
+    review=export_review(store,config,as_of=today)
     result=seal(store,config,report_date=today)
     payload={'report_date':today,'report_id':result['report_id'],'bundle':result['bundle'],
              'collection':collection,'extraction':extraction,'review':review}

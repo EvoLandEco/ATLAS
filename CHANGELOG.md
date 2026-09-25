@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.1.0-alpha.6 — 2026-09-25
+
+- Apply a six-calendar-month publication window to collection, extraction, review queues, and report evidence without removing ledger history.
+- Record the publication window in report metadata. Exclude relationships and retained opportunities whose evidence falls outside the view.
+- Data schema 0.1.2; report template 0.1.1.
+
 ## v0.1.0-alpha.5 — 2026-09-25
 
 - Constrain extraction dates to complete ISO dates in the model schema. Retain month-only source dates as unknown day values with their precision described in the extraction.

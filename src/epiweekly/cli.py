@@ -75,7 +75,7 @@ def execute(a):
             if cmd=='run':return run(store,config,provider=a.provider,model=a.model,report_date=a.report_date,force=a.force)
             if cmd=='seal':return seal(store,config,as_of=a.as_of,report_date=a.report_date)
             if cmd=='verify':return store.verify()
-            if cmd=='review-export':return export_review(store)
+            if cmd=='review-export':return export_review(store,config)
             if cmd=='import-document':
                 item=read_json(a.path);source=next(s for s in config['sources'] if s['id']==item['source_id'])
                 from urllib.parse import urlparse

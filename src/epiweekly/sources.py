@@ -17,6 +17,7 @@ from xml.etree.ElementTree import ParseError
 import httpx
 from pypdf import PdfReader
 from .store import Store
+from .config import publication_window, in_publication_window
 from .util import canonical_url, digest, stamp, uid, utcnow, canonical
 
 ADAPTER_VERSION = "0.2.1"
@@ -467,6 +468,8 @@ def retrieve_entry(store: Store, source: dict, entry: dict, fetcher: Fetcher) ->
 
 
 def collect(store: Store, config: dict, since: str, *, missing_only: bool = False) -> dict:
+    window=publication_window(config)
+    if window:since=max(since,window[0])
     totals={"documents_seen":0,"documents_new":0,"sources":[]}
     for source in config["sources"]:
         check={"source_id":source["id"],"enabled":source.get("enabled",False),
@@ -487,7 +490,7 @@ def collect(store: Store, config: dict, since: str, *, missing_only: bool = Fals
             recent={}; cached={}
             for row in store.records("document"):
                 p=row["payload"]
-                if p["source_id"]==source["id"]:
+                if p["source_id"]==source["id"] and in_publication_window(p,window):
                     cached[p["url"]]=row["id"]
                     recent[p["url"]]={"url":p["url"],"title":p["title"],"published_at":p["published_at"],
                                      "publication_precision":p["publication_precision"]}
@@ -496,6 +499,7 @@ def collect(store: Store, config: dict, since: str, *, missing_only: bool = Fals
                 entries.extend(e for e in list(recent.values())[-config["limits"].get("revisit_documents",8):]
                                if e["url"] not in known_urls)
             entries.sort(key=lambda x:(x.get("published_at") or "",x["url"]),reverse=True)
+            entries=[e for e in entries if not e.get("published_at") or in_publication_window(e,window)]
             check["discovered"]=len(entries)
             cap=config["limits"]["max_documents_per_source"]
             if len(entries)>cap:

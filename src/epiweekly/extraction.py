@@ -4,7 +4,7 @@ import json
 import os
 from pathlib import Path
 import httpx
-from .config import assets, vocabulary
+from .config import assets, vocabulary, publication_window, in_publication_window
 from .models import Extraction, Mention
 from .codex import CodexExtractor
 from .semantics import normalize_mention, evidence_errors
@@ -102,9 +102,10 @@ def add_extraction(store: Store, document_id: str, result: Extraction, *, at: st
     return candidate_ids
 
 
-def extract_pending(store: Store, config: dict, provider: str = "none", model: str = "") -> dict:
+def extract_pending(store: Store, config: dict, provider: str = "none", model: str = "", *, as_of: str | None = None) -> dict:
     if provider not in {"none","openai","codex"}: raise ValueError("Unknown extraction provider")
     limits=config["limits"]
+    window=publication_window(config,as_of)
     completed={r["payload"]["extraction_key"] for r in store.records("extraction")}
     summary={"provider":provider,"calls":0,"cache_hits":0,"completed_chunks":0,"queued_chunks":0,
              "failed_chunks":0,"candidate_count":0,"input_characters":0}
@@ -119,6 +120,7 @@ def extract_pending(store: Store, config: dict, provider: str = "none", model: s
     try:
         for row in store.records("document"):
             doc=row["payload"]
+            if not in_publication_window(doc,window):continue
             if row["id"] in editorial_docs: continue
             text=(store.home/doc["text_object"]).read_text(encoding="utf-8")
             for start,end,piece in chunks(text,limits["chunk_characters"],limits["chunk_overlap"]):

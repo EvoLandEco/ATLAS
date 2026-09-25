@@ -125,9 +125,10 @@ def match_candidates(store: Store, candidate: dict, as_of: str | None = None) ->
     return sorted(out.values(),key=lambda x:(-x["rank"],x["event_id"]))
 
 
-def review_queue(store: Store, as_of: str | None = None) -> list[dict]:
+def review_queue(store: Store, as_of: str | None = None, *, document_ids: set[str] | None = None) -> list[dict]:
     latest=current_reviews(store,as_of);result=[]
     for row in store.records("candidate",as_of):
+        if document_ids is not None and row["payload"]["document_id"] not in document_ids:continue
         review=latest.get(row["id"])
         if not review or review["payload"]["action"]=="defer":
             doc=store.get(row["payload"]["document_id"])["payload"]

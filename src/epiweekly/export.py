@@ -66,6 +66,7 @@ def metadata_schema() -> dict:
     quality.update(future_dated_candidates_excluded={"type":"array","items":{"type":"string"}},
         core_source_gaps={"type":"array","items":{"type":"string"}},latest_extraction_check={"type":["object","null"]})
     props["quality"]={"type":"object","required":list(quality),"properties":quality,"additionalProperties":False}
+    props["publication_window"]={"type":["array","null"],"items":{"type":"string","format":"date"},"minItems":2,"maxItems":2}
     return {"type":"object","required":list(props),"properties":props,"additionalProperties":False}
 
 
