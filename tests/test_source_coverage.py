@@ -153,3 +153,28 @@ def test_sitemap_rejects_entities_and_reports_format_error():
     source={'adapter':'sitemap','index_url':'https://example.org/map','link_pattern':'/news/'}
     pages=Pages({'https://example.org/map':'<!DOCTYPE urlset [<!ENTITY x SYSTEM "file:///private">]><urlset>&x;</urlset>'})
     with pytest.raises(sources.SourceError,match='XML'):sources.discover(source,pages,'2024-09-25',{})
+
+
+def test_source_content_selector_captures_report_outside_first_main(store):
+    source={'id':'fao','content_selector':'#situation'}
+    pages=Pages({'https://example.org/report':'<main>Header</main><main><section id="situation"><p>'+('Full situation evidence. '*20)+'</p></section></main>'})
+    did=sources.retrieve_entry(store,source,{'url':'https://example.org/report'},pages)
+    p=store.get(did)['payload'];text=(store.home/p['text_object']).read_text()
+    assert 'Full situation evidence' in text and 'Header' not in text and p['parse_status']=='text_ready'
+    source['content_selector']='#absent'
+    with pytest.raises(sources.SourceError,match='content'):sources.retrieve_entry(store,source,{'url':'https://example.org/report'},pages)
+
+
+def test_parser_revision_does_not_reuse_stale_conditional_text(store,monkeypatch):
+    source={'id':'fao','content_selector':'#situation'};url='https://example.org/report'
+    class Conditional(Pages):
+        def get(self,url,headers=None):
+            if headers:return b'',{},url,304
+            raw,_,_,_=super().get(url)
+            return raw,{'etag':'same-source-body'},url,200
+    pages=Conditional({url:'<main>Heading</main><div id="situation">'+('Evidence. '*30)+'</div>'})
+    monkeypatch.setattr(sources,'ADAPTER_VERSION','old-parser')
+    old=sources.retrieve_entry(store,{'id':'fao'},{'url':url},pages)
+    monkeypatch.setattr(sources,'ADAPTER_VERSION','new-parser')
+    new=sources.retrieve_entry(store,source,{'url':url},pages)
+    assert old!=new and store.get(new)['payload']['parse_status']=='text_ready'

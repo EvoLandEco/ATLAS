@@ -91,6 +91,7 @@ sources:
     required: false
     priority: 3
     allowed_hosts: [www.fao.org, fao.org]
+    content_selector: "#Contentplaceholder1_C016_Col00"
     publication_date_selector: "#Contentplaceholder1_C016_Col00 > div:first-child strong"
     publication_date_format: "%d %B %Y"
     urls:

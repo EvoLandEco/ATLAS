@@ -19,7 +19,7 @@ from pypdf import PdfReader
 from .store import Store
 from .util import canonical_url, digest, stamp, uid, utcnow, canonical
 
-ADAPTER_VERSION = "0.2.0"
+ADAPTER_VERSION = "0.2.1"
 
 
 class SourceError(RuntimeError):
@@ -139,7 +139,7 @@ def parse_date(value: str | None) -> tuple[str | None,str]:
         return None,"unknown"
 
 
-def html_text(raw: bytes | str, *, main_only: bool = True) -> tuple[str,str,str | None,str]:
+def html_text(raw: bytes | str, *, main_only: bool = True, content_selector: str | None = None) -> tuple[str,str,str | None,str]:
     soup=BeautifulSoup(raw,"html.parser")
     title_node=soup.find("h1") or soup.find("title")
     title=title_node.get_text(" ",strip=True) if title_node else "Untitled source document"
@@ -161,6 +161,10 @@ def html_text(raw: bytes | str, *, main_only: bool = True) -> tuple[str,str,str 
         except (ValueError,TypeError):
             pass
     content=(soup.find("main") or soup.find("article") or soup.body or soup) if main_only else soup
+    if content_selector:
+        content=soup.select_one(content_selector)
+        if content is None:
+            raise SourceError("Source content selector requires adapter review")
     for node in content.select("script,style,nav,footer,header,form,noscript,svg"):
         node.decompose()
     links=sorted({urljoin("",a.get("href","")) for a in content.select("a[href]")
@@ -404,7 +408,7 @@ def retrieve_entry(store: Store, source: dict, entry: dict, fetcher: Fetcher) ->
     previous=prior[-1] if prior else None
     receipts=[r["payload"] for r in store.records("fetch_receipt") if r["payload"].get("url")==canonical_url(entry["url"])]
     conditional={}
-    if receipts and previous and not source.get("primary_pdf"):
+    if receipts and previous and previous["payload"]["adapter_version"]==ADAPTER_VERSION and not source.get("primary_pdf"):
         if receipts[-1].get("etag"):
             conditional["If-None-Match"]=receipts[-1]["etag"]
         elif receipts[-1].get("last_modified"):
@@ -421,7 +425,7 @@ def retrieve_entry(store: Store, source: dict, entry: dict, fetcher: Fetcher) ->
     if mime=="application/pdf" or raw.startswith(b"%PDF"):
         text,parse_status=pdf_text(raw); mime="application/pdf"
     else:
-        text,parsed_title,parsed_date,parsed_precision=html_text(raw)
+        text,parsed_title,parsed_date,parsed_precision=html_text(raw,content_selector=source.get("content_selector"))
         title=parsed_title if parsed_title!="Untitled source document" and source.get("adapter")!="static" else title
         if parsed_date:
             published,precision=parsed_date,parsed_precision
