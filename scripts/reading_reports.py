@@ -28,7 +28,7 @@ def render_reports(state, out, start, end):
         css = 'body{font:17px/1.6 system-ui;max-width:960px;margin:40px auto;padding:0 20px;color:#183441}a{color:#006880}article{border-top:1px solid #ccd8dd;padding:20px 0}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}summary{cursor:pointer}table{border-collapse:collapse}td,th{padding:8px;text-align:left;border-bottom:1px solid #ccd8dd;vertical-align:top;overflow-wrap:anywhere}'
         def page(title, body):
             return '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+escape(title)+'</title><style>'+css+'</style><main><h1>'+escape(title)+'</h1>'+body+'</main></html>'
-        note = '<p>Captured source reading archive. These documents have not undergone structured extraction or editorial event review. Publication dates determine the month; capture dates record when EpiWeekly retrieved the text. Entries are publications, not counts of distinct outbreaks.</p>'
+        note = '<p>Captured source reading archive. Extraction and event review are recorded separately in the workflow briefing. Publication dates determine the month; capture dates record when EpiWeekly retrieved the text. Entries are publications, not counts of distinct outbreaks.</p>'
         links = []
         for month, rows in sorted(groups.items(), reverse=True):
             articles = []
@@ -53,6 +53,8 @@ def render_reports(state, out, start, end):
         body = '<p>'+str(start)+' through '+str(end)+'</p>'+note+'<p>'+str(total)+' dated publications; '+str(excluded)+' documents outside the publication window or without a publication date are excluded from the monthly archive. Months without captured publications are omitted; their absence does not establish that no outbreaks occurred.</p><h2>Monthly reading reports</h2><ul>'+''.join(links)+'</ul><h2>Collection coverage</h2>'+coverage
         if (out/'coverage-review.html').exists():
             body='<p><a href="coverage-review.html">Coverage review and investigation instructions</a></p>'+body
+        if (out/'workflow-review.html').exists():
+            body='<p><a href="workflow-review.html">Model extraction, reviewed events, and draft briefing</a></p>'+body
         (out/'index.html').write_text(page('EpiWeekly · Two-year source scan',body))
         return {'publications':total,'months':len(groups),'excluded':excluded,'index':str(out/'index.html')}
     finally:
