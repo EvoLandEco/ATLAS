@@ -104,3 +104,20 @@ def test_relative_diagnostics_paths_and_interruption(tmp_path, monkeypatch):
     with pytest.raises(KeyboardInterrupt):
         codex.CodexExtractor('',1000).extract('source',{'title':'Doc','published_at':None,'url':'https://example.org'},Path('diagnostics'))
     assert (tmp_path/'diagnostics/stderr.txt').read_text()=='Interrupted model call\n'
+
+
+def test_codex_uses_trial_contract_and_prompt(monkeypatch):
+    from pydantic import BaseModel
+    class Compact(BaseModel):
+        summary: str
+    monkeypatch.setattr(codex.shutil,'which',lambda _: '/usr/bin/codex')
+    def run(args,**kwargs):
+        assert args[-1]=='Digest instructions'
+        schema=json.loads(Path(args[args.index('--output-schema')+1]).read_text())
+        assert 'summary' in schema['properties'] and 'mentions' not in schema['properties']
+        Path(args[args.index('--output-last-message')+1]).write_text('{"summary":"Source fact"}')
+        kwargs['stdout'].write('{"type":"turn.completed","usage":{}}\n')
+        return SimpleNamespace(returncode=0)
+    monkeypatch.setattr(codex.subprocess,'run',run)
+    result,_=codex.CodexExtractor('',1000).extract('source',{'title':'Doc','published_at':None,'url':'https://example.org'},contract=Compact,prompt='Digest instructions')
+    assert result.summary=='Source fact'

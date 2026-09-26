@@ -24,13 +24,13 @@ class CodexExtractor:
         self.env = {k:v for k,v in os.environ.items()
                     if k not in {'OPENAI_API_KEY','CODEX_API_KEY','CODEX_ACCESS_TOKEN'}}
 
-    def extract(self, text: str, document: dict, diagnostics: Path | None = None) -> tuple[Extraction, dict]:
+    def extract(self, text: str, document: dict, diagnostics: Path | None = None, *, contract=Extraction, prompt: str | None = None):
         from .extraction import strict_schema
         if diagnostics is not None:diagnostics.mkdir(parents=True,exist_ok=False)
         with (nullcontext(diagnostics) if diagnostics is not None else tempfile.TemporaryDirectory(prefix='epiweekly-extract-')) as directory:
             root = Path(directory).resolve()
             schema, output = root/'schema.json', root/'result.json'
-            write_json(schema, strict_schema(Extraction.model_json_schema()))
+            write_json(schema, strict_schema(contract.model_json_schema()))
             args = [self.executable, 'exec', '--ignore-user-config', '--ephemeral',
                     '--skip-git-repo-check', '--sandbox', 'read-only', '--json',
                     '--output-schema', str(schema), '--output-last-message', str(output)]
@@ -45,7 +45,7 @@ class CodexExtractor:
                 args.extend(['--disable', feature])
             if self.model:
                 args.extend(['--model', self.model])
-            args.append(assets('extract.md'))
+            args.append(assets('extract.md') if prompt is None else prompt)
             source = json.dumps({'document_title':document['title'],
                                  'publication_date':document['published_at'],
                                  'source_url':document['url'], 'captured_source_text':text})
@@ -64,7 +64,7 @@ class CodexExtractor:
                     raise ValueError('Codex did not complete extraction')
                 if not output.is_file() or output.stat().st_size > self.max_bytes:
                     raise ValueError('Codex output is missing or exceeds the configured byte limit')
-                result = Extraction.model_validate_json(output.read_text())
+                result = contract.model_validate_json(output.read_text())
             except subprocess.TimeoutExpired as exc:
                 raise ValueError('Codex extraction exceeded its time limit') from exc
             except OSError as exc:

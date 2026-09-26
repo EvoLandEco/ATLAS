@@ -1,5 +1,8 @@
 # Wednesday editorial guide
 
+## Digest scope
+The [weekly digest design](WORKFLOW.md) selects important developments and the measurements needed to explain them. Detailed extraction is requested for a named investigation. Reviewers check whether any omitted fact would change the briefing's interpretation. An unexamined detail is not evidence that the source omitted it. The installed extraction commands produce the full schema; the isolated digest trial writes a separate review report.
+
 ## Review a mention
 Read the captured source and its actual publication and epidemiological dates. For PDFs, compare relevant pages and tables with the extracted text. Check host, geography, case definition, classification, count kind, date basis, population, stratum, qualifier, and originating authority. Inspect the source quote and the complete surrounding context. Mechanical evidence checks verify quoted substrings and numeric anchors; the editor checks their meaning.
 

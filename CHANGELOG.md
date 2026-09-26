@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.0-alpha.8 — 2026-09-26
+
+- Add an isolated compact digest trial with publication-version selection, claim evidence, persistent diagnostics, and usage reports.
+- Permit the Codex transport to use a supplied extraction contract and prompt. The registry extraction contract remains unchanged.
+
 ## v0.1.0-alpha.7 — 2026-09-25
 
 - Support an inclusive publication window in days; configure a 14-day workflow.

@@ -1,6 +1,6 @@
 timezone: Europe/Amsterdam
 dataset_mode: operational
-user_agent: "EpiWeekly/0.1.0-alpha.7 (research-group weekly intelligence)"
+user_agent: "EpiWeekly/0.1.0-alpha.8 (research-group weekly intelligence)"
 event_stale_days: 21
 publication_window_days: 14
 lookback_days: 21

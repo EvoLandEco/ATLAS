@@ -1,12 +1,16 @@
 # EpiWeekly
 
-**Experimental release v0.1.0-alpha.7** · Python package `0.1.0a7` · Data schema `0.1.2`
+**Experimental release v0.1.0-alpha.8** · Python package `0.1.0a8` · Data schema `0.1.2`
 
 EpiWeekly produces a Wednesday research-group briefing from configured outbreak intelligence sources. It maintains a longitudinal event registry, records changes in the evidence, and surfaces questions and resources relevant to the group's research. Each briefing includes a fixed-layout report and a documented analytical dataset.
 
 The initial research profile covers One Health, temporal networks, spatial spread, inference, phylodynamics, and observation processes. Source selection, relevance weights, retrieval budgets, and the reporting timezone live in versioned configuration.
 
-## Weekly workflow
+## Workflow design
+
+The [weekly digest design](docs/WORKFLOW.md) prioritizes important developments and source-backed research leads, with detailed extraction for selected investigations. It specifies compact model output and selection of one captured version per publication. An isolated trial supports compact claims and evidence for selected publication versions; registry expansion and selective detailed extraction require implementation and evaluation. The CLI described below performs full-schema extraction. The [evaluation protocol](docs/EVALUATION.md) defines the comparison before a batch run.
+
+## Installed workflow
 
 ```text
 Wednesday collection → source snapshots → structured extraction
@@ -64,7 +68,7 @@ codex login status
 epiweekly run --provider codex
 ```
 
-To extract sources already collected, use `epiweekly extract --provider codex`. Supply `--model MODEL_ID` to select a model available to your Codex account; otherwise the CLI selects its default. EpiWeekly uses a temporary working directory, schema-constrained output, and a read-only sandbox with shell, browser, apps, and plugins disabled. Subscription usage limits apply. API keys are not passed to this provider.
+To extract sources already collected, use `epiweekly extract --provider codex`. Supply `--model MODEL_ID` to select a model available to your Codex account; otherwise the CLI selects its default. EpiWeekly uses a private attempt directory, schema-constrained output, and a read-only sandbox with shell, browser, apps, and plugins disabled. Subscription usage limits apply. API keys are not passed to this provider.
 
 For API extraction, configure a model available to your API project and set `OPENAI_API_KEY` through your secret manager or shell environment:
 
@@ -152,3 +156,13 @@ Each model call records its start and outcome in the ledger. Codex event logs, e
 The backfill configuration permits 40 pages per index and 2,000 documents per source. EFSA collection covers its Animal health and Biological hazards topics, including foodborne disease, zoonoses, and antimicrobial resistance. Data calls use the topic labels on each call. RIVM sitemap modification dates guide discovery; article publication dates determine the reading month. RSS feeds and mutable situation pages may cover only part of the requested period. Inspect source coverage before interpreting the result. Collection alone does not create reviewed outbreak events. Captures retain their actual retrieval time; they do not reconstruct what was known in each historical week.
 
 Local reports, captured evidence, and installation records are excluded from Git. Hosted collection requires the repository variables and secrets in [Operations](docs/OPERATIONS.md); the schedule is gated by `EPIWEEKLY_SCHEDULE_ENABLED`.
+
+## Compact digest trial
+
+Run a separate digest experiment against captured publications:
+
+```bash
+python scripts/digest_trial.py --since 2026-08-26 --until 2026-09-26 --out reports/month-trial
+```
+
+The trial selects the latest captured version of each publication, retains full source text, and writes claims with evidence references, diagnostics, usage, and an HTML review report. It makes at most 36 subscription calls with a 10-minute limit per call and checks a 200,000-byte completed response limit. Input is bounded at 650,000 characters overall and 100,000 per publication; oversized sources are reported without truncation. Results do not enter the accepted registry. Quote matching is a mechanical check, and an editor must assess meaning and briefing coverage. Use a separate output directory for an independent repeat.

@@ -1,6 +1,9 @@
 # Architecture and decision boundaries
 
-## Workflow graph
+## Design boundary
+The [weekly digest design](WORKFLOW.md) separates concise source extraction from detailed investigation. The isolated digest trial exercises a compact model contract and publication-version selection; registry expansion and selective detailed extraction require implementation and evaluation. The components described here are the installed full-schema workflow. Registry validation, evidence preservation, editorial identity decisions, and publication approval also apply to the digest design.
+
+## Installed workflow graph
 The orchestrator drives collection, extraction, review preparation, and sealing. The collector selects configured source adapters, captures content-addressed versions, records retrieval coverage, and revisits recent URLs. The extraction agent converts bounded text chunks into a strict schema through the OpenAI API or local Codex CLI. Provider and model selection are part of the cache identity. Mechanical validators check field types, missingness consistency, dates, numerical ranges, and evidence anchors. The linker proposes existing event identities. An editor accepts, rejects, or defers a mention and supplies the persistent event key.
 
 A deterministic reducer constructs the event and measurement view at an explicit knowledge cutoff. Evidence-tag rules generate persistent research opportunities, ranked by the group's versioned relevance profile and explicit resource availability. A fixed renderer creates the human report and analytical bundle. A separate approval binds publication to a checksummed artifact.
