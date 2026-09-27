@@ -11,7 +11,7 @@ readme = "README.md"
 license = "MIT"
 authors = [{name = "ATLAS contributors"}]
 dependencies = [
-  "pydantic==2.13.4", "httpx==0.28.1", "beautifulsoup4==4.14.3",
+  "pydantic==2.13.4", "httpx==0.28.1", "beautifulsoup4==4.15.0",
   "pypdf==5.9.0", "PyYAML==6.0.3", "filelock==3.29.0",
   "defusedxml==0.7.1", "protego==0.6.2", "markdown-it-py==4.2.0", "pycountry==24.6.1", "tzdata==2026.2", "jsonschema==4.26.0"
 ]
