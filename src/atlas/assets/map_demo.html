@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ATLAS · Map and event replay</title>
+<style>
+:root{color-scheme:light;--ink:#193c45;--muted:#536d74;--line:#cedbd9;--accent:#006c61;--paper:#f4f7f3;--warn:#974b12}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 system-ui,sans-serif}header{background:#133f47;color:#f6fbf8;padding:30px max(24px,calc((100vw - 1280px)/2))}header small{color:#a9d6c8;letter-spacing:.15em}h1{font-size:34px;margin:5px 0}header p{max-width:850px;margin:8px 0;color:#d8e7e3}main{max-width:1328px;margin:auto;padding:24px}h2{font-size:21px;margin:0 0 10px}h3{font-size:18px;margin:4px 0}p{margin:8px 0}button,select,input{font:inherit}button,select{padding:8px 12px;background:white;border:1px solid var(--line);border-radius:6px;color:var(--ink)}button{cursor:pointer}button:hover{border-color:var(--accent)}button[aria-pressed=true],#play{background:var(--accent);color:white;border-color:var(--accent)}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid #d79a2a;outline-offset:3px}a{color:var(--accent)}.controls{display:flex;gap:16px;align-items:center;flex-wrap:wrap;background:white;padding:16px;border:1px solid var(--line);border-radius:10px}.controls label{display:flex;gap:8px;align-items:center}.slider{flex:1;min-width:220px}input[type=range]{width:100%;accent-color:var(--accent)}#date{font-size:22px;font-weight:650;min-width:155px}.note{font-size:14px;color:var(--muted)}.stats{display:flex;gap:28px;margin:18px 0;flex-wrap:wrap}.stats b{font-size:24px}.panel{background:white;border:1px solid var(--line);border-radius:10px;padding:20px;margin:18px 0}.panel-head{display:flex;justify-content:space-between;gap:16px;align-items:start}.map-wrap{overflow:hidden;border-radius:6px;background:#e7f0f0}#map{width:100%;display:block;max-height:530px}.land{fill:#c4d5cd;stroke:#91aaa2;stroke-width:.5}.graticule{stroke:#cfdddd;stroke-width:.7;fill:none}.pin{cursor:pointer}.pin circle{fill:var(--accent);stroke:white;stroke-width:2;vector-effect:non-scaling-stroke}.pin.selected circle{fill:#b75520;stroke:#fff;stroke-width:3}.pin text{font-size:11px;fill:#123e45;font-weight:650;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.legend button{font-size:13px;text-align:left}.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.grid .panel{margin-top:0}.scroll{max-height:750px}.network{width:100%;min-width:430px;display:block}.network text{font:12px system-ui;fill:var(--ink)}.network .edge{stroke:#88aaa6;stroke-width:1.5;fill:none}.network .edge.focus{stroke:var(--accent);stroke-width:2.5}.network circle{fill:var(--accent)}.network rect{fill:#e8f2eb;stroke:#93b8ac}.network [role=button]{cursor:pointer}.scroll{overflow-x:auto}.card{border-left:3px solid #84afa3;padding:0 0 12px 16px;margin:20px 0}.card.selected{border-left-color:#b75520;background:#faf5eb}.card.conflict{border-left-color:var(--warn)}.card p{font-size:15px}.tag{font-size:12px;background:#e8f2eb;border-radius:4px;padding:3px 7px;display:inline-block}.warning{color:var(--warn);font-weight:600}blockquote{font-size:14px;border-left:2px solid var(--line);padding-left:12px;margin:10px 0;color:#3a555c}details{margin:8px 0}summary{cursor:pointer;color:var(--accent)}.empty{padding:35px 0;color:var(--muted)}footer{font-size:13px;color:var(--muted);margin:24px 0}#trace{max-height:750px;overflow:auto;padding-right:8px}#network-help{min-height:42px}.extent{font-size:13px}svg{overflow:visible}#map{overflow:hidden}@media(max-width:850px){.grid{grid-template-columns:1fr}main{padding:14px}.panel{padding:14px}header{padding:24px}.controls{gap:10px}.slider{order:5;flex-basis:100%}#trace{max-height:none}}
+
+.map-wrap{position:relative}.relation-inset{margin:12px;background:#fff;border:1px solid #b9ceca;border-radius:6px;padding:14px}.relation-diagram{display:flex;align-items:center;gap:12px;margin:10px 0;flex-wrap:wrap}.relation-node{background:#e8f2eb;padding:8px 12px;border-radius:6px}.relation-arrow{font-size:24px;color:#974b12}.relation-badge{cursor:pointer}.relation-badge text{font:bold 10px system-ui;fill:white}.relation-badge rect{fill:#80502b;stroke:white;stroke-width:1}.relationship{border-left:3px solid #b9ceca;padding:12px 16px;margin:12px 0}.relationship.active{border-left-color:#974b12;background:#fbf5eb}.rule-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.rule-grid h3{font-size:16px}.rule-grid p{font-size:14px}#relations{display:grid;grid-template-columns:1fr 1fr;gap:12px}.identity-ring{fill:none;stroke:#684d9b;stroke-width:2;stroke-dasharray:4 3;vector-effect:non-scaling-stroke}.relationship button{font-size:14px}.symbol-key{font-size:14px;color:var(--muted)}@media(max-width:850px){.rule-grid,#relations{grid-template-columns:1fr}}
+.explore-line{fill:none;stroke-width:2;opacity:.75;vector-effect:non-scaling-stroke;cursor:pointer}.explore-line:hover,.explore-line:focus,.explore-line.active{opacity:1;stroke-width:3}.explore-line.hypothesis{stroke-dasharray:5 5}.link-list{max-height:320px;overflow:auto;display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.link-list button{font-size:13px;text-align:left}.movement-key{color:#3568a8}.shared-key{color:#007b72}.hypothesis-key{color:#995e25}.range-pair{position:relative;height:38px;min-width:250px}.range-pair:before{content:"";position:absolute;left:0;right:0;top:18px;height:4px;background:#d0dbd9}.range-pair #range-band{position:absolute;top:18px;height:4px;background:#006c61}button:disabled{background:#e2e9e6!important;color:#526b64!important;cursor:default}.range-pair input{position:absolute;inset:0;width:100%;height:38px;margin:0;appearance:none;background:transparent;pointer-events:none}.range-pair input::-webkit-slider-thumb{appearance:none;width:22px;height:22px;border-radius:50%;border:2px solid white;background:#006c61;pointer-events:auto;cursor:grab;box-shadow:0 0 0 1px #006c61}.range-pair input::-moz-range-thumb{width:20px;height:20px;border-radius:50%;border:2px solid white;background:#006c61;pointer-events:auto;cursor:grab}.range-pair input::-moz-range-track{background:transparent}.date-fields{display:flex;gap:12px;flex-wrap:wrap}.date-fields input{max-width:155px;color:var(--ink);border:1px solid var(--line);padding:4px}.context-pin{fill:white;stroke:#536d74;stroke-width:1.5;vector-effect:non-scaling-stroke}</style></head><body>
+<header><small>ATLAS / EXPLORATORY DEMO</small><h1>ATLAS replay</h1><p>Explore outbreak reports, compare places, and follow signals over time.</p><p class="extent">Reports from __WINDOW_LABEL__ · Research preview</p></header>
+<main>
+<div class="controls"><button id="play">Play window</button><button id="reset">All dates</button><button id="fortnight">14 days</button><output id="date" aria-live="polite"></output><div class="slider"><div class="range-pair"><span id="range-band" aria-hidden="true"></span><input id="day-start" type="range" min="0" max="__DAYS__" value="0" aria-label="Window start date"><input id="day" type="range" min="0" max="__DAYS__" value="__DAYS__" aria-label="Window end date"></div><div class="date-fields"><label>From <input id="date-start" type="date" min="__SINCE__" max="__UNTIL__"></label><label>To <input id="date-end" type="date" min="__SINCE__" max="__UNTIL__"></label></div></div><label>Time basis <select id="basis"><option value="publication">Publication / edition date</option><option value="capture">Capture date</option></select></label></div>
+<p id="time-note" class="note"></p>
+<div class="stats"><span><b id="ntracks">0</b> reporting topics</span><span><b id="nreports">0</b> source documents</span><span><b id="nclaims">0</b> reported findings</span></div>
+<section class="panel"><div class="panel-head"><div><h2>Explore connections</h2><p class="note">Pins show the countries or regions described in reports. Select a pin to focus on its connections.</p></div><label>View <select id="extent"><option value="world">World</option><option value="europe">Europe</option></select></label></div>
+<div class="controls"><label>Connections <select id="link-type"><option value="all">All source links</option><option value="movement">Travel and importation</option><option value="shared_event">Shared event</option><option value="hypothesis">Source hypotheses</option><option value="none">Hide geographic links</option></select></label><button id="clear-focus">Show all places</button><span id="link-count" class="note"></span><span id="location-count" class="note"></span></div><p class="symbol-key"><span class="movement-key">━➤ Reported travel or importation</span> · <span class="shared-key">━━ Shared event</span> · <span class="hypothesis-key">┄┄ Source hypothesis</span></p><div class="map-wrap"><svg id="map" viewBox="0 0 1080 540" role="img" aria-label="World map with reporting topics and exploratory connections"><g class="graticule" id="grid"></g><g class="land">__LAND__</g><defs><marker id="travel-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10Z" fill="#3568a8"/></marker></defs><g id="exploratory-lines"></g><g id="pins"></g><g id="relationship-marks"></g></svg><div id="map-relation" class="relation-inset" aria-live="polite"></div></div><div class="legend" id="tracks"></div><p id="location" class="note"></p><p class="symbol-key">Report details: I = outbreak follow-up · T = reported or suspected transmission · E = exposure · M = travel · ? = open question. Select a badge to read the source assessment.</p></section>
+
+<section class="panel"><h2>Geographic links in the reports</h2><p>Explore reported journeys, shared events and source hypotheses. Select a connection to read the source assessment and its quotation.</p><div id="explore-detail" aria-live="polite"></div><div id="explore-list" class="link-list"></div></section>
+<section class="panel" id="relationship-panel"><h2>What the reports say about links</h2><p>Source assessments cover outbreak follow-up, transmission, exposure and travel. Each entry includes supporting evidence and questions that remain open.</p><div id="relations"></div></section>
+<div class="grid"><section class="panel"><h2>Sources and reporting topics</h2><p class="note">An edge means a document supports reported findings in a track. Tracks are analyst groupings for this demo; edges do not establish transmission or shared outbreak identity.</p><div class="scroll"><svg id="network" class="network" viewBox="0 0 580 470" role="img" aria-label="Documents linked to the report tracks they describe"></svg></div><p id="network-help" class="note">Select a topic or source document to read the evidence.</p><button id="all">Show all topics</button></section>
+<section class="panel"><h2 id="trace-title">Report chronology</h2><p class="note">Read developments in date order. Each report retains its own counts, observation period and source wording.</p><div id="trace"></div></section></div>
+<details class="panel"><summary>About this map</summary><p>The map shows selected findings from the assessed collection. Geographic links require a source statement connecting the named places. Arrows show reported travel direction; shared-event links and hypotheses have no arrows. The source network below shows which documents cover each topic.</p><p>Pins use country, regional or named-site reference points. Lines join these points for exploration. Source assessments of transmission, exposure and travel appear separately in the badges and evidence panel. Acceptance into the event registry requires editorial review.</p><p>Both window boundaries are inclusive. Publication mode selects reports by their publication or edition date; capture mode selects when ATLAS saved them. A link appears when all its supporting report entries fall within the window. This is a reporting window: observation periods and travel dates remain in the source text. Play moves the chosen window one day at a time.</p><p>Conflicting counts remain visible, including the DRC case totals and Guatemala measles deaths. Each report keeps its measurement scope and time period.</p><p>Map outlines: <a href="https://www.naturalearthdata.com/about/terms-of-use/">Natural Earth, public domain</a>. <a href="data.json">Download map data</a> · <a href="link-review.html">Technical review and link rules</a> · <a href="../month-trial/comparison.html">Extraction evaluation</a> · <a href="../three-month/index.html">Browse all digests</a>.</p></details>
+<p><a href="__COVERAGE_URL__">Source coverage and collection gaps</a></p><footer>ATLAS research preview · Replay uses saved reports and runs locally.</footer>
+</main>
+<script>
+__LINKS__
+const DATA=__DATA__;
+validateMapLinks(DATA.map_links,DATA.records);
+const $=id=>document.getElementById(id), NS='http://www.w3.org/2000/svg';
+const dayMs=86400000, start=Date.parse(DATA.display_window[0]+"T00:00:00Z"), days=(Date.parse(DATA.display_window[1]+"T00:00:00Z")-start)/dayMs;
+for(const id of ["day-start","day"]){$(id).max=days;} $("day").value=days;
+for(const id of ["date-start","date-end"]){$(id).min=DATA.display_window[0];$(id).max=DATA.display_window[1];}
+let selectedPlaces=null, selected=null, selectedDoc=null,timer=null,selectedRelation=null,selectedLink=null;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function node(tag,attrs,text){let n=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));if(text)n.textContent=text;return n;}
+function action(n,fn,label){n.setAttribute('role','button');n.setAttribute('tabindex','0');n.setAttribute('aria-label',label);n.addEventListener('click',fn);n.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();fn();}});}
+function dayDate(value){return new Date(start+Number(value)*dayMs).toISOString().slice(0,10);}
+function cutoff(){return dayDate($('day').value);}
+function windowStart(){return dayDate($('day-start').value);}
+function visibleRecords(date=cutoff(),basis=$('basis').value,from=windowStart()){return windowRecords(DATA.records,from,date,basis);}
+function choose(id){selectedPlaces=null;selected=selected===id?null:id;selectedDoc=null;selectedLink=null;draw();}
+function stop(){clearInterval(timer);timer=null;$('play').textContent='Play window';}
+function draw(){
+ const date=cutoff(),rows=visibleRecords(),tracks=DATA.tracks.filter(t=>rows.some(r=>r.track===t.id));
+ const first=windowStart(),format=d=>new Date(d+'T12:00:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'});
+ $('date').textContent=format(first)+' – '+format(date);
+ $('date-start').value=first;$('date-end').value=date;
+ $('day-start').setAttribute('aria-valuetext',first);$('day').setAttribute('aria-valuetext',date);
+ $('day-start').setAttribute('aria-valuemax',$('day').value);$('day').setAttribute('aria-valuemin',$('day-start').value);
+ $('range-band').setAttribute('style',`left:${+$('day-start').value/Math.max(1,days)*100}%;right:${100-+$('day').value/Math.max(1,days)*100}%`);
+ $('play').setAttribute('title','Choose a window shorter than the full timeline to play it forward');
+ $('play').disabled=+$('day').value-+$('day-start').value===days;
+ $('time-note').textContent=($('basis').value==='publication'?'Reports published or dated within this window.':'Reports saved by ATLAS within this window.')+' Both dates are included. Event dates are shown in the report text. Choose a shorter window to play it forward.';
+ $('ntracks').textContent=tracks.length;$('nreports').textContent=new Set(rows.map(r=>r.document_id)).size;$('nclaims').textContent=rows.reduce((n,r)=>n+r.claims.length,0);
+ $('pins').replaceChildren();$('tracks').replaceChildren();
+ const europe=$('extent').value==='europe';$('map').setAttribute('viewBox',europe?'504 76 156 91':'0 0 1080 540');
+ const active=new Set(tracks.map(t=>t.id)), visibleIds=new Set(rows.map(r=>r.id)), groups=new Map();
+ for(const p of DATA.map_places){
+  if(!p.eligibility.some(rule=>rule.record_ids.every(id=>visibleIds.has(id))))continue;
+  const ids=p.topic_ids.filter(id=>active.has(id));if(!ids.length)continue;
+  const key=p.lon+','+p.lat, group=groups.get(key)||{...p,ids:new Set()};
+  ids.forEach(id=>group.ids.add(id));groups.set(key,group);
+ }
+ for(const p of groups.values()){
+  const ids=[...p.ids],g=node('g',{class:'pin',transform:`translate(${(p.lon+180)*3} ${(90-p.lat)*3})`});
+  g.append(node('circle',{r:europe?1.35:5}),node('title',{},p.label+' · '+ids.length+' reporting topics · '+p.precision));
+  action(g,()=>{selectedPlaces=null;selected=null;selectedDoc=null;selectedPlaces=ids;draw();},'Inspect '+p.label);$('pins').append(g);
+ }
+ tracks.forEach(t=>{let b=document.createElement('button');b.textContent=t.label;b.setAttribute('aria-pressed',selected===t.id);b.onclick=()=>choose(t.id);$('tracks').append(b);});
+ $('location-count').textContent=groups.size+' visible reference points';
+
+ const track=DATA.tracks.find(t=>t.id===selected);$('location').textContent=track?track.location_note:'Choose a pin or topic to follow its reports and connections. Use Europe view for nearby locations.';
+ drawExploratory(rows);
+ drawRelationships(rows,europe);
+ drawNetwork(rows,tracks);
+ const chosen=rows.filter(r=>(!selected||r.track===selected)&&(!selectedPlaces||selectedPlaces.includes(r.track))&&(!selectedDoc||r.document_id===selectedDoc)).sort((a,b)=>a[$('basis').value].localeCompare(b[$('basis').value])||a.id.localeCompare(b.id));
+ $('trace-title').textContent=track?track.label:selectedDoc?'Selected source document':selectedPlaces?'Reports at selected location':'Report chronology';
+ $('trace').innerHTML=chosen.length?chosen.map(r=>`<article class="card ${r.conflict?'conflict':''}" id="record-${r.id}"><span class="tag">${esc(r.source)} · ${r.publication.slice(0,10)} · ${esc(r.date_basis)}</span><h3>${esc(r.title)}</h3><p class="note">Captured ${esc(r.capture)} · ${esc(DATA.tracks.find(t=>t.id===r.track).kind)}</p>${r.conflict?'<p class="warning">Sources report different values</p>':''}${r.claims.map(c=>`<p>${esc(c.text)}</p><details><summary>Source quotation</summary>${c.quotes.map(q=>`<blockquote>${esc(q)}</blockquote>`).join('')}</details>`).join('')}<p><a href="${esc(r.url)}" target="_blank" rel="noopener">Original source</a> · <a href="__SOURCE_URL__/${r.document_id}.txt">Captured text</a></p></article>`).join(''):'<p class="empty">No reports are available by this date.</p>';
+}
+
+const relationSymbols={identity:'I',transmission:'T',exposure:'E',unresolved:'?',movement:'M'};
+function availableRelations(rows){const ids=new Set(rows.map(r=>r.id));return DATA.relationships.filter(r=>r.support.every(([id])=>ids.has(id)));}
+function availableUpdates(rel,rows){const ids=new Set(rows.map(r=>r.id));return (rel.updates||[]).filter(u=>u.support.every(([id])=>ids.has(id)));}
+function relationEvidence(support){return support.map(([id,ci])=>{const r=DATA.records.find(r=>r.id===id),c=r.claims.find(c=>c.claim_index===ci);return `<p class="note">${esc(r.source)} · ${esc(r.date_basis)} ${r.publication.slice(0,10)} · captured ${r.capture.slice(0,10)}</p>${c.quotes.map(q=>`<blockquote>${esc(q)}</blockquote>`).join('')}<a href="${esc(r.url)}" target="_blank" rel="noopener">Original source</a> · <a href="__SOURCE_URL__/${r.document_id}.txt">Captured text</a>`;}).join('');}
+function selectRelation(id){selectedPlaces=null;selectedLink=null;selectedRelation=id;selected=DATA.relationships.find(r=>r.id===id).track;selectedDoc=null;draw();}
+function drawRelationships(rows,europe){
+ const visible=availableRelations(rows),marks=$('relationship-marks');marks.replaceChildren();
+ visible.forEach(rel=>{const t=DATA.tracks.find(t=>t.id===rel.track),peers=visible.filter(r=>r.track===t.id),i=peers.indexOf(rel),scale=europe?.22:1;if(!Number.isFinite(t.lon)||!Number.isFinite(t.lat))return;const x=(t.lon+180)*3,y=(90-t.lat)*3;
+  if(rel.type==='identity')marks.append(node('circle',{cx:x,cy:y,r:europe?2.3:9,class:'identity-ring'}));
+  const g=node('g',{class:'relation-badge',transform:`translate(${x+8*scale} ${y+(i*19-12)*scale}) scale(${scale})`});g.append(node('rect',{x:0,y:0,width:17,height:17,rx:3}),node('text',{x:8.5,y:12,'text-anchor':'middle'},relationSymbols[rel.type]),node('title',{},rel.status+' · '+t.label));action(g,()=>selectRelation(rel.id),rel.status+' at '+t.label);marks.append(g);
+ });
+ const focused=visible.find(r=>r.id===selectedRelation),arrow=r=>r.type==='identity'?'↔':(r.type==='transmission'||r.type==='movement')?'⇢':r.type==='exposure'?'···':'?';
+ if(focused){const t=DATA.tracks.find(t=>t.id===focused.track),updates=availableUpdates(focused,rows);$('map-relation').innerHTML=`<strong>${esc(t.label)} · ${esc(focused.status)}</strong><div class="relation-diagram"><span class="relation-node">${esc(focused.from)}</span><span class="relation-arrow" aria-label="${esc(focused.type)}">${arrow(focused)}</span><span class="relation-node">${esc(focused.to)}</span></div><p class="note">Source assessment for review. The diagram shows the people, hosts or reports described in the evidence.</p><p>${esc(focused.limit)}</p>${updates.map(u=>`<p class="warning">Later assessment: ${esc(u.text)}</p>`).join('')}`;
+ }else $('map-relation').innerHTML='<p class="note">Select a map badge to read the reported link and supporting evidence.</p>';
+ $('relations').innerHTML=visible.length?visible.map(r=>`<article class="relationship ${r.id===selectedRelation?'active':''}"><span class="tag">${relationSymbols[r.type]} · ${esc(r.status)}</span><h3>${esc(DATA.tracks.find(t=>t.id===r.track).label)}</h3><p>${esc(r.basis)}</p><p class="note">${esc(r.limit)}</p>${availableUpdates(r,rows).map(u=>`<p class="warning">Later assessment: ${esc(u.text)}</p><details><summary>Later source evidence</summary>${relationEvidence(u.support)}</details>`).join('')}<details><summary>Supporting evidence</summary>${relationEvidence(r.support)}</details><button data-relation="${r.id}">Locate on map</button></article>`).join(''):'<p class="empty">No source assessments are available by this date.</p>';
+ $('relations').querySelectorAll('[data-relation]').forEach(b=>b.onclick=()=>{selectRelation(b.dataset.relation);$('map').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'center'});});
+}
+
+function shownLinks(rows){
+ const type=$('link-type').value;
+ return mapLinks(DATA.map_links,rows).filter(l=>(type==='all'||l.type===type)&&(!selected||l.from.track===selected||l.to.track===selected)&&(!selectedPlaces||l.support.some(([id])=>selectedPlaces.includes(DATA.records.find(r=>r.id===id).track))));
+}
+function selectLink(id){selectedLink=id;selectedRelation=null;draw();}
+function drawExploratory(rows){
+ const links=shownLinks(rows),layer=$('exploratory-lines');layer.replaceChildren();
+ $('link-count').textContent=links.length+' source links';
+ const colors={movement:'#3568a8',shared_event:'#007b72',hypothesis:'#995e25'};
+ links.forEach(link=>{
+  const a=link.from,b=link.to,x1=(a.lon+180)*3,y1=(90-a.lat)*3,x2=(b.lon+180)*3,y2=(90-b.lat)*3;
+  const d=`M${x1} ${y1} Q${(x1+x2)/2} ${(y1+y2)/2-24} ${x2} ${y2}`;
+  const attrs={d,class:'explore-line '+link.type+(selectedLink===link.id?' active':''),stroke:colors[link.type]};
+  if(link.directed)attrs['marker-end']='url(#travel-arrow)';
+  const line=node('path',attrs),label=link.label+' · '+a.label+(link.directed?' → ':' ↔ ')+b.label;
+  line.append(node('title',{},label));action(line,()=>selectLink(link.id),label);layer.append(line);
+  for(const endpoint of [a,b]){
+   if(!endpoint.track||!rows.some(r=>r.track===endpoint.track)){
+    const pin=node('circle',{cx:(endpoint.lon+180)*3,cy:(90-endpoint.lat)*3,r:$('extent').value==='europe'?1.3:4,class:'context-pin'});
+    pin.append(node('title',{},endpoint.label+' · '+endpoint.precision));action(pin,()=>selectLink(link.id),endpoint.label);layer.append(pin);
+   }
+  }
+ });
+ $('explore-list').replaceChildren();
+ links.forEach(link=>{const button=document.createElement('button');button.textContent=link.label+' · '+link.from.label+(link.directed?' → ':' ↔ ')+link.to.label;button.setAttribute('aria-pressed',selectedLink===link.id);button.onclick=()=>selectLink(link.id);$('explore-list').append(button);});
+ const focus=links.find(l=>l.id===selectedLink);
+ if(!focus){$('explore-detail').innerHTML='<p class="note">Choose a connection to read its assessment. The filter selects the type of source link.</p>';return;}
+ $('explore-detail').innerHTML=`<h3>${esc(focus.label)}</h3><p>${esc(focus.basis)}</p><p class="note">${esc(focus.limit)}</p><p class="note">Locations: ${esc(focus.from.precision)} ${esc(focus.to.precision)}</p>${relationEvidence(focus.support)}`;
+}
+
+function drawNetwork(rows,tracks){
+ const svg=$('network');svg.replaceChildren();const docs=[...new Map(rows.map(r=>[r.document_id,r])).values()].sort((a,b)=>a[$('basis').value].localeCompare(b[$('basis').value]));
+ const height=Math.max(180,Math.max(docs.length,tracks.length)*46+70);svg.setAttribute('viewBox',`0 0 580 ${height}`);
+ svg.append(node('text',{x:10,y:20},'SOURCE DOCUMENTS'),node('text',{x:355,y:20},'REPORTING TOPICS'));
+ const dy=new Map(docs.map((d,i)=>[d.document_id,55+i*46])),ty=new Map(tracks.map((t,i)=>[t.id,55+i*46]));
+ rows.forEach(r=>{const a=dy.get(r.document_id),b=ty.get(r.track);svg.append(node('path',{d:`M 193 ${a} C 255 ${a}, 290 ${b}, 351 ${b}`,class:'edge'+((selected===r.track||selectedDoc===r.document_id)?' focus':'')}));});
+ docs.forEach(r=>{const y=dy.get(r.document_id),g=node('g',{});g.append(node('circle',{cx:193,cy:y,r:4}),node('text',{x:10,y:y+4},r.source+' · '+r[$('basis').value].slice(5,10)));g.append(node('title',{},r.title));action(g,()=>{selectedPlaces=null;selected=null;selectedDoc=selectedDoc===r.document_id?null:r.document_id;draw();},'Inspect '+r.source+' '+r.publication.slice(0,10));svg.append(g);});
+ tracks.forEach(t=>{const y=ty.get(t.id),g=node('g',{});g.append(node('rect',{x:351,y:y-15,width:224,height:30,rx:5}),node('text',{x:360,y:y+4},t.label));action(g,()=>choose(t.id),'Follow '+t.label);svg.append(g);});
+ if(!rows.length)svg.append(node('text',{x:10,y:65},'No selected documents captured by this date.'));
+ $('network-help').textContent=selectedDoc?'Source selected. The chronology shows the reported findings this document supports.':selected?'Topic selected. Highlighted lines show its sources.':'Select a topic or source document to read the evidence.';
+}
+for(let lat=-60;lat<=60;lat+=30)$('grid').append(node('path',{d:`M0 ${(90-lat)*3}H1080`}));
+for(let lon=-150;lon<=150;lon+=30)$('grid').append(node('path',{d:`M${(lon+180)*3} 0V540`}));
+$('link-type').onchange=()=>{selectedLink=null;draw();};
+$('clear-focus').onclick=()=>{selectedPlaces=null;selected=null;selectedDoc=null;selectedLink=null;draw();};
+function changeWindow(which,value){
+ stop();const n=Math.max(0,Math.min(days,value));if(!Number.isFinite(n)){draw();return;}
+ if(which==='start')$('day-start').value=Math.min(n,+$('day').value);
+ else $('day').value=Math.max(n,+$('day-start').value);
+ draw();
+}
+$('day-start').oninput=()=>changeWindow('start',+$('day-start').value);
+$('day').oninput=()=>changeWindow('end',+$('day').value);
+$('date-start').onchange=()=>changeWindow('start',(Date.parse($('date-start').value+'T00:00:00Z')-start)/dayMs);
+$('date-end').onchange=()=>changeWindow('end',(Date.parse($('date-end').value+'T00:00:00Z')-start)/dayMs);
+$('basis').onchange=()=>{stop();draw();};$('extent').onchange=draw;
+$('reset').onclick=()=>{stop();$('day-start').value=0;$('day').value=days;selectedPlaces=null;selected=null;selectedDoc=null;draw();};
+$('fortnight').onclick=()=>{stop();$('day-start').value=Math.max(0,+$('day').value-13);draw();};
+$('all').onclick=()=>{selectedPlaces=null;selected=null;selectedDoc=null;draw();};
+$('play').onclick=()=>{
+ if(timer){stop();return;}
+ const width=+$('day').value-+$('day-start').value;if(width===days)return;
+ if(+$('day').value===days){$('day-start').value=0;$('day').value=width;}
+ $('play').textContent='Pause';draw();
+ timer=setInterval(()=>{$('day-start').value=+$('day-start').value+1;$('day').value=+$('day').value+1;draw();if(+$('day').value>=days)stop();},900);
+};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
+draw();
+</script></body></html>

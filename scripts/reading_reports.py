@@ -5,7 +5,7 @@ from datetime import date
 from html import escape
 from pathlib import Path
 
-from epiweekly.store import Store
+from atlas.store import Store
 
 
 def render_reports(state, out, start, end):
@@ -28,7 +28,7 @@ def render_reports(state, out, start, end):
         css = 'body{font:17px/1.6 system-ui;max-width:960px;margin:40px auto;padding:0 20px;color:#183441}a{color:#006880}article{border-top:1px solid #ccd8dd;padding:20px 0}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}summary{cursor:pointer}table{border-collapse:collapse}td,th{padding:8px;text-align:left;border-bottom:1px solid #ccd8dd;vertical-align:top;overflow-wrap:anywhere}'
         def page(title, body):
             return '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+escape(title)+'</title><style>'+css+'</style><main><h1>'+escape(title)+'</h1>'+body+'</main></html>'
-        note = '<p>Captured source reading archive. Extraction and event review are recorded separately in the workflow briefing. Publication dates determine the month; capture dates record when EpiWeekly retrieved the text. Entries are publications, not counts of distinct outbreaks.</p>'
+        note = '<p>Captured source reading archive. Extraction and event review are recorded separately in the workflow briefing. Publication dates determine the month; capture dates record when ATLAS retrieved the text. Entries are publications, not counts of distinct outbreaks.</p>'
         links = []
         for month, rows in sorted(groups.items(), reverse=True):
             articles = []
@@ -36,7 +36,7 @@ def render_reports(state, out, start, end):
                 p = row['payload']
                 text = (store.home / p['text_object']).read_text()
                 articles.append('<article><h2>'+escape(p['title'])+'</h2><p>'+escape(p['source_id'])+' · Published '+escape(p['published_at'][:10])+' · Captured '+escape(row['recorded_at'][:10])+'</p><p><a href="'+escape(p['url'], quote=True)+'">Original source</a> · Parse status: '+escape(p['parse_status'])+'</p><details><summary>Read captured source text</summary><pre>'+escape(text)+'</pre></details></article>')
-            (out / (month+'.html')).write_text(page('EpiWeekly · '+month, '<p><a href="index.html">All months</a></p>'+note+''.join(articles)))
+            (out / (month+'.html')).write_text(page('ATLAS · '+month, '<p><a href="index.html">All months</a></p>'+note+''.join(articles)))
             links.append('<li><a href="'+month+'.html">'+month+'</a> · '+str(len(rows))+' publications</li>')
         checks = {}
         for row in store.records('source_check'):
@@ -55,7 +55,7 @@ def render_reports(state, out, start, end):
             body='<p><a href="coverage-review.html">Coverage review and investigation instructions</a></p>'+body
         if (out/'workflow-review.html').exists():
             body='<p><a href="workflow-review.html">Model extraction, reviewed events, and draft briefing</a></p>'+body
-        (out/'index.html').write_text(page('EpiWeekly · Source reading archive',body))
+        (out/'index.html').write_text(page('ATLAS · Source reading archive',body))
         return {'publications':total,'months':len(groups),'excluded':excluded,'index':str(out/'index.html')}
     finally:
         store.close()

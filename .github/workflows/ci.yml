@@ -21,13 +21,10 @@ jobs:
           python -m pip install -r requirements-dev.lock
           python -m pip install --no-deps --no-build-isolation -e .
           python -m pytest -q
-          epiweekly schemas --out generated-schemas
+          node tests/test_map_links.cjs
+          node tests/test_site_view.cjs
+          atlas schemas --out generated-schemas
           diff -r schemas generated-schemas
-          epiweekly demo --out demo-output
-          epiweekly replay demo-output/reports/2026-09-23/report.json --out replay-output
+          atlas demo --out demo-output
+          atlas replay demo-output/reports/2026-09-23/report.json --out replay-output
           cmp demo-output/reports/2026-09-23/dataset.zip replay-output/dataset.zip
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: synthetic-demonstration-${{ matrix.python }}
-          path: demo-output/reports/
-          retention-days: 14

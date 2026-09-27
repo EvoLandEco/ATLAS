@@ -1,8 +1,8 @@
 from pathlib import Path
 import pytest
-from epiweekly.store import Store
-from epiweekly.demo import demo_config,demo
-from epiweekly.util import read_json
+from atlas.store import Store
+from atlas.demo import demo_config,demo
+from atlas.util import read_json
 
 @pytest.fixture
 def store(tmp_path):

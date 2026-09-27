@@ -2,15 +2,15 @@ import copy,json,sqlite3
 from pathlib import Path
 import pytest
 from pydantic import ValidationError
-from epiweekly.models import TextValue,DateValue,Mention,Observation,Extraction,Review,reported
-from epiweekly.demo import sample_mention,add_example
-from epiweekly.semantics import normalize_mention,evidence_errors,series_key,cumulative_change
-from epiweekly.config import vocabulary
-from epiweekly.registry import apply_reviews,match_candidates,review_queue,add_relation
-from epiweekly.snapshot import build_snapshot
-from epiweekly.export import validate_snapshot,export_snapshot,verify_bundle,csv_bytes
-from epiweekly.util import read_json,uid,canonical,digest
-from epiweekly.workflow import approve,approved_bundle,run
+from atlas.models import TextValue,DateValue,Mention,Observation,Extraction,Review,reported
+from atlas.demo import sample_mention,add_example
+from atlas.semantics import normalize_mention,evidence_errors,series_key,cumulative_change
+from atlas.config import vocabulary
+from atlas.registry import apply_reviews,match_candidates,review_queue,add_relation
+from atlas.snapshot import build_snapshot
+from atlas.export import validate_snapshot,export_snapshot,verify_bundle,csv_bytes
+from atlas.util import read_json,uid,canonical,digest
+from atlas.workflow import approve,approved_bundle,run
 
 AT='2026-09-09T06:00:00Z';CUT='2026-09-09T06:37:00Z'
 
@@ -223,7 +223,7 @@ def test_bound_differences_are_not_comparable(demo_run):
 
 def test_extraction_schema_rejects_partial_dates():
     import jsonschema
-    from epiweekly.models import DateValue
+    from atlas.models import DateValue
     schema = DateValue.model_json_schema()
     with pytest.raises(jsonschema.ValidationError):
         jsonschema.validate({'value': '2026-08', 'status': 'reported'}, schema)

@@ -11,7 +11,7 @@ from .render import render_markdown, render_html
 from .tables import TABLES, dictionary, fields_for, complete_row
 from .util import canonical, digest, write_json, atomic_write, read_json
 
-DATASET_GUIDE="""# EpiWeekly dataset\n\n
+DATASET_GUIDE="""# ATLAS dataset\n\n
 This bundle is a frozen knowledge-time snapshot. `report.json` is the canonical structured representation.
 CSV files use the same tables and fixed column order. `data_dictionary.json` and `DATA_DICTIONARY.md` describe every column.
 `report.schema.json` defines the machine-readable table contracts. `checksums.sha256` verifies bundle members.
@@ -87,7 +87,7 @@ def report_schema() -> dict:
                     schema["enum"]=[s.value for s in Status]
             props[field["name"]]=schema
         table_props[name]={"type":"array","items":{"type":"object","properties":props,"required":list(props),"additionalProperties":False}}
-    return {"$schema":"https://json-schema.org/draft/2020-12/schema","title":"EpiWeekly report 0.1.0",
+    return {"$schema":"https://json-schema.org/draft/2020-12/schema","title":"ATLAS report 0.1.0",
             "type":"object","required":["metadata","tables"],"additionalProperties":False,
             "properties":{"metadata":metadata_schema(),"tables":{"type":"object","properties":table_props,
                 "required":list(TABLES),"additionalProperties":False}}}
@@ -152,7 +152,7 @@ def csv_bytes(name: str, rows: list[dict]) -> bytes:
 
 
 def dictionary_markdown() -> str:
-    parts=["# EpiWeekly data dictionary",f"Schema version: {SCHEMA_VERSION}. Nullable fields have an explicit reason column."]
+    parts=["# ATLAS data dictionary",f"Schema version: {SCHEMA_VERSION}. Nullable fields have an explicit reason column."]
     for name in TABLES:
         parts.extend(["## "+name,"| Field | Type | Meaning |","| --- | --- | --- |"])
         for f in fields_for(name):
@@ -198,7 +198,7 @@ def export_snapshot(snapshot: dict, out: Path) -> dict:
             fields.append(field)
         resources.append({"name":name,"path":name+".csv","profile":"tabular-data-resource",
             "format":"csv","encoding":"utf-8","schema":{"fields":fields,"missingValues":["N/A"]}})
-    write_json(out/"datapackage.json",{"profile":"tabular-data-package","name":"epiweekly-"+snapshot["metadata"]["report_id"],
+    write_json(out/"datapackage.json",{"profile":"tabular-data-package","name":"atlas-"+snapshot["metadata"]["report_id"],
                                      "resources":resources})
     write_json(out/"run_manifest.json",snapshot["metadata"])
     checksums={p.name:digest(p.read_bytes()) for p in sorted(out.iterdir()) if p.is_file()}

@@ -1,10 +1,11 @@
 cff-version: 1.2.0
 message: "Cite the version used in the report's run manifest."
-title: "EpiWeekly: a versioned weekly outbreak-intelligence workflow"
-version: 0.1.0-alpha.8
-date-released: 2026-09-25
+title: "ATLAS: Agentic Tracking and Longitudinal Analysis for Surveillance"
+version: 0.1.0-alpha.21
+date-released: 2026-09-27
 type: software
+repository-code: "https://github.com/EvoLandEco/ATLAS"
 authors:
-  - name: EpiWeekly contributors
+  - name: ATLAS contributors
 license: MIT
 abstract: "A research-group workflow for longitudinal outbreak evidence, reviewed event identities, deterministic reports, and documented analytical datasets."

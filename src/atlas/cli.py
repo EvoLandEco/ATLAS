@@ -1,4 +1,4 @@
-"""epiweekly command line. See --help for each explicit operation."""
+"""atlas command line. See --help for each explicit operation."""
 from __future__ import annotations
 import argparse,json,os,sys,shutil
 from pathlib import Path
@@ -18,15 +18,15 @@ from .workflow import run,seal,export_review,approve,approved_bundle,fingerprint
 
 
 def parser():
-    p=argparse.ArgumentParser(prog='epiweekly',description='Versioned weekly outbreak intelligence and event registry')
+    p=argparse.ArgumentParser(prog='atlas',description='ATLAS: Agentic Tracking and Longitudinal Analysis for Surveillance')
     p.add_argument('--version',action='version',version=__version__)
-    p.add_argument('--config',type=Path,default=Path('config/epiweekly.yaml'))
+    p.add_argument('--config',type=Path,default=Path('config/atlas.yaml'))
     p.add_argument('--state',type=Path,default=Path('.runtime-state'))
     s=p.add_subparsers(dest='command',required=True)
     s.add_parser('init');s.add_parser('doctor')
     c=s.add_parser('collect');c.add_argument('--since',required=True);c.add_argument('--missing-only',action='store_true',help='Fetch uncaptured URLs and reuse existing documents without checking revisions')
-    c=s.add_parser('extract');c.add_argument('--provider',choices=['none','openai','codex'],default=os.getenv('EPIWEEKLY_PROVIDER','none'));c.add_argument('--model',default=os.getenv('EPIWEEKLY_MODEL',''))
-    c=s.add_parser('run');c.add_argument('--provider',choices=['none','openai','codex'],default=os.getenv('EPIWEEKLY_PROVIDER','none'));c.add_argument('--model',default=os.getenv('EPIWEEKLY_MODEL',''));c.add_argument('--report-date');c.add_argument('--force',action='store_true')
+    c=s.add_parser('extract');c.add_argument('--provider',choices=['none','openai','codex'],default=os.getenv('ATLAS_PROVIDER','none'));c.add_argument('--model',default=os.getenv('ATLAS_MODEL',''))
+    c=s.add_parser('run');c.add_argument('--provider',choices=['none','openai','codex'],default=os.getenv('ATLAS_PROVIDER','none'));c.add_argument('--model',default=os.getenv('ATLAS_MODEL',''));c.add_argument('--report-date');c.add_argument('--force',action='store_true')
     c=s.add_parser('import-document');c.add_argument('path',type=Path)
     c=s.add_parser('import-extraction');c.add_argument('document_id');c.add_argument('path',type=Path);c.add_argument('--editor',required=True)
     s.add_parser('review-export')
@@ -38,11 +38,29 @@ def parser():
     c=s.add_parser('approve');c.add_argument('bundle',type=Path);c.add_argument('--editor',required=True);c.add_argument('--note',required=True);c.add_argument('--out',type=Path,required=True)
     c=s.add_parser('verify-approval');c.add_argument('bundle',type=Path);c.add_argument('approval',type=Path)
     c=s.add_parser('schemas');c.add_argument('--out',type=Path,default=Path('schemas'))
+    c=s.add_parser('metrics');c.add_argument('--snapshot',type=Path,required=True);c.add_argument('--annotations',type=Path,required=True);c.add_argument('--source-dir',type=Path,required=True);c.add_argument('--out',type=Path,required=True);c.add_argument('--since',required=True);c.add_argument('--until',required=True);c.add_argument('--basis',choices=['publication','capture'],default='publication');c.add_argument('--knowledge-cutoff')
+    c=s.add_parser('site-export')
+    for flag in ['snapshot','results','metrics','annotations','source-dir','out','schedule']:
+        c.add_argument('--'+flag,type=Path,required=True)
+    c=s.add_parser('site-verify');c.add_argument('bundle',type=Path)
+    c=s.add_parser('handoff');c.add_argument('--cycle',required=True);c.add_argument('--out',type=Path,default=Path('reports/publication-handoff.json'))
+    c.add_argument('--initial-bundle',type=Path);c.add_argument('--initial-snapshot',type=Path)
     c=s.add_parser('demo');c.add_argument('--out',type=Path,default=Path('demo-output'))
     return p
 
 
 def execute(a):
+    if a.command=='site-export':
+        from .site_export import export_site
+        result=export_site(a.snapshot,a.results,a.metrics,a.annotations,a.source_dir,a.out,a.schedule)
+        return {'out':str(a.out),'contract_version':result['contract_version'],'records':len(result['records']),'comparisons':len(result['comparisons'])}
+    if a.command=='site-verify':
+        from .site_export import verify_site
+        return verify_site(a.bundle)
+    if a.command=='metrics':
+        from .metrics import export_metrics
+        result=export_metrics(a.snapshot,a.annotations,a.source_dir,a.out,a.since,a.until,a.basis,a.knowledge_cutoff)
+        return {'out':str(a.out),'contract_version':result['contract_version'],**result['coverage']}
     if a.command=='demo':
         from .demo import demo
         return demo(a.out)
@@ -50,6 +68,16 @@ def execute(a):
     if a.command=='approve':return approve(a.bundle,a.editor,a.note,a.out)
     if a.command=='verify-approval':return approved_bundle(a.bundle,a.approval)
     if a.command=='schemas':
+        from .geography import Reviews
+        write_json(a.out/'geographic-review.schema.json',Reviews.model_json_schema())
+        from .handoff import WeeklyReceipt
+        write_json(a.out/'weekly-receipt.schema.json',WeeklyReceipt.model_json_schema())
+        from .site_export import SiteBundle,SiteAnnotations
+        write_json(a.out/'atlas-site.schema.json',SiteBundle.model_json_schema())
+        write_json(a.out/'site-annotations.schema.json',SiteAnnotations.model_json_schema())
+        from .metrics import MetricsExport,MetricAnnotations
+        write_json(a.out/'metrics.schema.json',MetricsExport.model_json_schema())
+        write_json(a.out/'metric-annotations.schema.json',MetricAnnotations.model_json_schema())
         write_json(a.out/'extraction.schema.json',Extraction.model_json_schema())
         write_json(a.out/'provider.schema.json',strict_schema(Extraction.model_json_schema()))
         write_json(a.out/'report.schema.json',report_schema())
@@ -62,12 +90,17 @@ def execute(a):
         store=Store(a.state)
         try:
             cmd=a.command
+            if cmd=='handoff':
+                from .handoff import build_handoff
+                result=build_handoff(store,a.cycle,initial_bundle=a.initial_bundle,initial_snapshot=a.initial_snapshot)
+                write_json(a.out,result)
+                return {'handoff':str(a.out),'cycle':a.cycle,'weekly_ready':result['weekly_ready'],'blocking_reasons':result['blocking_reasons']}
             if cmd=='init':return {'state':str(a.state),'ledger':store.verify()}
             if cmd=='doctor':
                 ZoneInfo(config['timezone'])
                 return {'environment':fingerprint(),'ledger':store.verify(),'source_count':len(config['sources']),
                     'enabled_sources':[s['id'] for s in config['sources'] if s.get('enabled')],
-                    'provider':os.getenv('EPIWEEKLY_PROVIDER','none'),'model_configured':bool(os.getenv('EPIWEEKLY_MODEL')),
+                    'provider':os.getenv('ATLAS_PROVIDER','none'),'model_configured':bool(os.getenv('ATLAS_MODEL')),
                     'codex_available':shutil.which('codex') is not None,
                     'api_key_present':bool(os.getenv('OPENAI_API_KEY')),'network_check':'run collect explicitly'}
             if cmd=='collect':return collect(store,config,a.since,missing_only=a.missing_only)
@@ -112,6 +145,6 @@ def execute(a):
 def main():
     try:result=execute(parser().parse_args());print(json.dumps(result,indent=2,ensure_ascii=False));return 0
     except (ValueError,KeyError,OSError,RuntimeError,StopIteration) as exc:
-        print(f'epiweekly: {type(exc).__name__}: {exc}',file=sys.stderr);return 2
+        print(f'atlas: {type(exc).__name__}: {exc}',file=sys.stderr);return 2
 
 if __name__=='__main__':raise SystemExit(main())

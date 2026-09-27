@@ -7,5 +7,5 @@ PYTHON="${PYTHON:-python3}"
 .venv/bin/python -m pip install -r requirements-dev.lock
 .venv/bin/python -m pip install --no-deps --no-build-isolation .
 .venv/bin/python -m pytest -q
-.venv/bin/python -m epiweekly.cli doctor
+.venv/bin/python -m atlas.cli doctor
 printf '\nActivate with: source .venv/bin/activate\n'

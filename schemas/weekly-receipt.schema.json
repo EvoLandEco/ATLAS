@@ -1,0 +1,162 @@
+{
+  "$defs": {
+    "ExportReference": {
+      "additionalProperties": false,
+      "properties": {
+        "bundle_path": {
+          "title": "Bundle Path",
+          "type": "string"
+        },
+        "export_id": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Export Id",
+          "type": "string"
+        },
+        "manifest_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Manifest Sha256",
+          "type": "string"
+        },
+        "map_snapshot_path": {
+          "title": "Map Snapshot Path",
+          "type": "string"
+        },
+        "map_snapshot_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Map Snapshot Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "bundle_path",
+        "map_snapshot_path",
+        "manifest_sha256",
+        "map_snapshot_sha256",
+        "export_id"
+      ],
+      "title": "ExportReference",
+      "type": "object"
+    }
+  },
+  "additionalProperties": true,
+  "description": "Required handoff fields alongside a job's counts, checks and findings.",
+  "properties": {
+    "completed_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Completed At"
+    },
+    "cycle": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "title": "Cycle",
+      "type": "string"
+    },
+    "dependencies": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Dependencies",
+      "type": "object"
+    },
+    "export": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ExportReference"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "job": {
+      "enum": [
+        "review",
+        "production",
+        "inbox"
+      ],
+      "title": "Job",
+      "type": "string"
+    },
+    "ledger_head": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Ledger Head",
+      "type": "string"
+    },
+    "post_review_validation": {
+      "anyOf": [
+        {
+          "enum": [
+            "passed",
+            "pending",
+            "failed"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Post Review Validation"
+    },
+    "reviewed_export_id": {
+      "anyOf": [
+        {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reviewed Export Id"
+    },
+    "schema_version": {
+      "const": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "running",
+        "completed",
+        "partial",
+        "blocked"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "unapplied_decision_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Unapplied Decision Ids",
+      "type": "array"
+    },
+    "unresolved_issue_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Unresolved Issue Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "cycle",
+    "job",
+    "status",
+    "ledger_head"
+  ],
+  "title": "WeeklyReceipt",
+  "type": "object"
+}

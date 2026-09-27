@@ -3,26 +3,29 @@ requires = ["setuptools==82.0.1"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "epiweekly"
-version = "0.1.0a8"
+name = "atlas-surveillance"
+version = "0.1.0a21"
 description = "Versioned One Health outbreak intelligence with a longitudinal event ledger"
 requires-python = ">=3.11"
 readme = "README.md"
 license = "MIT"
-authors = [{name = "EpiWeekly contributors"}]
+authors = [{name = "ATLAS contributors"}]
 dependencies = [
   "pydantic==2.13.4", "httpx==0.28.1", "beautifulsoup4==4.14.3",
   "pypdf==5.9.0", "PyYAML==6.0.3", "filelock==3.29.0",
   "defusedxml==0.7.1", "protego==0.6.2", "markdown-it-py==4.2.0", "pycountry==24.6.1", "tzdata==2026.2", "jsonschema==4.26.0"
 ]
+[project.urls]
+Repository = "https://github.com/EvoLandEco/ATLAS"
+Issues = "https://github.com/EvoLandEco/ATLAS/issues"
 [project.optional-dependencies]
 dev = ["pytest==9.0.2", "pytest-cov==7.0.0"]
 [project.scripts]
-epiweekly = "epiweekly.cli:main"
+atlas = "atlas.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 [tool.setuptools.package-data]
-epiweekly = ["assets/*.md", "assets/*.yaml"]
+atlas = ["assets/*.md", "assets/*.yaml", "assets/*.js", "assets/*.html"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"

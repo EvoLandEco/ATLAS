@@ -1,6 +1,6 @@
 timezone: Europe/Amsterdam
 dataset_mode: operational
-user_agent: "EpiWeekly/0.1.0-alpha.8 (research-group weekly intelligence)"
+user_agent: "ATLAS/0.1.0-alpha.18 (research-group weekly intelligence)"
 event_stale_days: 21
 publication_window_days: 14
 limits:
@@ -109,18 +109,94 @@ sources:
     index_url: https://www.rivm.nl/sitemap.xml
     link_pattern: ^https://www\.rivm\.nl/nieuws/(?!rss\.xml$)
   - id: woah_wahis
-    name: WOAH WAHIS authorized imports
+    name: WOAH WAHIS (possible source; collaboration not established)
     role: official_animal_health_notifications
     adapter: manual
-    enabled: true
+    enabled: false
     required: false
     priority: 1
     allowed_hosts: [www.woah.org, wahis.woah.org]
   - id: beacon
-    name: BEACON curated discovery and errata
+    name: BEACON (possible source; collaboration not established)
     role: curated_signal_discovery
     adapter: manual
-    enabled: true
+    enabled: false
     required: false
     priority: 5
     allowed_hosts: [beaconbio.org, www.beaconbio.org]
+
+  - id: who_afro
+    name: WHO Africa outbreak and emergency bulletins
+    role: official_regional_synthesis
+    adapter: html_index
+    enabled: true
+    required: false
+    priority: 2
+    allowed_hosts: [www.afro.who.int, iris.who.int]
+    index_url: https://www.afro.who.int/health-topics/disease-outbreaks/outbreaks-and-other-emergencies-updates
+    row_selector: article.ob-latest, .ob-previous article
+    entry_link_selector: .pub-list-title a[href]
+    date_selector: .pub-card-date
+    date_format: "%d %B %Y"
+    date_order: descending
+    next_selector: a[aria-label="Next page"]
+    link_pattern: weekly-bulletin
+    attachment_selector: a.btn-pub-iris, a[href$=".pdf"]
+  - id: ncdc_sitreps
+    name: Nigeria NCDC disease situation reports
+    role: official_national_reporting
+    adapter: ncdc_sitreps
+    max_index_pages: 20
+    enabled: true
+    required: false
+    priority: 2
+    allowed_hosts: [ncdc.gov.ng]
+    index_url: https://ncdc.gov.ng/diseases/sitreps
+  - id: paho_alerts
+    name: PAHO epidemiological alerts and updates
+    role: official_regional_synthesis
+    adapter: html_index
+    enabled: true
+    required: false
+    priority: 2
+    allowed_hosts: [www.paho.org]
+    index_url: https://www.paho.org/en/epidemiological-alerts-and-updates
+    row_selector: .views-view-grid .col
+    entry_link_selector: .views-field-title a[href]
+    date_selector: time[datetime]
+    next_selector: a[rel=next]
+    link_pattern: /en/documents/
+    date_order: descending
+    attachment_selector: .download-button a[href]
+
+  - id: who_sitreps
+    name: WHO emergency situation updates
+    role: official_international_synthesis
+    adapter: who_sitreps
+    enabled: true
+    required: false
+    priority: 2
+    allowed_hosts: [www.who.int, cdn.who.int, iris.who.int]
+    index_url: https://www.who.int/api/hubs/meetingreports
+    publication_base: https://www.who.int/publications/m/item/
+    query:
+      sf_provider: OpenAccessProvider
+      sf_culture: en
+      $orderby: PublicationDateAndTime desc
+      $filter: "meetingreporttypes/any(a:a eq ce6cf3c6-43fc-49bf-9c4c-71bd965ee047)"
+
+  - id: ukhsa_monitoring
+    name: UKHSA global outbreaks under monitoring
+    role: official_national_synthesis
+    adapter: html_index
+    enabled: true
+    required: false
+    priority: 2
+    allowed_hosts: [www.gov.uk]
+    index_url: https://www.gov.uk/government/publications/outbreaks-under-monitoring-in-2026
+    row_selector: section.gem-c-attachment
+    entry_link_selector: .gem-c-attachment__title a[href]
+    date_selector: time[datetime]
+    next_selector: a[rel=next]
+    link_pattern: /outbreaks-under-monitoring-week-
+    content_selector: main .govspeak

@@ -1,0 +1,1311 @@
+{
+  "$defs": {
+    "CardGroup": {
+      "additionalProperties": false,
+      "properties": {
+        "context_id": {
+          "title": "Context Id",
+          "type": "string"
+        },
+        "measure_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Measure Ids",
+          "type": "array"
+        },
+        "observation_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Observation Date"
+        },
+        "priority": {
+          "title": "Priority",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "context_id",
+        "observation_date",
+        "measure_ids",
+        "priority"
+      ],
+      "title": "CardGroup",
+      "type": "object"
+    },
+    "ClaimRef": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_index": {
+          "minimum": 0,
+          "title": "Claim Index",
+          "type": "integer"
+        },
+        "document_id": {
+          "pattern": "^doc_[a-f0-9]{24}$",
+          "title": "Document Id",
+          "type": "string"
+        },
+        "quote_indexes": {
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 1,
+          "title": "Quote Indexes",
+          "type": "array"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "document_id",
+        "claim_index",
+        "quote_indexes"
+      ],
+      "title": "ClaimRef",
+      "type": "object"
+    },
+    "DateValue": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Complete date in YYYY-MM-DD form. Use null when the day is not reported.",
+          "title": "Value"
+        }
+      },
+      "title": "DateValue",
+      "type": "object"
+    },
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "field": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Field",
+          "type": "string"
+        },
+        "locator": {
+          "default": "text",
+          "maxLength": 120,
+          "title": "Locator",
+          "type": "string"
+        },
+        "quote": {
+          "maxLength": 400,
+          "minLength": 3,
+          "title": "Quote",
+          "type": "string"
+        }
+      },
+      "required": [
+        "field",
+        "quote"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "ExportConflict": {
+      "additionalProperties": false,
+      "properties": {
+        "conflict_id": {
+          "title": "Conflict Id",
+          "type": "string"
+        },
+        "measure_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Measure Ids",
+          "type": "array"
+        },
+        "resolution": {
+          "const": "unresolved",
+          "title": "Resolution",
+          "type": "string"
+        }
+      },
+      "required": [
+        "conflict_id",
+        "measure_ids",
+        "resolution"
+      ],
+      "title": "ExportConflict",
+      "type": "object"
+    },
+    "ExportCoverage": {
+      "additionalProperties": false,
+      "properties": {
+        "finding_count": {
+          "title": "Finding Count",
+          "type": "integer"
+        },
+        "measure_count": {
+          "title": "Measure Count",
+          "type": "integer"
+        },
+        "pending_candidate_count": {
+          "title": "Pending Candidate Count",
+          "type": "integer"
+        },
+        "records_in_window": {
+          "title": "Records In Window",
+          "type": "integer"
+        },
+        "records_with_measures": {
+          "title": "Records With Measures",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "records_in_window",
+        "records_with_measures",
+        "measure_count",
+        "finding_count",
+        "pending_candidate_count"
+      ],
+      "title": "ExportCoverage",
+      "type": "object"
+    },
+    "ExportEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_index": {
+          "minimum": 0,
+          "title": "Claim Index",
+          "type": "integer"
+        },
+        "document_id": {
+          "pattern": "^doc_[a-f0-9]{24}$",
+          "title": "Document Id",
+          "type": "string"
+        },
+        "quote_indexes": {
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 1,
+          "title": "Quote Indexes",
+          "type": "array"
+        },
+        "quote_sha256": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Quote Sha256",
+          "type": "array"
+        },
+        "quotes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Quotes",
+          "type": "array"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "document_id",
+        "claim_index",
+        "quote_indexes",
+        "quotes",
+        "quote_sha256"
+      ],
+      "title": "ExportEvidence",
+      "type": "object"
+    },
+    "ExportFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "$ref": "#/$defs/ExportEvidence"
+        },
+        "finding_id": {
+          "title": "Finding Id",
+          "type": "string"
+        },
+        "review_status": {
+          "const": "extracted_draft",
+          "title": "Review Status",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "finding_id",
+        "text",
+        "review_status",
+        "evidence"
+      ],
+      "title": "ExportFinding",
+      "type": "object"
+    },
+    "ExportMeasure": {
+      "additionalProperties": false,
+      "properties": {
+        "acquisition": {
+          "default": "unknown",
+          "enum": [
+            "imported",
+            "local",
+            "mixed",
+            "unknown"
+          ],
+          "title": "Acquisition",
+          "type": "string"
+        },
+        "annotation_key": {
+          "minLength": 1,
+          "title": "Annotation Key",
+          "type": "string"
+        },
+        "as_of": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "capture": {
+          "title": "Capture",
+          "type": "string"
+        },
+        "case_class": {
+          "enum": [
+            "confirmed",
+            "probable",
+            "suspected",
+            "confirmed_and_probable",
+            "all_reported",
+            "unknown"
+          ],
+          "title": "Case Class",
+          "type": "string"
+        },
+        "case_definition": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "conflict_set": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Conflict Set"
+        },
+        "context_id": {
+          "title": "Context Id",
+          "type": "string"
+        },
+        "context_references": {
+          "items": {
+            "$ref": "#/$defs/ClaimRef"
+          },
+          "title": "Context References",
+          "type": "array"
+        },
+        "count_kind": {
+          "enum": [
+            "cumulative",
+            "interval",
+            "point",
+            "unknown"
+          ],
+          "title": "Count Kind",
+          "type": "string"
+        },
+        "cumulative_baseline": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "date_basis": {
+          "enum": [
+            "onset",
+            "notification",
+            "specimen",
+            "death",
+            "report",
+            "unknown"
+          ],
+          "title": "Date Basis",
+          "type": "string"
+        },
+        "denominator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Denominator"
+        },
+        "denominator_population": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "denominator_status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "disease": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        },
+        "evidence_references": {
+          "items": {
+            "$ref": "#/$defs/ExportEvidence"
+          },
+          "title": "Evidence References",
+          "type": "array"
+        },
+        "geography": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "host": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "measure_id": {
+          "title": "Measure Id",
+          "type": "string"
+        },
+        "metric": {
+          "enum": [
+            "cases",
+            "deaths",
+            "hospitalizations",
+            "affected_holdings",
+            "affected_animals",
+            "samples_tested",
+            "positive_samples",
+            "test_positivity",
+            "other"
+          ],
+          "title": "Metric",
+          "type": "string"
+        },
+        "numeric_evidence_review": {
+          "anyOf": [
+            {
+              "minLength": 20,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Numeric Evidence Review"
+        },
+        "observation_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Observation Date"
+        },
+        "observation_date_status": {
+          "enum": [
+            "reported",
+            "not_reported"
+          ],
+          "title": "Observation Date Status",
+          "type": "string"
+        },
+        "origin_authority": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "pathogen": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "period_end": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "period_label": {
+          "minLength": 1,
+          "title": "Period Label",
+          "type": "string"
+        },
+        "period_start": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "population": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "priority": {
+          "default": 2,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Priority",
+          "type": "integer"
+        },
+        "proposal_candidates": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Proposal Candidates",
+          "type": "array"
+        },
+        "publication": {
+          "title": "Publication",
+          "type": "string"
+        },
+        "publication_basis": {
+          "title": "Publication Basis",
+          "type": "string"
+        },
+        "qualifier": {
+          "default": "unknown",
+          "enum": [
+            "exact",
+            "approximately",
+            "at_least",
+            "at_most",
+            "unknown"
+          ],
+          "title": "Qualifier",
+          "type": "string"
+        },
+        "ratio_basis": {
+          "default": "not_applicable",
+          "enum": [
+            "source_reported",
+            "not_applicable"
+          ],
+          "title": "Ratio Basis",
+          "type": "string"
+        },
+        "review_status": {
+          "const": "source_checked_draft",
+          "title": "Review Status",
+          "type": "string"
+        },
+        "revision_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Revision Reason"
+        },
+        "semantic_note": {
+          "minLength": 12,
+          "title": "Semantic Note",
+          "type": "string"
+        },
+        "source_date_warning": {
+          "title": "Source Date Warning",
+          "type": "boolean"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_reference": {
+          "$ref": "#/$defs/ClaimRef"
+        },
+        "source_url": {
+          "title": "Source Url",
+          "type": "string"
+        },
+        "stratum": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "superseded": {
+          "title": "Superseded",
+          "type": "boolean"
+        },
+        "supersedes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Supersedes",
+          "type": "array"
+        },
+        "track_id": {
+          "title": "Track Id",
+          "type": "string"
+        },
+        "transmission_role": {
+          "default": "unknown",
+          "enum": [
+            "index",
+            "secondary",
+            "import_linked",
+            "unknown"
+          ],
+          "title": "Transmission Role",
+          "type": "string"
+        },
+        "unit": {
+          "enum": [
+            "people",
+            "holdings",
+            "animals",
+            "samples",
+            "percent",
+            "proportion",
+            "other",
+            "unknown"
+          ],
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "value_status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        }
+      },
+      "required": [
+        "metric",
+        "unit",
+        "count_kind",
+        "case_class",
+        "date_basis",
+        "evidence",
+        "annotation_key",
+        "label",
+        "disease",
+        "pathogen",
+        "host",
+        "geography",
+        "period_label",
+        "source_reference",
+        "semantic_note",
+        "measure_id",
+        "track_id",
+        "source_id",
+        "publication",
+        "publication_basis",
+        "capture",
+        "source_url",
+        "evidence_references",
+        "review_status",
+        "observation_date",
+        "observation_date_status",
+        "source_date_warning",
+        "superseded",
+        "context_id"
+      ],
+      "title": "ExportMeasure",
+      "type": "object"
+    },
+    "ExportPanel": {
+      "additionalProperties": false,
+      "properties": {
+        "card_groups": {
+          "items": {
+            "$ref": "#/$defs/CardGroup"
+          },
+          "title": "Card Groups",
+          "type": "array"
+        },
+        "finding_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Finding Ids",
+          "type": "array"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "record",
+            "topic",
+            "geographic_link",
+            "assessment",
+            "assessment_update"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "measure_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Measure Ids",
+          "type": "array"
+        },
+        "support": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Support",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "id",
+        "support",
+        "measure_ids",
+        "card_groups",
+        "finding_ids"
+      ],
+      "title": "ExportPanel",
+      "type": "object"
+    },
+    "ExportRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "capture": {
+          "title": "Capture",
+          "type": "string"
+        },
+        "document_id": {
+          "title": "Document Id",
+          "type": "string"
+        },
+        "publication": {
+          "title": "Publication",
+          "type": "string"
+        },
+        "publication_basis": {
+          "title": "Publication Basis",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "track_id": {
+          "title": "Track Id",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "document_id",
+        "track_id",
+        "publication",
+        "publication_basis",
+        "capture",
+        "url"
+      ],
+      "title": "ExportRecord",
+      "type": "object"
+    },
+    "ExportReview": {
+      "additionalProperties": false,
+      "properties": {
+        "pending_candidate_count": {
+          "title": "Pending Candidate Count",
+          "type": "integer"
+        },
+        "review_status": {
+          "const": "source_checked_draft",
+          "title": "Review Status",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "scope": {
+          "title": "Scope",
+          "type": "string"
+        }
+      },
+      "required": [
+        "review_status",
+        "reviewed_by",
+        "reviewed_at",
+        "scope",
+        "pending_candidate_count"
+      ],
+      "title": "ExportReview",
+      "type": "object"
+    },
+    "ExportSeries": {
+      "additionalProperties": false,
+      "properties": {
+        "comparability_status": {
+          "const": "not_established",
+          "title": "Comparability Status",
+          "type": "string"
+        },
+        "connect_points": {
+          "const": false,
+          "title": "Connect Points",
+          "type": "boolean"
+        },
+        "context": {
+          "additionalProperties": true,
+          "title": "Context",
+          "type": "object"
+        },
+        "context_id": {
+          "title": "Context Id",
+          "type": "string"
+        },
+        "measure_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Measure Ids",
+          "type": "array"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "context_id",
+        "context",
+        "measure_ids",
+        "connect_points",
+        "comparability_status",
+        "reason"
+      ],
+      "title": "ExportSeries",
+      "type": "object"
+    },
+    "ExportWindow": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "enum": [
+            "publication",
+            "capture"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "inclusive": {
+          "const": true,
+          "title": "Inclusive",
+          "type": "boolean"
+        },
+        "knowledge_cutoff": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Knowledge Cutoff"
+        },
+        "mode": {
+          "enum": [
+            "sources_known_at_cutoff",
+            "retrospective_reporting_window"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "since": {
+          "title": "Since",
+          "type": "string"
+        },
+        "until": {
+          "title": "Until",
+          "type": "string"
+        }
+      },
+      "required": [
+        "since",
+        "until",
+        "basis",
+        "inclusive",
+        "knowledge_cutoff",
+        "mode"
+      ],
+      "title": "ExportWindow",
+      "type": "object"
+    },
+    "ReviewedSeries": {
+      "additionalProperties": false,
+      "properties": {
+        "comparability_status": {
+          "const": "reviewed_for_reported_counts",
+          "default": "reviewed_for_reported_counts",
+          "title": "Comparability Status",
+          "type": "string"
+        },
+        "connections": {
+          "items": {
+            "$ref": "#/$defs/SeriesConnection"
+          },
+          "title": "Connections",
+          "type": "array"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/SeriesEvidence"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "members": {
+          "items": {
+            "$ref": "#/$defs/SeriesMember"
+          },
+          "title": "Members",
+          "type": "array"
+        },
+        "operation": {
+          "enum": [
+            "reported_interval_counts",
+            "cumulative_reporting_totals"
+          ],
+          "title": "Operation",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "review_status": {
+          "const": "source_checked_draft",
+          "default": "source_checked_draft",
+          "title": "Review Status",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "scope": {
+          "title": "Scope",
+          "type": "string"
+        },
+        "series_id": {
+          "title": "Series Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "series_id",
+        "label",
+        "operation",
+        "scope",
+        "reason",
+        "limitations",
+        "reviewed_by",
+        "reviewed_at",
+        "members",
+        "connections",
+        "evidence"
+      ],
+      "title": "ReviewedSeries",
+      "type": "object"
+    },
+    "SeriesConnection": {
+      "additionalProperties": false,
+      "properties": {
+        "eligibility": {
+          "$ref": "#/$defs/Support"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "from_measure_id": {
+          "title": "From Measure Id",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "to_measure_id": {
+          "title": "To Measure Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "from_measure_id",
+        "to_measure_id",
+        "evidence_ids",
+        "eligibility"
+      ],
+      "title": "SeriesConnection",
+      "type": "object"
+    },
+    "SeriesEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "document_id": {
+          "pattern": "^doc_[a-f0-9]{24}$",
+          "title": "Document Id",
+          "type": "string"
+        },
+        "end": {
+          "exclusiveMinimum": 0,
+          "title": "End",
+          "type": "integer"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Page"
+        },
+        "quote": {
+          "minLength": 1,
+          "title": "Quote",
+          "type": "string"
+        },
+        "quote_sha256": {
+          "title": "Quote Sha256",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "section": {
+          "minLength": 1,
+          "title": "Section",
+          "type": "string"
+        },
+        "source_text_sha256": {
+          "title": "Source Text Sha256",
+          "type": "string"
+        },
+        "start": {
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "key",
+        "record_id",
+        "document_id",
+        "quote",
+        "section",
+        "id",
+        "start",
+        "end",
+        "page",
+        "source_text_sha256",
+        "quote_sha256"
+      ],
+      "title": "SeriesEvidence",
+      "type": "object"
+    },
+    "SeriesMember": {
+      "additionalProperties": false,
+      "properties": {
+        "eligibility": {
+          "$ref": "#/$defs/Support"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "measure_id": {
+          "title": "Measure Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "measure_id",
+        "evidence_ids",
+        "eligibility"
+      ],
+      "title": "SeriesMember",
+      "type": "object"
+    },
+    "Status": {
+      "enum": [
+        "reported",
+        "not_reported",
+        "unknown",
+        "not_applicable",
+        "pending_verification",
+        "conflicting",
+        "not_extracted",
+        "not_comparable",
+        "access_restricted"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "Support": {
+      "additionalProperties": false,
+      "properties": {
+        "partial": {
+          "const": "hide_relationship_keep_visible_assertions",
+          "default": "hide_relationship_keep_visible_assertions",
+          "title": "Partial",
+          "type": "string"
+        },
+        "record_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Record Ids",
+          "type": "array"
+        },
+        "rule": {
+          "const": "all_supporting_records_in_window",
+          "default": "all_supporting_records_in_window",
+          "title": "Rule",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_ids"
+      ],
+      "title": "Support",
+      "type": "object"
+    },
+    "TextValue": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "title": "TextValue",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "annotations_sha256": {
+      "title": "Annotations Sha256",
+      "type": "string"
+    },
+    "conflicts": {
+      "items": {
+        "$ref": "#/$defs/ExportConflict"
+      },
+      "title": "Conflicts",
+      "type": "array"
+    },
+    "contract_version": {
+      "const": "0.2.0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "coverage": {
+      "$ref": "#/$defs/ExportCoverage"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/ExportFinding"
+      },
+      "title": "Findings",
+      "type": "array"
+    },
+    "input_sha256": {
+      "title": "Input Sha256",
+      "type": "string"
+    },
+    "measures": {
+      "items": {
+        "$ref": "#/$defs/ExportMeasure"
+      },
+      "title": "Measures",
+      "type": "array"
+    },
+    "panels": {
+      "items": {
+        "$ref": "#/$defs/ExportPanel"
+      },
+      "title": "Panels",
+      "type": "array"
+    },
+    "records": {
+      "items": {
+        "$ref": "#/$defs/ExportRecord"
+      },
+      "title": "Records",
+      "type": "array"
+    },
+    "records_sha256": {
+      "title": "Records Sha256",
+      "type": "string"
+    },
+    "release_status": {
+      "const": "research_preview",
+      "title": "Release Status",
+      "type": "string"
+    },
+    "review": {
+      "$ref": "#/$defs/ExportReview"
+    },
+    "reviewed_series": {
+      "items": {
+        "$ref": "#/$defs/ReviewedSeries"
+      },
+      "title": "Reviewed Series",
+      "type": "array"
+    },
+    "series": {
+      "items": {
+        "$ref": "#/$defs/ExportSeries"
+      },
+      "title": "Series",
+      "type": "array"
+    },
+    "software_version": {
+      "title": "Software Version",
+      "type": "string"
+    },
+    "source_snapshot_sha256": {
+      "title": "Source Snapshot Sha256",
+      "type": "string"
+    },
+    "window": {
+      "$ref": "#/$defs/ExportWindow"
+    }
+  },
+  "required": [
+    "contract_version",
+    "software_version",
+    "release_status",
+    "source_snapshot_sha256",
+    "records_sha256",
+    "input_sha256",
+    "annotations_sha256",
+    "review",
+    "window",
+    "records",
+    "measures",
+    "findings",
+    "conflicts",
+    "series",
+    "reviewed_series",
+    "panels",
+    "coverage"
+  ],
+  "title": "MetricsExport",
+  "type": "object"
+}

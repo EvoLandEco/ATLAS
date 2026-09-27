@@ -34,7 +34,7 @@ def in_publication_window(document: dict, window: tuple[str,str] | None) -> bool
 
 
 def assets(name: str) -> str:
-    return files("epiweekly").joinpath("assets",name).read_text(encoding="utf-8")
+    return files("atlas").joinpath("assets",name).read_text(encoding="utf-8")
 
 
 def load_config(path: Path) -> dict:
@@ -47,7 +47,7 @@ def load_config(path: Path) -> dict:
         raise ValueError("Source IDs must be unique")
     publication_window(data)
     for s in data["sources"]:
-        if s["adapter"] not in {"who_odata","rss_discovery","html_index","sitemap","static","manual"}:
+        if s["adapter"] not in {"who_odata","rss_discovery","html_index","sitemap","static","manual","ncdc_sitreps","who_sitreps"}:
             raise ValueError("Unknown source adapter")
         if not s.get("allowed_hosts"):
             raise ValueError(f"{s['id']} requires an explicit host allowlist")

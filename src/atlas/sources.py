@@ -20,7 +20,7 @@ from .store import Store
 from .config import publication_window, in_publication_window
 from .util import canonical_url, digest, stamp, uid, utcnow, canonical
 
-ADAPTER_VERSION = "0.2.1"
+ADAPTER_VERSION = "0.3.0"
 
 
 class SourceError(RuntimeError):
@@ -312,6 +312,58 @@ def discover_sitemap(source: dict, fetcher: Fetcher, since: str, limits: dict) -
 
 def discover(source: dict, fetcher: Fetcher, since: str, limits: dict) -> tuple[list[dict],list[str]]:
     adapter=source["adapter"]; notes=[]
+    if adapter=="who_sitreps":
+        entries=[]; previous=None
+        for page in range(limits.get('max_index_pages',5)):
+            query=urlencode({**source['query'],'$top':50,'$skip':page*50})
+            raw,_,_,_=fetcher.get(source['index_url']+'?'+query)
+            rows=json.loads(raw).get('value')
+            if not isinstance(rows,list):raise SourceError('WHO publication collection changed')
+            reached=False
+            for item in rows:
+                published,precision=parse_date(item.get('PublicationDateAndTime'))
+                if not published:raise SourceError('WHO publication date missing')
+                if previous and published>previous:raise SourceError('WHO publication ordering changed')
+                previous=published
+                if published[:10]<since[:10]:reached=True;continue
+                entries.append({'url':urljoin(source['publication_base'],item['ItemDefaultUrl'].lstrip('/')),
+                    'title':item['Title'],'published_at':published,'publication_precision':precision,
+                    'modified_at':item.get('LastModified'),'download_url':item.get('DownloadUrl')})
+            if reached or len(rows)<50:break
+        else:notes.append('index_page_cap')
+        return entries,notes
+    if adapter=="ncdc_sitreps":
+        raw,_,base,_=fetcher.get(source['index_url'])
+        soup=BeautifulSoup(raw,'html.parser')
+        series=sorted({urljoin(base,a['href']) for a in soup.select('a[href]')
+                       if re.search(r'/diseases/sitreps/\?cat=\d+',a['href'])})
+        if not series:raise SourceError('NCDC disease series links require review')
+        entries={}; cap=source.get('max_index_pages',limits.get('max_index_pages',20))
+        if len(series)>cap:notes.append('index_page_cap')
+        for url in series[:cap]:
+            try:
+                raw,_,final,_=fetcher.get(url)
+            except (httpx.HTTPError,SourceError) as exc:
+                notes.append(f'series_unavailable:{url}:{exc}');continue
+            rows=BeautifulSoup(raw,'html.parser').select('table tbody tr')
+            if not rows:
+                notes.append('series_unavailable:'+url+':report table absent');continue
+            for row in rows:
+                link=row.select_one('a[download][href]')
+                if not link:raise SourceError('NCDC download link requires review')
+                target=urljoin(final,link['href'])
+                match=re.fullmatch(r'.+_(\d{6})_.*\.pdf',link['download'])
+                try:
+                    if not match:raise ValueError('Missing date')
+                    day=datetime.strptime(match[1],'%d%m%y').date().isoformat()
+                except ValueError:
+                    notes.append('archive_date_invalid:'+target);continue
+                if day>=since[:10]:
+                    cells=row.select('td')
+                    entries[target]={'url':target,'title':cells[1].get_text(' ',strip=True),
+                                     'published_at':day,'publication_precision':'day'}
+        notes.append('NCDC dates are edition labels in publisher download names; PDF observation periods remain separate.')
+        return list(entries.values()),notes
     if adapter=="manual":
         return [],["manual_access"]
     if adapter=="sitemap":
@@ -394,6 +446,8 @@ def discover(source: dict, fetcher: Fetcher, since: str, limits: dict) -> tuple[
 
 
 def retrieve_entry(store: Store, source: dict, entry: dict, fetcher: Fetcher) -> str | None:
+    if source.get('adapter')=='who_sitreps' and not entry.get('download_url'):
+        raise SourceError('WHO situation report has no published PDF download')
     if "who_item" in entry:
         item=entry["who_item"]
         pieces=[f"<h1>{item.get('OverrideTitle') or item.get('Title','WHO DON')}</h1>"]
@@ -409,12 +463,12 @@ def retrieve_entry(store: Store, source: dict, entry: dict, fetcher: Fetcher) ->
     previous=prior[-1] if prior else None
     receipts=[r["payload"] for r in store.records("fetch_receipt") if r["payload"].get("url")==canonical_url(entry["url"])]
     conditional={}
-    if receipts and previous and previous["payload"]["adapter_version"]==ADAPTER_VERSION and not source.get("primary_pdf"):
+    if receipts and previous and previous["payload"]["adapter_version"]==ADAPTER_VERSION and not (source.get("primary_pdf") or source.get("attachment_selector") or entry.get('download_url')):
         if receipts[-1].get("etag"):
             conditional["If-None-Match"]=receipts[-1]["etag"]
         elif receipts[-1].get("last_modified"):
             conditional["If-Modified-Since"]=receipts[-1]["last_modified"]
-    raw,headers,final,status=fetcher.get(entry["url"],conditional)
+    raw,headers,final,status=fetcher.get(entry.get('download_url') or entry["url"],conditional)
     if status==304:
         if previous is None:
             raise SourceError("304 received without a cached document")
@@ -423,6 +477,8 @@ def retrieve_entry(store: Store, source: dict, entry: dict, fetcher: Fetcher) ->
     title=entry.get("title") or "Untitled source document"
     published=entry.get("published_at"); precision=entry.get("publication_precision","unknown")
     parse_status="text_ready"
+    if entry.get('download_url') and not raw.startswith(b'%PDF'):
+        raise SourceError('WHO bulletin download did not return PDF bytes')
     if mime=="application/pdf" or raw.startswith(b"%PDF"):
         text,parse_status=pdf_text(raw); mime="application/pdf"
     else:
@@ -444,7 +500,13 @@ def retrieve_entry(store: Store, source: dict, entry: dict, fetcher: Fetcher) ->
                 raise SourceError("Source edition date requires adapter review")
             published=datetime.strptime(node.get_text(" ",strip=True),source["publication_date_format"]).date().isoformat()
             precision="day"
-        if source.get("primary_pdf"):
+        if source.get("attachment_selector"):
+            targets={urljoin(final,a['href']) for a in soup.select(source['attachment_selector'])}
+            if len(targets)!=1:raise SourceError('Expected exactly one bulletin attachment')
+            raw,headers,final,_=fetcher.get(targets.pop())
+            if not raw.startswith(b'%PDF'):raise SourceError('Bulletin attachment did not return PDF bytes')
+            mime='application/pdf';text,parse_status=pdf_text(raw)
+        elif source.get("primary_pdf"):
             pdfs=set()
             for card in soup.select(source.get("pdf_card_selector","a[href]")):
                 label=card.get_text(" ",strip=True) if source.get("pdf_card_selector") else unquote(card["href"])

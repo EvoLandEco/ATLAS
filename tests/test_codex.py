@@ -4,10 +4,10 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from epiweekly import codex, extraction
-from epiweekly.cli import parser
-from epiweekly.models import Extraction
-from epiweekly.sources import save_document
+from atlas import codex, extraction
+from atlas.cli import parser
+from atlas.models import Extraction
+from atlas.sources import save_document
 
 
 @pytest.mark.parametrize('failure', [None, 'exit', 'timeout', 'incomplete', 'invalid', 'oversized'])

@@ -24,13 +24,13 @@ jobs:
           persist-credentials: false
       - name: Verify private state location
         env:
-          EPIWEEKLY_STATE_REPO: ${{ vars.EPIWEEKLY_STATE_REPO }}
-          EPIWEEKLY_STATE_TOKEN: ${{ secrets.EPIWEEKLY_STATE_TOKEN }}
+          ATLAS_STATE_REPO: ${{ vars.ATLAS_STATE_REPO }}
+          ATLAS_STATE_TOKEN: ${{ secrets.ATLAS_STATE_TOKEN }}
         run: python scripts/check_state_repo.py
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          repository: ${{ vars.EPIWEEKLY_STATE_REPO }}
-          token: ${{ secrets.EPIWEEKLY_STATE_TOKEN }}
+          repository: ${{ vars.ATLAS_STATE_REPO }}
+          token: ${{ secrets.ATLAS_STATE_TOKEN }}
           path: .runtime-state
           persist-credentials: false
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
@@ -51,4 +51,4 @@ jobs:
           RELEASE_TAG: ${{ steps.stage.outputs.tag }}
         run: |
           gh release create "$RELEASE_TAG" approved-release/dataset.zip approved-release/approval.json \
-            --title "EpiWeekly $RELEASE_TAG" --notes-file approved-release/RELEASE.md
+            --title "ATLAS $RELEASE_TAG" --notes-file approved-release/RELEASE.md

@@ -1,14 +1,14 @@
 from pathlib import Path
 import json
-from epiweekly.sources import save_document
-from epiweekly.extraction import extract_pending
-from epiweekly.demo import sample_mention,add_example
-from epiweekly.snapshot import build_snapshot
-from epiweekly.export import validate_snapshot
+from atlas.sources import save_document
+from atlas.extraction import extract_pending
+from atlas.demo import sample_mention,add_example
+from atlas.snapshot import build_snapshot
+from atlas.export import validate_snapshot
 
 
 def test_six_calendar_months():
-    from epiweekly.config import publication_window
+    from atlas.config import publication_window
     c={'timezone':'Europe/Amsterdam','publication_window_months':6}
     assert publication_window(c,'2026-09-25') == ('2026-03-25','2026-09-25')
     assert publication_window(c,'2024-08-31') == ('2024-02-29','2024-08-31')
@@ -28,7 +28,7 @@ def test_extraction_excludes_old_future_and_undated_documents(store,config):
 
 
 def test_snapshot_and_review_share_publication_window(store,config):
-    from epiweekly.workflow import export_review
+    from atlas.workflow import export_review
     for day,key in [('2026-03-24','old'),('2026-03-25','inside')]:
         add_example(store,config,sample_mention(key=key),at=day+'T10:00:00Z',event_key=key)
         add_example(store,config,sample_mention(key=key+'-pending'),at=day+'T10:00:00Z')
@@ -48,9 +48,9 @@ def test_snapshot_and_review_share_publication_window(store,config):
 
 
 def test_collection_clamps_discovery_and_skips_known_old_publications(store,config,monkeypatch):
-    from epiweekly import config as config_module, sources
+    from atlas import config as config_module, sources
     monkeypatch.setattr(config_module,'utcnow',lambda:'2026-09-25T12:00:00Z')
-    c={**config,'user_agent':'EpiWeekly test','limits':{**config['limits'],'max_response_bytes':16000000,'max_documents_per_source':10},'publication_window_months':6,'sources':[{'id':'example','adapter':'rss_discovery','enabled':True,'allowed_hosts':['example.org']}]}
+    c={**config,'user_agent':'ATLAS test','limits':{**config['limits'],'max_response_bytes':16000000,'max_documents_per_source':10},'publication_window_months':6,'sources':[{'id':'example','adapter':'rss_discovery','enabled':True,'allowed_hosts':['example.org']}]}
     def discover(source,fetcher,since,limits):
         assert since=='2026-03-25'
         return [{'url':'https://example.org/'+d,'published_at':d} for d in ['2026-03-24','2026-03-25']],[]
@@ -78,7 +78,7 @@ def test_outside_window_metric_is_not_a_change_baseline(store,config):
 
 def test_fourteen_inclusive_publication_days():
     import pytest
-    from epiweekly.config import publication_window
+    from atlas.config import publication_window
     c={'timezone':'Europe/Amsterdam','publication_window_days':14}
     assert publication_window(c,'2026-09-25') == ('2026-09-12','2026-09-25')
     with pytest.raises(ValueError):publication_window({**c,'publication_window_months':6})

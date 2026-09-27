@@ -1,0 +1,661 @@
+{
+  "$defs": {
+    "CardMeasure": {
+      "additionalProperties": false,
+      "properties": {
+        "acquisition": {
+          "default": "unknown",
+          "enum": [
+            "imported",
+            "local",
+            "mixed",
+            "unknown"
+          ],
+          "title": "Acquisition",
+          "type": "string"
+        },
+        "annotation_key": {
+          "minLength": 1,
+          "title": "Annotation Key",
+          "type": "string"
+        },
+        "as_of": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "case_class": {
+          "enum": [
+            "confirmed",
+            "probable",
+            "suspected",
+            "confirmed_and_probable",
+            "all_reported",
+            "unknown"
+          ],
+          "title": "Case Class",
+          "type": "string"
+        },
+        "case_definition": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "conflict_set": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Conflict Set"
+        },
+        "context_references": {
+          "items": {
+            "$ref": "#/$defs/ClaimRef"
+          },
+          "title": "Context References",
+          "type": "array"
+        },
+        "count_kind": {
+          "enum": [
+            "cumulative",
+            "interval",
+            "point",
+            "unknown"
+          ],
+          "title": "Count Kind",
+          "type": "string"
+        },
+        "cumulative_baseline": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "date_basis": {
+          "enum": [
+            "onset",
+            "notification",
+            "specimen",
+            "death",
+            "report",
+            "unknown"
+          ],
+          "title": "Date Basis",
+          "type": "string"
+        },
+        "denominator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Denominator"
+        },
+        "denominator_population": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "denominator_status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "disease": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        },
+        "geography": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "host": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "metric": {
+          "enum": [
+            "cases",
+            "deaths",
+            "hospitalizations",
+            "affected_holdings",
+            "affected_animals",
+            "samples_tested",
+            "positive_samples",
+            "test_positivity",
+            "other"
+          ],
+          "title": "Metric",
+          "type": "string"
+        },
+        "numeric_evidence_review": {
+          "anyOf": [
+            {
+              "minLength": 20,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Numeric Evidence Review"
+        },
+        "origin_authority": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "pathogen": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "period_end": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "period_label": {
+          "minLength": 1,
+          "title": "Period Label",
+          "type": "string"
+        },
+        "period_start": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "population": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "priority": {
+          "default": 2,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Priority",
+          "type": "integer"
+        },
+        "proposal_candidates": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Proposal Candidates",
+          "type": "array"
+        },
+        "qualifier": {
+          "default": "unknown",
+          "enum": [
+            "exact",
+            "approximately",
+            "at_least",
+            "at_most",
+            "unknown"
+          ],
+          "title": "Qualifier",
+          "type": "string"
+        },
+        "ratio_basis": {
+          "default": "not_applicable",
+          "enum": [
+            "source_reported",
+            "not_applicable"
+          ],
+          "title": "Ratio Basis",
+          "type": "string"
+        },
+        "revision_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Revision Reason"
+        },
+        "semantic_note": {
+          "minLength": 12,
+          "title": "Semantic Note",
+          "type": "string"
+        },
+        "source_reference": {
+          "$ref": "#/$defs/ClaimRef"
+        },
+        "stratum": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "supersedes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Supersedes",
+          "type": "array"
+        },
+        "transmission_role": {
+          "default": "unknown",
+          "enum": [
+            "index",
+            "secondary",
+            "import_linked",
+            "unknown"
+          ],
+          "title": "Transmission Role",
+          "type": "string"
+        },
+        "unit": {
+          "enum": [
+            "people",
+            "holdings",
+            "animals",
+            "samples",
+            "percent",
+            "proportion",
+            "other",
+            "unknown"
+          ],
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "value_status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        }
+      },
+      "required": [
+        "metric",
+        "unit",
+        "count_kind",
+        "case_class",
+        "date_basis",
+        "evidence",
+        "annotation_key",
+        "label",
+        "disease",
+        "pathogen",
+        "host",
+        "geography",
+        "period_label",
+        "source_reference",
+        "semantic_note"
+      ],
+      "title": "CardMeasure",
+      "type": "object"
+    },
+    "ClaimRef": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_index": {
+          "minimum": 0,
+          "title": "Claim Index",
+          "type": "integer"
+        },
+        "document_id": {
+          "pattern": "^doc_[a-f0-9]{24}$",
+          "title": "Document Id",
+          "type": "string"
+        },
+        "quote_indexes": {
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 1,
+          "title": "Quote Indexes",
+          "type": "array"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "document_id",
+        "claim_index",
+        "quote_indexes"
+      ],
+      "title": "ClaimRef",
+      "type": "object"
+    },
+    "DateValue": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Complete date in YYYY-MM-DD form. Use null when the day is not reported.",
+          "title": "Value"
+        }
+      },
+      "title": "DateValue",
+      "type": "object"
+    },
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "field": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Field",
+          "type": "string"
+        },
+        "locator": {
+          "default": "text",
+          "maxLength": 120,
+          "title": "Locator",
+          "type": "string"
+        },
+        "quote": {
+          "maxLength": 400,
+          "minLength": 3,
+          "title": "Quote",
+          "type": "string"
+        }
+      },
+      "required": [
+        "field",
+        "quote"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "MethodEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "document_id": {
+          "pattern": "^doc_[a-f0-9]{24}$",
+          "title": "Document Id",
+          "type": "string"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "quote": {
+          "minLength": 1,
+          "title": "Quote",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "section": {
+          "minLength": 1,
+          "title": "Section",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "record_id",
+        "document_id",
+        "quote",
+        "section"
+      ],
+      "title": "MethodEvidence",
+      "type": "object"
+    },
+    "ReviewConnection": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_keys": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Keys",
+          "type": "array"
+        },
+        "from_key": {
+          "title": "From Key",
+          "type": "string"
+        },
+        "to_key": {
+          "title": "To Key",
+          "type": "string"
+        }
+      },
+      "required": [
+        "from_key",
+        "to_key"
+      ],
+      "title": "ReviewConnection",
+      "type": "object"
+    },
+    "ReviewMember": {
+      "additionalProperties": false,
+      "properties": {
+        "annotation_key": {
+          "title": "Annotation Key",
+          "type": "string"
+        },
+        "evidence_keys": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Keys",
+          "type": "array"
+        }
+      },
+      "required": [
+        "annotation_key",
+        "evidence_keys"
+      ],
+      "title": "ReviewMember",
+      "type": "object"
+    },
+    "SeriesReview": {
+      "additionalProperties": false,
+      "properties": {
+        "connections": {
+          "items": {
+            "$ref": "#/$defs/ReviewConnection"
+          },
+          "title": "Connections",
+          "type": "array"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/MethodEvidence"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Limitations",
+          "type": "array"
+        },
+        "members": {
+          "items": {
+            "$ref": "#/$defs/ReviewMember"
+          },
+          "minItems": 1,
+          "title": "Members",
+          "type": "array"
+        },
+        "operation": {
+          "enum": [
+            "reported_interval_counts",
+            "cumulative_reporting_totals"
+          ],
+          "title": "Operation",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "scope": {
+          "minLength": 1,
+          "title": "Scope",
+          "type": "string"
+        },
+        "series_id": {
+          "minLength": 1,
+          "title": "Series Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "series_id",
+        "label",
+        "operation",
+        "scope",
+        "reason",
+        "limitations",
+        "reviewed_by",
+        "reviewed_at",
+        "members",
+        "connections",
+        "evidence"
+      ],
+      "title": "SeriesReview",
+      "type": "object"
+    },
+    "Status": {
+      "enum": [
+        "reported",
+        "not_reported",
+        "unknown",
+        "not_applicable",
+        "pending_verification",
+        "conflicting",
+        "not_extracted",
+        "not_comparable",
+        "access_restricted"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "TextValue": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "title": "TextValue",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contract_version": {
+      "enum": [
+        "0.1.0",
+        "0.2.0"
+      ],
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "measures": {
+      "items": {
+        "$ref": "#/$defs/CardMeasure"
+      },
+      "title": "Measures",
+      "type": "array"
+    },
+    "pending_candidate_count": {
+      "minimum": 0,
+      "title": "Pending Candidate Count",
+      "type": "integer"
+    },
+    "records_sha256": {
+      "title": "Records Sha256",
+      "type": "string"
+    },
+    "review_status": {
+      "const": "source_checked_draft",
+      "title": "Review Status",
+      "type": "string"
+    },
+    "reviewed_at": {
+      "title": "Reviewed At",
+      "type": "string"
+    },
+    "reviewed_by": {
+      "title": "Reviewed By",
+      "type": "string"
+    },
+    "scope": {
+      "title": "Scope",
+      "type": "string"
+    },
+    "series_reviews": {
+      "items": {
+        "$ref": "#/$defs/SeriesReview"
+      },
+      "title": "Series Reviews",
+      "type": "array"
+    }
+  },
+  "required": [
+    "contract_version",
+    "records_sha256",
+    "review_status",
+    "reviewed_by",
+    "reviewed_at",
+    "scope",
+    "measures",
+    "pending_candidate_count"
+  ],
+  "title": "MetricAnnotations",
+  "type": "object"
+}

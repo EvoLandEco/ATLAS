@@ -43,7 +43,7 @@ def chunks(text: str, size: int = 18000, overlap: int = 1000):
 class OpenAIExtractor:
     def __init__(self, model: str, max_output_tokens: int, client: httpx.Client | None = None):
         if not model.strip():
-            raise ValueError("Set EPIWEEKLY_MODEL to a model available in the deployment API project")
+            raise ValueError("Set ATLAS_MODEL to a model available in the deployment API project")
         self.model=model;self.max_output_tokens=max_output_tokens
         self.client=client or httpx.Client(timeout=120,follow_redirects=False)
 

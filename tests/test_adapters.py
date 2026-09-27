@@ -1,12 +1,12 @@
 import json,io
 import httpx,pytest
 from pypdf import PdfWriter
-from epiweekly.sources import Fetcher,SourceError,parse_date,parse_feed,html_text,pdf_text,collect,discover,save_document
-from epiweekly.extraction import OpenAIExtractor,strict_schema,chunks,extract_pending
-from epiweekly.models import Extraction
-from epiweekly.demo import sample_mention,add_example
-from epiweekly.config import load_config
-from epiweekly.util import canonical_url
+from atlas.sources import Fetcher,SourceError,parse_date,parse_feed,html_text,pdf_text,collect,discover,save_document
+from atlas.extraction import OpenAIExtractor,strict_schema,chunks,extract_pending
+from atlas.models import Extraction
+from atlas.demo import sample_mention,add_example
+from atlas.config import load_config
+from atlas.util import canonical_url
 from pathlib import Path
 
 
@@ -119,7 +119,7 @@ def test_chunk_coverage():
     assert all(end-start<=1200 for start,end,_ in parts)
 
 def test_configuration_contract():
-    c=load_config(Path('config/epiweekly.yaml'))
+    c=load_config(Path('config/atlas.yaml'))
     assert c['timezone']=='Europe/Amsterdam'
     assert next(s for s in c['sources'] if s['id']=='beacon')['adapter']=='manual'
 
@@ -153,7 +153,7 @@ def test_budget_queue_and_cached_model_result(store,config,monkeypatch):
         def extract(self,text,document):
             calls.append(document['title'])
             return Extraction(outcome='no_relevant_content'),{'model':'fixture','response_id':'fixture-result'}
-    from epiweekly import extraction
+    from atlas import extraction
     monkeypatch.setattr(extraction,'OpenAIExtractor',Agent)
     config['limits']['max_model_calls']=1
     for i in range(2):

@@ -1,16 +1,31 @@
 import json
 from pathlib import Path
-from epiweekly.cli import execute,parser
-from epiweekly.util import write_json,read_json
-from epiweekly.demo import sample_mention
+from atlas.cli import execute,parser
+from atlas.util import write_json,read_json
+from atlas.demo import sample_mention
+
+
+def test_atlas_command_configuration(monkeypatch):
+    monkeypatch.setenv('ATLAS_PROVIDER', 'codex')
+    monkeypatch.setenv('ATLAS_MODEL', 'test-model')
+    cli = parser()
+    assert cli.prog == 'atlas'
+    for command in ('run', 'extract'):
+        args = cli.parse_args([command])
+        assert args.config == Path('config/atlas.yaml')
+        assert args.provider == 'codex'
+        assert args.model == 'test-model'
+    args = cli.parse_args(['extract', '--provider', 'none', '--model', 'explicit-model'])
+    assert args.provider == 'none'
+    assert args.model == 'explicit-model'
 
 
 def test_cli_editorial_installation_path(tmp_path, monkeypatch):
-    monkeypatch.setattr("epiweekly.config.utcnow",lambda:"2026-09-25T12:00:00Z")
+    monkeypatch.setattr("atlas.config.utcnow",lambda:"2026-09-25T12:00:00Z")
     state=tmp_path/'state'
     def command(*args):return execute(parser().parse_args(['--state',str(state),*args]))
     assert command('init')['ledger']['records']==0
-    assert command('doctor')['source_count']==7
+    assert command('doctor')['source_count']==12
     doc=read_json(Path('examples/import/document.json'));m=sample_mention(12)
     doc['published_at']='2026-09-18'
     path=tmp_path/'document.json';write_json(path,doc)

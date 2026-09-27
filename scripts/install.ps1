@@ -9,5 +9,5 @@ if ($LASTEXITCODE -ne 0) { throw "Dependency installation failed" }
 if ($LASTEXITCODE -ne 0) { throw "Package installation failed" }
 & .\.venv\Scripts\python.exe -m pytest -q
 if ($LASTEXITCODE -ne 0) { throw "Tests failed" }
-& .\.venv\Scripts\python.exe -m epiweekly.cli doctor
+& .\.venv\Scripts\python.exe -m atlas.cli doctor
 Write-Host "Activate with: .\.venv\Scripts\Activate.ps1"

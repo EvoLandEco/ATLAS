@@ -1,5 +1,5 @@
 import pytest
-from epiweekly import sources
+from atlas import sources
 
 
 class Pages:
@@ -60,7 +60,7 @@ def test_robots_query_rules_wildcards_and_merged_groups():
     policy='User-agent: *\nDisallow: /nieuws?\n\nUser-agent: *\nDisallow: /private/*\nAllow: /private/public$\n'
     def handler(req):
         return httpx.Response(200,text=policy if req.url.path=='/robots.txt' else 'feed')
-    f=sources.Fetcher(['example.org'],user_agent='EpiWeekly',min_interval=0,
+    f=sources.Fetcher(['example.org'],user_agent='ATLAS',min_interval=0,
                       client=httpx.Client(transport=httpx.MockTransport(handler)),resolve=lambda host:None)
     assert f.get('https://example.org/nieuws/rss.xml')[0]==b'feed'
     assert f.get('https://example.org/private/public')[0]==b'feed'
@@ -182,7 +182,7 @@ def test_parser_revision_does_not_reuse_stale_conditional_text(store,monkeypatch
 
 def test_rivm_publication_date_is_separate_from_modification_date(store):
     from pathlib import Path
-    from epiweekly.config import load_config
+    from atlas.config import load_config
     config=load_config(Path('config/backfill.yaml'))
     source=next(s for s in config['sources'] if s['id']=='rivm')
     url='https://www.rivm.nl/nieuws/example'
@@ -190,3 +190,54 @@ def test_rivm_publication_date_is_separate_from_modification_date(store):
     did=sources.retrieve_entry(store,source,{'url':url,'modified_at':'2026-09-24'},pages)
     p=store.get(did)['payload']
     assert p['published_at']=='2026-05-07' and p['modified_at']=='2026-09-24'
+
+
+def test_explicit_download_link_requires_pdf_bytes(store,monkeypatch):
+    source={'id':'regional','attachment_selector':'a.download'}
+    url='https://example.org/report'
+    pages=Pages({url:'<h1>Bulletin</h1><a class="download" href="/bitstream/download">Download</a>',
+                 'https://example.org/bitstream/download':'<html>Repository shell</html>'})
+    with pytest.raises(sources.SourceError,match='PDF'):
+        sources.retrieve_entry(store,source,{'url':url},pages)
+    assert not store.records('document')
+    pages.pages['https://example.org/bitstream/download']='%PDF-test'
+    monkeypatch.setattr(sources,'pdf_text',lambda raw:('Evidence. '*30,'text_ready'))
+    did=sources.retrieve_entry(store,source,{'url':url},pages)
+    assert store.get(did)['payload']['content_url'].endswith('/download')
+
+
+def test_ncdc_series_keep_dates_and_report_invalid_labels():
+    source={'adapter':'ncdc_sitreps','index_url':'https://example.org/diseases/sitreps'}
+    pages=Pages({source['index_url']:'<a href="/diseases/sitreps/?cat=5">Lassa</a>',
+        'https://example.org/diseases/sitreps/?cat=5':'''<table><tbody>
+        <tr><td>1</td><td>Lassa week 35</td><td><a href="/new.pdf" download="Lassa_050926_35.pdf"></a></td></tr>
+        <tr><td>2</td><td>Lassa old</td><td><a href="/old.pdf" download="Lassa_010126_1.pdf"></a></td></tr>
+        <tr><td>3</td><td>Undated</td><td><a href="/unknown.pdf" download="Lassa_000000_0.pdf"></a></td></tr>
+        </tbody></table>'''})
+    entries,notes=sources.discover(source,pages,'2026-06-26',{'max_index_pages':20})
+    assert len(entries)==1 and entries[0]['published_at']=='2026-09-05'
+    assert entries[0]['title']=='Lassa week 35'
+    assert any('date_invalid' in n for n in notes)
+    pages.pages[source['index_url']]+='<a href="/diseases/sitreps/?cat=8">Mpox</a>'
+    pages.pages['https://example.org/diseases/sitreps/?cat=8']='<h1>No report table</h1>'
+    entries,notes=sources.discover(source,pages,'2026-06-26',{'max_index_pages':20})
+    assert len(entries)==1 and any('series_unavailable:' in n for n in notes)
+
+
+def test_who_situation_archive_dates_and_download(store,monkeypatch):
+    import json
+    from urllib.parse import urlencode
+    source={'id':'who_sitreps','adapter':'who_sitreps','index_url':'https://example.org/api',
+            'publication_base':'https://example.org/publications/m/item/','query':{'$orderby':'PublicationDateAndTime desc'}}
+    item={'ItemDefaultUrl':'/bulletin','Title':'Bulletin','PublicationDateAndTime':'2026-09-20T00:00:00Z',
+          'LastModified':'2026-09-21T00:00:00Z','DownloadUrl':'https://example.org/bulletin.pdf'}
+    url=source['index_url']+'?'+urlencode({**source['query'],'$top':50,'$skip':0})
+    pages=Pages({url:json.dumps({'value':[item]}),item['DownloadUrl']:'%PDF-test'})
+    entries,notes=sources.discover(source,pages,'2026-06-26',{})
+    assert len(entries)==1 and not notes and entries[0]['url']=='https://example.org/publications/m/item/bulletin'
+    monkeypatch.setattr(sources,'pdf_text',lambda raw:('Evidence. '*30,'text_ready'))
+    did=sources.retrieve_entry(store,source,entries[0],pages)
+    assert store.get(did)['payload']['content_url']==item['DownloadUrl']
+    assert store.get(did)['payload']['modified_at']==item['LastModified']
+    with pytest.raises(sources.SourceError,match='no published PDF'):
+        sources.retrieve_entry(store,source,{**entries[0],'download_url':None},pages)

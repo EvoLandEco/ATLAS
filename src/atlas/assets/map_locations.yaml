@@ -1,0 +1,994 @@
+code_mapping: Valid ISO_A2 and ISO 3166-1 alpha-3 ADM0_A3 identifiers mapped to alpha-2
+  reporting locations; non-ISO features excluded.
+license: Public domain
+locations:
+  AD:
+    label: Andorra
+    latitude: 42.547643
+    longitude: 1.539409
+  AE:
+    label: United Arab Emirates
+    latitude: 23.466285
+    longitude: 54.547256
+  AF:
+    label: Afghanistan
+    latitude: 34.164262
+    longitude: 66.496586
+  AG:
+    label: Antigua and Barbuda
+    latitude: 17.352249
+    longitude: -61.790612
+  AI:
+    label: Anguilla
+    latitude: 18.242979
+    longitude: -63.026361
+  AL:
+    label: Albania
+    latitude: 40.654855
+    longitude: 20.11384
+  AM:
+    label: Armenia
+    latitude: 40.459077
+    longitude: 44.800564
+  AO:
+    label: Angola
+    latitude: -12.182762
+    longitude: 17.984249
+  AQ:
+    label: Antarctica
+    latitude: -79.843222
+    longitude: 35.885455
+  AR:
+    label: Argentina
+    latitude: -33.501159
+    longitude: -64.173331
+  AS:
+    label: American Samoa
+    latitude: -14.32671
+    longitude: -170.747153
+  AT:
+    label: Austria
+    latitude: 47.518859
+    longitude: 14.130515
+  AU:
+    label: Australia
+    latitude: -24.129522
+    longitude: 134.04972
+  AW:
+    label: Aruba
+    latitude: 12.5174
+    longitude: -69.972795
+  AX:
+    label: Åland
+    latitude: 60.156467
+    longitude: 19.869671
+  AZ:
+    label: Azerbaijan
+    latitude: 40.402387
+    longitude: 47.210994
+  BA:
+    label: Bosnia and Herzegovina
+    latitude: 44.091051
+    longitude: 18.06841
+  BB:
+    label: Barbados
+    latitude: 13.163709
+    longitude: -59.568966
+  BD:
+    label: Bangladesh
+    latitude: 24.214956
+    longitude: 89.684963
+  BE:
+    label: Belgium
+    latitude: 50.785392
+    longitude: 4.800448
+  BF:
+    label: Burkina Faso
+    latitude: 12.673048
+    longitude: -1.36388
+  BG:
+    label: Bulgaria
+    latitude: 42.508785
+    longitude: 25.15709
+  BH:
+    label: Bahrain
+    latitude: 26.055972
+    longitude: 50.554816
+  BI:
+    label: Burundi
+    latitude: -3.332836
+    longitude: 29.917086
+  BJ:
+    label: Benin
+    latitude: 10.324775
+    longitude: 2.352018
+  BL:
+    label: Saint Barthélemy
+    latitude: 17.901987
+    longitude: -62.833193
+  BM:
+    label: Bermuda
+    latitude: 32.296592
+    longitude: -64.763573
+  BN:
+    label: Brunei
+    latitude: 4.448298
+    longitude: 114.551943
+  BO:
+    label: Bolivia
+    latitude: -16.666015
+    longitude: -64.593433
+  BQ:
+    label: Caribbean Netherlands
+    latitude: 17.5438
+    longitude: -63.1334
+  BR:
+    label: Brazil
+    latitude: -12.098687
+    longitude: -49.55945
+  BS:
+    label: The Bahamas
+    latitude: 26.401789
+    longitude: -77.146688
+  BT:
+    label: Bhutan
+    latitude: 27.536685
+    longitude: 90.040294
+  BW:
+    label: Botswana
+    latitude: -22.102634
+    longitude: 24.179216
+  BY:
+    label: Belarus
+    latitude: 53.821888
+    longitude: 28.417701
+  BZ:
+    label: Belize
+    latitude: 17.202068
+    longitude: -88.712962
+  CA:
+    label: Canada
+    latitude: 60.324287
+    longitude: -101.9107
+  CC:
+    label: Cocos
+    latitude: -12.159615
+    longitude: 96.830147
+  CD:
+    label: Democratic Republic of the Congo
+    latitude: -1.858167
+    longitude: 23.458829
+  CF:
+    label: Central African Republic
+    latitude: 6.989681
+    longitude: 20.906897
+  CG:
+    label: Republic of the Congo
+    latitude: 0.142331
+    longitude: 15.9005
+  CH:
+    label: Switzerland
+    latitude: 46.719114
+    longitude: 7.463965
+  CI:
+    label: Ivory Coast
+    latitude: 7.49139
+    longitude: -5.568618
+  CK:
+    label: Cook Islands
+    latitude: -21.215993
+    longitude: -159.785675
+  CL:
+    label: Chile
+    latitude: -38.151771
+    longitude: -72.318871
+  CM:
+    label: Cameroon
+    latitude: 4.585041
+    longitude: 12.473488
+  CN:
+    label: China
+    latitude: 32.498178
+    longitude: 106.337289
+  CO:
+    label: Colombia
+    latitude: 3.373111
+    longitude: -73.174347
+  CR:
+    label: Costa Rica
+    latitude: 10.0651
+    longitude: -84.077922
+  CU:
+    label: Cuba
+    latitude: 21.334024
+    longitude: -77.975855
+  CV:
+    label: Cape Verde
+    latitude: 15.074761
+    longitude: -23.639434
+  CW:
+    label: Curaçao
+    latitude: 12.145039
+    longitude: -68.920578
+  CX:
+    label: Christmas Island
+    latitude: -10.490789
+    longitude: 105.67259
+  CY:
+    label: Cyprus
+    latitude: 34.913329
+    longitude: 33.084182
+  CZ:
+    label: Czech Republic
+    latitude: 49.882364
+    longitude: 15.377555
+  DE:
+    label: Germany
+    latitude: 50.961733
+    longitude: 9.678348
+  DJ:
+    label: Djibouti
+    latitude: 11.976343
+    longitude: 42.498825
+  DK:
+    label: Denmark
+    latitude: 55.966965
+    longitude: 9.018163
+  DM:
+    label: Dominica
+    latitude: 15.458829
+    longitude: -61.344958
+  DO:
+    label: Dominican Republic
+    latitude: 19.104137
+    longitude: -70.653998
+  DZ:
+    label: Algeria
+    latitude: 27.397406
+    longitude: 2.808241
+  EC:
+    label: Ecuador
+    latitude: -1.259076
+    longitude: -78.188375
+  EE:
+    label: Estonia
+    latitude: 58.724865
+    longitude: 25.867126
+  EG:
+    label: Egypt
+    latitude: 26.186173
+    longitude: 29.445837
+  EH:
+    label: Western Sahara
+    latitude: 23.967592
+    longitude: -12.630304
+  ER:
+    label: Eritrea
+    latitude: 15.787401
+    longitude: 38.285566
+  ES:
+    label: Spain
+    latitude: 40.090953
+    longitude: -3.464718
+  ET:
+    label: Ethiopia
+    latitude: 8.032795
+    longitude: 39.0886
+  FI:
+    label: Finland
+    latitude: 63.252361
+    longitude: 27.276449
+  FJ:
+    label: Fiji
+    latitude: -17.826099
+    longitude: 177.975427
+  FK:
+    label: Falkland Islands
+    latitude: -51.608913
+    longitude: -58.738602
+  FM:
+    label: Federated States of Micronesia
+    latitude: 6.887553
+    longitude: 158.234019
+  FO:
+    label: Faroe Islands
+    latitude: 62.185604
+    longitude: -7.058429
+  FR:
+    label: France
+    latitude: 46.696113
+    longitude: 2.552275
+  GA:
+    label: Gabon
+    latitude: -0.437739
+    longitude: 11.835939
+  GB:
+    label: United Kingdom
+    latitude: 54.402739
+    longitude: -2.116346
+  GD:
+    label: Grenada
+    latitude: 12.113156
+    longitude: -61.680461
+  GE:
+    label: Georgia
+    latitude: 41.870087
+    longitude: 43.735724
+  GF:
+    label: French Guiana
+    latitude: 3.999223
+    longitude: -53.068349
+  GG:
+    label: Guernsey
+    latitude: 49.463533
+    longitude: -2.561736
+  GH:
+    label: Ghana
+    latitude: 7.717639
+    longitude: -1.036941
+  GL:
+    label: Greenland
+    latitude: 74.319387
+    longitude: -39.335251
+  GM:
+    label: The Gambia
+    latitude: 13.641721
+    longitude: -14.998318
+  GN:
+    label: Guinea
+    latitude: 10.618516
+    longitude: -10.016402
+  GP:
+    label: Guadeloupe
+    latitude: 16.299332
+    longitude: -61.433565
+  GQ:
+    label: Equatorial Guinea
+    latitude: 2.333
+    longitude: 8.9902
+  GR:
+    label: Greece
+    latitude: 39.492763
+    longitude: 21.72568
+  GS:
+    label: South Georgia and the South Sandwich Islands
+    latitude: -55.683402
+    longitude: -31.063179
+  GT:
+    label: Guatemala
+    latitude: 14.982133
+    longitude: -90.497134
+  GU:
+    label: Guam
+    latitude: 13.354173
+    longitude: 144.703614
+  GW:
+    label: Guinea-Bissau
+    latitude: 12.163712
+    longitude: -14.52413
+  GY:
+    label: Guyana
+    latitude: 5.124317
+    longitude: -58.942643
+  HK:
+    label: Hong Kong
+    latitude: 22.448829
+    longitude: 114.097769
+  HM:
+    label: Heard Island and McDonald Islands
+    latitude: -53.103462
+    longitude: 73.50521
+  HN:
+    label: Honduras
+    latitude: 14.794801
+    longitude: -86.887604
+  HR:
+    label: Croatia
+    latitude: 45.805799
+    longitude: 16.37241
+  HT:
+    label: Haiti
+    latitude: 19.263784
+    longitude: -72.224051
+  HU:
+    label: Hungary
+    latitude: 47.086841
+    longitude: 19.447867
+  ID:
+    label: Indonesia
+    latitude: -0.954404
+    longitude: 101.892949
+  IE:
+    label: Ireland
+    latitude: 53.078726
+    longitude: -7.798588
+  IL:
+    label: Israel
+    latitude: 30.911148
+    longitude: 34.847915
+  IM:
+    label: Isle of Man
+    latitude: 54.220833
+    longitude: -4.530069
+  IN:
+    label: India
+    latitude: 22.686852
+    longitude: 79.358105
+  IO:
+    label: British Indian Ocean Territory
+    latitude: -6.190826
+    longitude: 71.348349
+  IQ:
+    label: Iraq
+    latitude: 33.09403
+    longitude: 43.26181
+  IR:
+    label: Iran
+    latitude: 32.166225
+    longitude: 54.931495
+  IS:
+    label: Iceland
+    latitude: 64.779286
+    longitude: -18.673711
+  IT:
+    label: Italy
+    latitude: 44.732482
+    longitude: 11.076907
+  JE:
+    label: Jersey
+    latitude: 49.220808
+    longitude: -2.090146
+  JM:
+    label: Jamaica
+    latitude: 18.137124
+    longitude: -77.318767
+  JO:
+    label: Jordan
+    latitude: 30.805025
+    longitude: 36.375991
+  JP:
+    label: Japan
+    latitude: 36.142538
+    longitude: 138.44217
+  KE:
+    label: Kenya
+    latitude: 0.549043
+    longitude: 37.907632
+  KG:
+    label: Kyrgyzstan
+    latitude: 41.66854
+    longitude: 74.532637
+  KH:
+    label: Cambodia
+    latitude: 12.647584
+    longitude: 104.50487
+  KI:
+    label: Kiribati
+    latitude: 1.820437
+    longitude: -157.384577
+  KM:
+    label: Comoros
+    latitude: -11.727683
+    longitude: 43.318094
+  KN:
+    label: Saint Kitts and Nevis
+    latitude: 17.336558
+    longitude: -62.757975
+  KP:
+    label: North Korea
+    latitude: 39.885252
+    longitude: 126.444516
+  KR:
+    label: South Korea
+    latitude: 36.384924
+    longitude: 128.129504
+  KW:
+    label: Kuwait
+    latitude: 29.413628
+    longitude: 47.313999
+  KY:
+    label: Cayman Islands
+    latitude: 19.319862
+    longitude: -81.24055
+  KZ:
+    label: Kazakhstan
+    latitude: 49.054149
+    longitude: 68.685548
+  LA:
+    label: Laos
+    latitude: 19.431821
+    longitude: 102.533912
+  LB:
+    label: Lebanon
+    latitude: 34.133368
+    longitude: 35.992892
+  LC:
+    label: Saint Lucia
+    latitude: 13.892371
+    longitude: -60.980094
+  LI:
+    label: Liechtenstein
+    latitude: 47.111405
+    longitude: 9.559439
+  LK:
+    label: Sri Lanka
+    latitude: 7.581097
+    longitude: 80.704823
+  LR:
+    label: Liberia
+    latitude: 6.447177
+    longitude: -9.460379
+  LS:
+    label: Lesotho
+    latitude: -29.480158
+    longitude: 28.246639
+  LT:
+    label: Lithuania
+    latitude: 55.103703
+    longitude: 24.089932
+  LU:
+    label: Luxembourg
+    latitude: 49.733732
+    longitude: 6.07762
+  LV:
+    label: Latvia
+    latitude: 57.066872
+    longitude: 25.458723
+  LY:
+    label: Libya
+    latitude: 26.638944
+    longitude: 18.011015
+  MA:
+    label: Morocco
+    latitude: 31.650723
+    longitude: -7.187296
+  MC:
+    label: Monaco
+    latitude: 43.739652
+    longitude: 7.398291
+  MD:
+    label: Moldova
+    latitude: 47.434999
+    longitude: 28.487904
+  ME:
+    label: Montenegro
+    latitude: 42.803101
+    longitude: 19.143727
+  MF:
+    label: Saint Martin
+    latitude: 18.081302
+    longitude: -63.049399
+  MG:
+    label: Madagascar
+    latitude: -18.628288
+    longitude: 46.704241
+  MH:
+    label: Marshall Islands
+    latitude: 7.082568
+    longitude: 171.193609
+  MK:
+    label: North Macedonia
+    latitude: 41.558223
+    longitude: 21.555839
+  ML:
+    label: Mali
+    latitude: 18.692713
+    longitude: -2.038455
+  MM:
+    label: Myanmar
+    latitude: 21.573855
+    longitude: 95.804497
+  MN:
+    label: Mongolia
+    latitude: 45.997488
+    longitude: 104.150405
+  MO:
+    label: Macau
+    latitude: 22.129735
+    longitude: 113.556038
+  MP:
+    label: Northern Mariana Islands
+    latitude: 15.188188
+    longitude: 145.734397
+  MQ:
+    label: Martinique
+    latitude: 14.711979
+    longitude: -61.055657
+  MR:
+    label: Mauritania
+    latitude: 19.587062
+    longitude: -9.740299
+  MS:
+    label: Montserrat
+    latitude: 16.73717
+    longitude: -62.188252
+  MT:
+    label: Malta
+    latitude: 35.892886
+    longitude: 14.433005
+  MU:
+    label: Mauritius
+    latitude: -20.299506
+    longitude: 57.565848
+  MV:
+    label: Maldives
+    latitude: 4.174441
+    longitude: 73.507554
+  MW:
+    label: Malawi
+    latitude: -13.386737
+    longitude: 33.608082
+  MX:
+    label: Mexico
+    latitude: 23.919988
+    longitude: -102.289448
+  MY:
+    label: Malaysia
+    latitude: 2.528667
+    longitude: 113.83708
+  MZ:
+    label: Mozambique
+    latitude: -13.94323
+    longitude: 37.83789
+  NA:
+    label: Namibia
+    latitude: -20.575298
+    longitude: 17.108166
+  NC:
+    label: New Caledonia
+    latitude: -21.064697
+    longitude: 165.084004
+  NE:
+    label: Niger
+    latitude: 17.446195
+    longitude: 9.504356
+  NF:
+    label: Norfolk Island
+    latitude: -29.033042
+    longitude: 167.954531
+  NG:
+    label: Nigeria
+    latitude: 9.439799
+    longitude: 7.50322
+  NI:
+    label: Nicaragua
+    latitude: 12.670697
+    longitude: -85.069347
+  NL:
+    label: Netherlands
+    latitude: 52.422211
+    longitude: 5.61144
+  'NO':
+    label: Norway
+    latitude: 61.357092
+    longitude: 9.679975
+  NP:
+    label: Nepal
+    latitude: 28.297925
+    longitude: 83.639914
+  NR:
+    label: Nauru
+    latitude: -0.520261
+    longitude: 166.932644
+  NU:
+    label: Niue
+    latitude: -19.045956
+    longitude: -169.862565
+  NZ:
+    label: New Zealand
+    latitude: -39.759
+    longitude: 172.787
+  OM:
+    label: Oman
+    latitude: 22.120427
+    longitude: 57.336553
+  PA:
+    label: Panama
+    latitude: 8.72198
+    longitude: -80.352106
+  PE:
+    label: Peru
+    latitude: -12.976679
+    longitude: -72.90016
+  PF:
+    label: French Polynesia
+    latitude: -17.628081
+    longitude: -149.46157
+  PG:
+    label: Papua New Guinea
+    latitude: -5.695285
+    longitude: 143.910216
+  PH:
+    label: Philippines
+    latitude: 11.198
+    longitude: 122.465
+  PK:
+    label: Pakistan
+    latitude: 29.328389
+    longitude: 68.545632
+  PL:
+    label: Poland
+    latitude: 51.990316
+    longitude: 19.490468
+  PM:
+    label: Saint Pierre and Miquelon
+    latitude: 47.040344
+    longitude: -56.332352
+  PN:
+    label: Pitcairn Islands
+    latitude: -24.364576
+    longitude: -128.317536
+  PR:
+    label: Puerto Rico
+    latitude: 18.234668
+    longitude: -66.481065
+  PS:
+    label: Palestine
+    latitude: 32.047431
+    longitude: 35.291341
+  PT:
+    label: Portugal
+    latitude: 39.606675
+    longitude: -8.271754
+  PW:
+    label: Palau
+    latitude: 7.518252
+    longitude: 134.580157
+  PY:
+    label: Paraguay
+    latitude: -21.674509
+    longitude: -60.146394
+  QA:
+    label: Qatar
+    latitude: 25.237383
+    longitude: 51.143509
+  RE:
+    label: Réunion
+    latitude: -21.113488
+    longitude: 55.535699
+  RO:
+    label: Romania
+    latitude: 45.733237
+    longitude: 24.972624
+  RS:
+    label: Serbia
+    latitude: 44.189919
+    longitude: 20.787989
+  RU:
+    label: Russia
+    latitude: 58.249357
+    longitude: 44.686469
+  RW:
+    label: Rwanda
+    latitude: -1.897196
+    longitude: 30.103894
+  SA:
+    label: Saudi Arabia
+    latitude: 23.806908
+    longitude: 44.6996
+  SB:
+    label: Solomon Islands
+    latitude: -8.029548
+    longitude: 159.170468
+  SC:
+    label: Seychelles
+    latitude: -4.676659
+    longitude: 55.480175
+  SD:
+    label: Sudan
+    latitude: 16.330746
+    longitude: 29.260657
+  SE:
+    label: Sweden
+    latitude: 65.85918
+    longitude: 19.01705
+  SG:
+    label: Singapore
+    latitude: 1.366587
+    longitude: 103.816925
+  SH:
+    label: Saint Helena
+    latitude: -15.950487
+    longitude: -5.71262
+  SI:
+    label: Slovenia
+    latitude: 46.06076
+    longitude: 14.915312
+  SJ:
+    label: Svalbard
+    latitude: 78.778287
+    longitude: 18.080737
+  SK:
+    label: Slovakia
+    latitude: 48.734044
+    longitude: 19.049868
+  SL:
+    label: Sierra Leone
+    latitude: 8.617449
+    longitude: -11.763677
+  SM:
+    label: San Marino
+    latitude: 43.933916
+    longitude: 12.441206
+  SN:
+    label: Senegal
+    latitude: 15.138125
+    longitude: -14.778586
+  SO:
+    label: Somalia
+    latitude: 3.568925
+    longitude: 45.19238
+  SR:
+    label: Suriname
+    latitude: 4.143987
+    longitude: -55.91094
+  SS:
+    label: South Sudan
+    latitude: 7.230477
+    longitude: 30.390151
+  ST:
+    label: São Tomé and Príncipe
+    latitude: 0.9709
+    longitude: 7.021
+  SV:
+    label: El Salvador
+    latitude: 13.685371
+    longitude: -88.890124
+  SX:
+    label: Sint Maarten
+    latitude: 18.04088
+    longitude: -63.070133
+  SY:
+    label: Syria
+    latitude: 35.006636
+    longitude: 38.277783
+  SZ:
+    label: Eswatini
+    latitude: -26.533676
+    longitude: 31.467264
+  TC:
+    label: Turks and Caicos Islands
+    latitude: 21.81663
+    longitude: -71.752704
+  TD:
+    label: Chad
+    latitude: 15.142959
+    longitude: 18.645041
+  TF:
+    label: French Southern and Antarctic Lands
+    latitude: -49.303721
+    longitude: 69.122136
+  TG:
+    label: Togo
+    latitude: 8.80722
+    longitude: 1.058113
+  TH:
+    label: Thailand
+    latitude: 15.45974
+    longitude: 101.073198
+  TJ:
+    label: Tajikistan
+    latitude: 38.199835
+    longitude: 72.587276
+  TK:
+    label: Tokelau
+    latitude: -8.561824
+    longitude: -172.48629
+  TL:
+    label: East Timor
+    latitude: -8.803705
+    longitude: 125.854679
+  TM:
+    label: Turkmenistan
+    latitude: 39.855246
+    longitude: 58.676647
+  TN:
+    label: Tunisia
+    latitude: 33.687263
+    longitude: 9.007881
+  TO:
+    label: Tonga
+    latitude: -21.210026
+    longitude: -175.163014
+  TR:
+    label: Turkey
+    latitude: 39.345388
+    longitude: 34.508268
+  TT:
+    label: Trinidad and Tobago
+    latitude: 10.9989
+    longitude: -60.9184
+  TV:
+    label: Tuvalu
+    latitude: -8.513717
+    longitude: 179.209587
+  TW:
+    label: Taiwan
+    latitude: 23.652408
+    longitude: 120.868204
+  TZ:
+    label: Tanzania
+    latitude: -6.051866
+    longitude: 34.959183
+  UA:
+    label: Ukraine
+    latitude: 49.724739
+    longitude: 32.140865
+  UG:
+    label: Uganda
+    latitude: 1.972589
+    longitude: 32.948555
+  US:
+    label: United States of America
+    latitude: 39.538479
+    longitude: -97.482602
+  UY:
+    label: Uruguay
+    latitude: -32.961127
+    longitude: -55.966942
+  UZ:
+    label: Uzbekistan
+    latitude: 41.693603
+    longitude: 64.005429
+  VA:
+    label: Vatican City
+    latitude: 41.903323
+    longitude: 12.453418
+  VC:
+    label: Saint Vincent and the Grenadines
+    latitude: 13.0879
+    longitude: -61.3359
+  VE:
+    label: Venezuela
+    latitude: 7.182476
+    longitude: -64.599381
+  VG:
+    label: British Virgin Islands
+    latitude: 18.426606
+    longitude: -64.63661
+  VI:
+    label: United States Virgin Islands
+    latitude: 17.746706
+    longitude: -64.779172
+  VN:
+    label: Vietnam
+    latitude: 21.715416
+    longitude: 105.387292
+  VU:
+    label: Vanuatu
+    latitude: -15.37153
+    longitude: 166.908762
+  WF:
+    label: Wallis and Futuna
+    latitude: -14.286415
+    longitude: -178.137436
+  WS:
+    label: Samoa
+    latitude: -13.639139
+    longitude: -172.438241
+  YE:
+    label: Yemen
+    latitude: 15.328226
+    longitude: 45.874383
+  YT:
+    label: Mayotte
+    latitude: -12.774755
+    longitude: 45.151319
+  ZA:
+    label: South Africa
+    latitude: -29.708776
+    longitude: 23.665734
+  ZM:
+    label: Zambia
+    latitude: -14.660804
+    longitude: 26.395298
+  ZW:
+    label: Zimbabwe
+    latitude: -18.91164
+    longitude: 29.925444
+map_units_sha256: b8d421aca6e9e08e8cdf09cc26af111cc3e0deba4fe915611d58ade71e8a4db0
+map_units_source: https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_50m_admin_0_map_units.geojson
+precision: Natural Earth 1:50m reporting-location label reference point; not an outbreak
+  or infection site.
+source: https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/ne_50m_admin_0_countries.geojson
+source_sha256: 3e458fc036ad0a66411f2c1e6cac49c5d7bfb81cb1123bc513b22511a2b7fdeb

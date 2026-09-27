@@ -1,0 +1,245 @@
+{
+  "$defs": {
+    "Assessment": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "title": "Basis",
+          "type": "string"
+        },
+        "claim_index": {
+          "minimum": 0,
+          "title": "Claim Index",
+          "type": "integer"
+        },
+        "from_label": {
+          "title": "From Label",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "limit": {
+          "title": "Limit",
+          "type": "string"
+        },
+        "quote_index": {
+          "minimum": 0,
+          "title": "Quote Index",
+          "type": "integer"
+        },
+        "to_label": {
+          "title": "To Label",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "transmission",
+            "exposure",
+            "unresolved"
+          ],
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "claim_index",
+        "quote_index",
+        "type",
+        "label",
+        "from_label",
+        "to_label",
+        "basis",
+        "limit"
+      ],
+      "title": "Assessment",
+      "type": "object"
+    },
+    "Link": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "title": "Basis",
+          "type": "string"
+        },
+        "claim_index": {
+          "minimum": 0,
+          "title": "Claim Index",
+          "type": "integer"
+        },
+        "directed": {
+          "title": "Directed",
+          "type": "boolean"
+        },
+        "from_code": {
+          "title": "From Code",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "limit": {
+          "title": "Limit",
+          "type": "string"
+        },
+        "quote_index": {
+          "minimum": 0,
+          "title": "Quote Index",
+          "type": "integer"
+        },
+        "to_code": {
+          "title": "To Code",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "movement",
+            "shared_event",
+            "hypothesis"
+          ],
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "claim_index",
+        "quote_index",
+        "type",
+        "from_code",
+        "to_code",
+        "label",
+        "basis",
+        "limit",
+        "directed"
+      ],
+      "title": "Link",
+      "type": "object"
+    },
+    "Location": {
+      "additionalProperties": false,
+      "properties": {
+        "area_code": {
+          "title": "Area Code",
+          "type": "string"
+        },
+        "claim_index": {
+          "minimum": 0,
+          "title": "Claim Index",
+          "type": "integer"
+        },
+        "quote_index": {
+          "minimum": 0,
+          "title": "Quote Index",
+          "type": "integer"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "occurrence",
+            "travel_origin",
+            "travel_destination",
+            "exposure",
+            "context",
+            "reporting_scope"
+          ],
+          "title": "Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "claim_index",
+        "quote_index",
+        "area_code",
+        "role",
+        "reason"
+      ],
+      "title": "Location",
+      "type": "object"
+    },
+    "Review": {
+      "additionalProperties": false,
+      "properties": {
+        "assessments": {
+          "items": {
+            "$ref": "#/$defs/Assessment"
+          },
+          "title": "Assessments",
+          "type": "array"
+        },
+        "links": {
+          "items": {
+            "$ref": "#/$defs/Link"
+          },
+          "title": "Links",
+          "type": "array"
+        },
+        "locations": {
+          "items": {
+            "$ref": "#/$defs/Location"
+          },
+          "title": "Locations",
+          "type": "array"
+        },
+        "primary_area_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Primary Area Code"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "assessed",
+            "no_specific_location",
+            "unresolved"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "status",
+        "reason",
+        "primary_area_code",
+        "locations",
+        "links",
+        "assessments"
+      ],
+      "title": "Review",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "records": {
+      "items": {
+        "$ref": "#/$defs/Review"
+      },
+      "title": "Records",
+      "type": "array"
+    }
+  },
+  "required": [
+    "records"
+  ],
+  "title": "Reviews",
+  "type": "object"
+}

@@ -6,11 +6,11 @@ from typing import Literal
 from html import escape
 from collections import Counter
 from pydantic import Field,model_validator
-from epiweekly.models import StrictModel
-from epiweekly.codex import CodexExtractor
-from epiweekly.config import assets
-from epiweekly.semantics import norm
-from epiweekly.util import write_json,digest,utcnow
+from atlas.models import StrictModel
+from atlas.codex import CodexExtractor
+from atlas.config import assets
+from atlas.semantics import norm
+from atlas.util import write_json,digest,utcnow
 
 class Claim(StrictModel):
     text: str = Field(min_length=1,max_length=700)
@@ -56,7 +56,7 @@ def render(root,manifest,rows,active=None):
             'active':active,'usage':dict(total_tokens),
             'state':'running' if active else 'interrupted' if any(r['state']=='interrupted' for r in rows) else 'complete' if len(rows)==len(manifest['documents']) else 'incomplete'}
     write_json(root/'status.json',status)
-    body=f'<h1>EpiWeekly · One-month compact digest trial</h1><p>Source publication window: {manifest["window"][0]} through {manifest["window"][1]}. Captured sources only; no fresh collection.</p><p>{status["completed"]} completed, {status["failed"]} failed, {len(manifest["documents"])} selected publications.</p>'
+    body=f'<h1>ATLAS · One-month compact digest trial</h1><p>Source publication window: {manifest["window"][0]} through {manifest["window"][1]}. Captured sources only; no fresh collection.</p><p>{status["completed"]} completed, {status["failed"]} failed, {len(manifest["documents"])} selected publications.</p>'
     body+='<p>Run state: '+escape(status['state'])+'</p>'
     if active:body+='<p>Active: '+escape(active['title'])+' · started '+escape(active['started_at'])+'</p>'
     body+='<p>Model proposals require source review. Exact quote checks do not establish scientific accuracy. These results are separate from the accepted event registry.</p><p>Usage: '+escape(json.dumps(dict(total_tokens)))+'</p>'
@@ -75,8 +75,8 @@ def render(root,manifest,rows,active=None):
         if result.get('omitted_detail'):body+='<p>Detail omitted: '+escape('; '.join(result['omitted_detail']))+'</p>'
         if row.get('evidence_errors'):body+='<pre>'+escape(json.dumps(row['evidence_errors']))+'</pre>'
         body+='</article>'
-    from epiweekly.util import atomic_write
-    atomic_write(root/'index.html','<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="15"><title>EpiWeekly compact digest trial</title><style>body{font:17px/1.6 system-ui;max-width:1050px;margin:40px auto;padding:0 20px;color:#183441}article{border-top:1px solid #ccd8dd;padding:20px 0}blockquote{font-size:15px}pre{white-space:pre-wrap;overflow-wrap:anywhere}summary{cursor:pointer}</style><main>'+body+'</main></html>')
+    from atlas.util import atomic_write
+    atomic_write(root/'index.html','<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="15"><title>ATLAS compact digest trial</title><style>body{font:17px/1.6 system-ui;max-width:1050px;margin:40px auto;padding:0 20px;color:#183441}article{border-top:1px solid #ccd8dd;padding:20px 0}blockquote{font-size:15px}pre{white-space:pre-wrap;overflow-wrap:anywhere}summary{cursor:pointer}</style><main>'+body+'</main></html>')
 
 def run(state,out,start,end):
     if date.fromisoformat(start)>date.fromisoformat(end):raise ValueError('Publication window is reversed')

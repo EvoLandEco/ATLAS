@@ -34,7 +34,7 @@ def render_markdown(snapshot: dict) -> str:
         ids=sorted({updates[c]["document_id"] for c in candidate_ids if c in updates})
         return "; ".join(f"[{esc(docs[d]['source_id'])} · {esc(d[:12])}]({docs[d]['url']})" for d in ids) or "N/A (not_reported)"
     events=sorted(data["events"],key=lambda e:(e["update_class"]=="carried_forward",e["disease"],e["event_id"]))
-    lines=[f"# EpiWeekly | {meta['report_date']}",
+    lines=[f"# ATLAS | {meta['report_date']}",
            f"**{esc(meta['release_status'].upper())} · Experimental {esc(meta['software_version'])} · {esc(meta['timezone'])}**",
            f"Knowledge cutoff: `{meta['knowledge_cutoff']}`  \nReport ID: `{meta['report_id']}`"]
     if meta.get("dataset_mode")=="synthetic_demo":
@@ -126,4 +126,4 @@ p{margin:12px 0}table{border-collapse:collapse;width:100%;font-size:.88rem;table
 """
     return '<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'+\
       '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; base-uri \'none\'; form-action \'none\'">'+\
-      '<title>EpiWeekly '+snapshot["metadata"]["report_date"]+'</title><style>'+css+'</style></head><body><main>'+body+'</main></body></html>\n'
+      '<title>ATLAS '+snapshot["metadata"]["report_date"]+'</title><style>'+css+'</style></head><body><main>'+body+'</main></body></html>\n'

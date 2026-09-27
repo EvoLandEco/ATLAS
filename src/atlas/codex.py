@@ -27,7 +27,7 @@ class CodexExtractor:
     def extract(self, text: str, document: dict, diagnostics: Path | None = None, *, contract=Extraction, prompt: str | None = None):
         from .extraction import strict_schema
         if diagnostics is not None:diagnostics.mkdir(parents=True,exist_ok=False)
-        with (nullcontext(diagnostics) if diagnostics is not None else tempfile.TemporaryDirectory(prefix='epiweekly-extract-')) as directory:
+        with (nullcontext(diagnostics) if diagnostics is not None else tempfile.TemporaryDirectory(prefix='atlas-extract-')) as directory:
             root = Path(directory).resolve()
             schema, output = root/'schema.json', root/'result.json'
             write_json(schema, strict_schema(contract.model_json_schema()))

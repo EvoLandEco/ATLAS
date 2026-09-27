@@ -1,7 +1,7 @@
 import importlib.util
 from pathlib import Path
 
-from epiweekly.sources import save_document
+from atlas.sources import save_document
 
 
 def test_reading_archive_dates_and_escaping(store, tmp_path):
