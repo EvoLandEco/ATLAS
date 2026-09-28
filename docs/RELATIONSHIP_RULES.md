@@ -12,7 +12,11 @@ Every geographic link has a type, two named endpoints, location precision, a sou
 | Shared event | A source links cases in both places to the same named gathering or exposure event. | Green line without an arrow. |
 | Source hypothesis | A source proposes an epidemiological connection or common introduction mechanism and names both places. | Dashed brown line, with the source's uncertainty in the label and panel. |
 
+A shared vaccination campaign or response programme describes coordination. It does not by itself meet the shared-event rule, which requires cases linked to a common gathering or exposure.
+
 Travel arrows describe movement. Shared-event links describe a common association. Hypothesis lines preserve the source's proposed explanation. The panel provides the source quotation, dates and a question or limitation relevant to investigation.
+
+In foodborne investigations, an explicitly documented shipment of implicated food or ingredients can support a movement link. Name the transported material and supplier route in its label. Delivery establishes product movement; evidence of contamination, consumption and illness retains its own source assessment.
 
 Country and regional reference points retain their stated precision. A contextual endpoint may appear when a source names a place without supplying a separate report about it. Keep that endpoint separate from unrelated diseases reported in the same country. For example, the South Ubangi cholera context and DRC Bundibugyo reporting are separate topics even when both use a DRC reference point.
 

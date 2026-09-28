@@ -76,6 +76,12 @@ Write each export to an empty directory and run `atlas site-verify` before analy
 
 Supply the weekly workflow file when exporting schedule metadata. The next planned collection date is calculated from the snapshot's latest capture and the declared timezone. The metadata records scheduler activation as unverified; operational checks establish whether a scheduled run actually occurred. Publication depends on editorial review and approval.
 
+### Partial datasets for interface testing
+
+A validated partial dataset can support local interface development while evidence review is paused. Finish in-flight calls, hold further dispatch, and export the completed annotations into a separate directory. Retain the full record inventory and an entry-level worklist distinguishing source review, annotation completion and pending scientific questions. Record the exact snapshot, manifest, selector and type hashes, executed checks, resource usage and resume instructions alongside the bundle.
+
+Label the handoff as a partial local test candidate. The consumer can test panels, filters and evidence displays against that fixed export. Keep the adopted dataset and public pointer intact. Partial coverage does not complete a weekly job or authorize publication; unprocessed entries remain pending until review resumes.
+
 ## Approved public distribution
 The `publish-approved.yml` workflow reads a bundle and approval from private state, verifies their matching hashes, and creates a GitHub release containing the complete dataset and approval. Create a GitHub environment named `outbreak-publication` with required reviewers. The publishing job uses contents-write permission only for that operation. The workflow validates submitted paths against the private state directory before copying output.
 
@@ -84,11 +90,13 @@ The CLI approval records a named editor and exact bundle hash; repository permis
 ## Budgets and source checks
 Defaults limit each source to 18 documents per run, each response to 16 MB, extraction attempts to 36, and source input to 650,000 characters. The API provider requests at most 10,000 output tokens per call. The Codex provider allows 1,200 seconds per invocation and accepts a final JSON file up to 1,000,000 bytes, configured through `codex_timeout_seconds` and `codex_output_bytes` under `limits`.
 
-For Codex, `max_model_calls` counts CLI invocations, not internal model requests; the CLI can make multiple requests in one invocation. The byte limit validates the returned JSON and is not a token spending cap. Subscription limits still apply. API cost depends on model pricing and usage; set the API project's spending limit separately. Begin with a two-attempt budget and compare extracted claims with source text. Failed and budget-exhausted chunks remain in the extraction queue.
+For Codex, `max_model_calls` counts CLI invocations, not internal model requests; the CLI can make multiple requests in one invocation. The byte limit validates the returned JSON and is not a token spending cap. Subscription limits still apply. API cost depends on model pricing and usage; set the API project's spending limit separately. Begin with a two-attempt budget and compare extracted claims with source text. Failed and budget-exhausted chunks remain in the extraction queue. Preserve the result file and event log when a review fails. Separate a missing model response from a schema or evidence-reference error in a completed response. A recorded source review can repair a reference or encoding error without another model call; retain the original output and validate the derived result. For a timeout, inspect connection errors and input/output size before assigning a bounded retry. Report unavailable usage for interrupted calls as unknown.
 
 Review core-source failures, extraction backlog, stale source publication dates, contradictory totals, and ambiguous identity matches each Wednesday. `documents_with_some_extraction` indicates that at least one extraction exists; chunk tasks and the extraction-run receipt provide completion detail. An image-only PDF page enters layout review. Editors also inspect visually complex PDF tables where native text order may be misleading.
 
 ## Recovery and maintenance
+For missing downloads and incomplete articles, follow [Source recovery](SOURCE_RECOVERY.md). Record host-specific failures and retry times, use documented access routes, and preserve partial captures. A connected Consensus plugin is required for the Consensus literature-discovery branch; standard configured collection uses the package's source adapters.
+
 Back up the private repository and separately retain approved bundles. Each model attempt appends its start and outcome to the ledger. Codex diagnostics remain in `extraction_attempts/`; `review/extraction_progress.json` records active work, completed chunks, failures, and the latest error. Check completed chunks and attempt outcomes to assess extraction progress. After an interruption, regenerate the queue from saved evidence before interpreting its remaining count.
 
 After a failed run, inspect the ledger, retained attempt diagnostics, source checks, extraction tasks, and receipt. Successful captured objects and model caches are reusable. Re-run only after understanding the failure and the actual budget consumed. If no completed date receipt exists, a retry resumes from the persisted evidence and caches; new collection may still make requests. Protect against missed state commits by checking that the private branch advanced.
@@ -96,3 +104,9 @@ After a failed run, inspect the ledger, retained attempt diagnostics, source che
 Scheduled runs can be delayed or skipped by their hosting platform. Monitor Actions failure notifications and the last successful report date; manual dispatch is the recovery route. Configure organization-level alerts for a missing Wednesday artifact where available. The alpha does not install a separate external heartbeat service.
 
 For a state restore, clone to a fresh directory, run ledger verification, verify the latest report bundle, and reproduce it from sealed JSON. For a code update, create a pull request, run tests, review schema diffs, compare a frozen replay, run a small collection trial, then deploy. Keep event keys stable. Versioned state migrations and large-scale object storage are roadmap items; back up state before experimental-version upgrades.
+
+### Large annotation files
+
+`atlas metrics --max-annotation-bytes N` sets the annotation file allowance for one local export. The default is 16,000,000 bytes; the maximum is 64,000,000 bytes. Record the chosen allowance and input size in the run receipt. Use compact JSON first and verify that it reconstructs the complete annotation object. This allowance does not affect source retrieval, model calls or the export contract.
+
+`atlas site-export --max-input-bytes N` sets the per-file allowance for prepared local inputs. The default is 64,000,000 bytes; the maximum is 128,000,000 bytes. Record the chosen limit and actual input sizes in the run receipt. Use compact JSON with exact object reconstruction before increasing the allowance. Source retrieval, model input and model call budgets have separate limits.

@@ -5,6 +5,7 @@ import json
 import re
 from collections import defaultdict
 from datetime import date
+from decimal import Decimal
 from pathlib import Path
 from typing import Literal
 from pydantic import Field, model_validator
@@ -88,11 +89,14 @@ def ref_pair(ref):
 
 
 def export_metrics(snapshot: Path, annotations: Path, source_dir: Path, out: Path,
-                   since: str, until: str, basis: str = 'publication', knowledge_cutoff: str | None = None):
+                   since: str, until: str, basis: str = 'publication', knowledge_cutoff: str | None = None,
+                   *, max_annotation_bytes: int = 16_000_000):
     date.fromisoformat(since); date.fromisoformat(until)
     if since > until or basis not in {'publication','capture'}:
         raise ValueError('Use an inclusive ordered reporting window and a supported date basis')
-    if snapshot.stat().st_size > 32_000_000 or annotations.stat().st_size > 16_000_000:
+    if type(max_annotation_bytes) is not int or not 0 < max_annotation_bytes <= 64_000_000:
+        raise ValueError('Metric annotation budget must be an integer from 1 to 64,000,000 bytes')
+    if snapshot.stat().st_size > 32_000_000 or annotations.stat().st_size > max_annotation_bytes:
         raise ValueError('Metric input exceeds the file budget')
     data=read_json(snapshot); batch=MetricAnnotations.model_validate(read_json(annotations))
     if digest(data['records']) != batch.records_sha256:
@@ -139,15 +143,18 @@ def export_metrics(snapshot: Path, annotations: Path, source_dir: Path, out: Pat
         joined=' '.join(q for e in evidence for q in e['quotes'])
         if norm(m.evidence.quote) not in norm(joined):raise ValueError('Measurement evidence is outside its referenced quotations')
         # Numeric anchoring is a check after source review, not a semantic decision.
+        scales={'thousand':1000,'million':1000000,'billion':1000000000}
+        scaled={Decimal(re.sub(r'[,\s]','',number))*scales[scale] for number,scale in
+                re.findall(r'(?<![\w.,+\-])([+\-]?(?:\d{1,3}(?:(?:,|\s)\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?))\s+(thousand|million|billion)\b',norm(joined))}
         for value in [m.value,m.denominator]:
             if value is not None:
                 token=format(value,'.15g')
                 integer, dot, fraction=token.partition('.')
                 grouped=r'(?:,|\s+)'.join(f'{int(integer):,}'.split(','))
-                number=r'(?:'+re.escape(integer)+'|'+grouped+')'+(r'\.'+fraction if dot else r'(?:\.0+)?')
-                words={0:['zero','no'],1:['one','a single'],2:['two'],3:['three'],4:['four'],5:['five'],6:['six'],7:['seven'],8:['eight'],9:['nine'],10:['ten']}
+                number=r'(?:'+re.escape(integer)+'|'+grouped+')'+(r'\.'+fraction+r'0*' if dot else r'(?:\.0+)?')
+                words={0:['zero','no','none'],1:['one','single'],2:['two'],3:['three'],4:['four'],5:['five'],6:['six'],7:['seven'],8:['eight'],9:['nine'],10:['ten'],11:['eleven']}
                 anchored=re.search(r'(?<![\d.,])'+number+r'(?!\d|[.,]\d)',joined)
-                if not anchored and not m.numeric_evidence_review and not any(re.search(r'\b'+w+r'\b',joined.lower()) for w in words.get(value,[])):
+                if not anchored and Decimal(token) not in scaled and not m.numeric_evidence_review and not any(re.search(r'\b'+w+r'\b',joined.lower()) for w in words.get(value,[])):
                     raise ValueError('Numeric anchor missing: '+m.annotation_key)
         for previous in m.supersedes:
             if previous not in keys or previous==m.annotation_key:raise ValueError('Revision target must exist and differ')
@@ -424,6 +431,6 @@ def render_preview(bundle):
         if len({m['observation_date'] for m in items})<2:continue
         dates=[date.fromisoformat(m['observation_date']).toordinal() for m in items];lo,hi=min(dates),max(dates);top=max(m['value'] for m in items) or 1
         dots=''.join('<circle cx="'+str(40+(d-lo)/(hi-lo)*500)+'" cy="'+str(150-m['value']/top*115)+'" r="5"><title>'+esc(m['label']+' '+str(m['value'])+' · '+m['observation_date']+' · '+m['source_reference']['record_id'])+'</title></circle>' for m,d in zip(items,dates))
-        charts.append('<article><h3>'+esc(items[0]['label']+' · '+items[0]['geography']['value']+' · '+items[0]['count_kind'])+'</h3><svg viewBox="0 0 600 185" role="img" aria-label="Unconnected source observations"><path d="M40 25V150H550" fill="none" stroke="#536d74"/>'+dots+'<text x="40" y="177">'+esc(date.fromordinal(lo))+'</text><text x="450" y="177">'+esc(date.fromordinal(hi))+'</text><text x="5" y="35">'+esc(top)+'</text><text x="15" y="150">0</text></svg><p>Observation dates on the horizontal axis; reported values on the vertical axis. Points retain separate source assertions. Comparability for these observations has not been reviewed.</p></article>')
+        charts.append('<article><h3>'+esc(items[0]['label']+' · '+(items[0]['geography']['value'] if items[0]['geography']['value'] is not None else 'Location: '+items[0]['geography']['status'].replace('_',' '))+' · '+items[0]['count_kind'])+'</h3><svg viewBox="0 0 600 185" role="img" aria-label="Unconnected source observations"><path d="M40 25V150H550" fill="none" stroke="#536d74"/>'+dots+'<text x="40" y="177">'+esc(date.fromordinal(lo))+'</text><text x="450" y="177">'+esc(date.fromordinal(hi))+'</text><text x="5" y="35">'+esc(top)+'</text><text x="15" y="150">0</text></svg><p>Observation dates on the horizontal axis; reported values on the vertical axis. Points retain separate source assertions. Comparability for these observations has not been reviewed.</p></article>')
     coverage=bundle['coverage']
     return '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ATLAS metric export preview</title><style>body{font:16px/1.5 system-ui;max-width:1050px;margin:35px auto;padding:0 20px;color:#193c45;background:#f4f7f3}a{color:#006c61}article{background:white;padding:18px;margin:14px 0;border:1px solid #cedbd9;border-radius:8px}.tiles{display:flex;gap:14px;flex-wrap:wrap}.tile{padding:12px;background:#e8f2eb;max-width:260px}.tile b,.tile span,.tile small{display:block}.tile b{font-size:26px}summary{cursor:pointer}summary h2{display:inline}pre{white-space:pre-wrap;overflow-wrap:anywhere}blockquote{border-left:3px solid #cedbd9;padding-left:12px}svg{width:100%;max-width:650px}circle{fill:#006c61}text{font:12px system-ui}h3{overflow-wrap:anywhere}</style><h1>ATLAS epidemiological figures</h1><p>Research preview · source-checked measurements awaiting editorial acceptance.</p><p>'+str(coverage['measure_count'])+' measurements across '+str(coverage['records_with_measures'])+' report entries; qualitative findings for '+str(coverage['records_in_window'])+' entries. '+str(coverage['pending_candidate_count'])+' proposal candidates await review.</p><p><a href="metrics.json">Metric export</a> · <a href="metrics.schema.json">JSON Schema</a> · <a href="manifest.json">Checksums</a></p><details><summary><h2>Source observation plots</h2></summary>'+''.join(charts)+'</details>'+''.join(sections)+'</html>'

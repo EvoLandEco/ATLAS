@@ -62,3 +62,7 @@ Complete the numeric enrichment pass in `docs/WORKFLOW.md` for every concrete op
 ## Reviewed chains
 
 Follow `docs/CHAIN_REVIEW.md` before exporting chain membership or connections. Keep transmission, contact, travel and reporting order distinct. Preserve explicit source support, unknown locations and separate event and publication dates. Reassess affected chains during weekly work and historical expansion; filtering must never bridge excluded intermediate nodes.
+
+## One Health evidence
+
+Follow `docs/ONE_HEALTH.md` for human, animal, environment and food observations. Preserve source-specific nodes, negative results, sampling context and exact relationship propositions. Reassess changed dependencies during weekly work and historical expansion. Section review coverage and remaining work must travel with the export. Shared pathogen labels, geography or timing do not establish spillover. Keep cross-domain counts and unreviewed comparisons separate.

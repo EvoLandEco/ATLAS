@@ -2,7 +2,7 @@
 
 ATLAS produces structured, analysis-ready outputs for evidence review, research and visualization. A versioned bundle connects documents, source assertions, measurements, comparisons and reporting locations through stable identifiers and exact evidence. This shared representation lets researchers and applications reuse the prepared data with consistent scientific definitions.
 
-The structured export contract is **1.2.0** and embeds metric contract **0.2.0**. A `research_preview` release contains extracted findings and annotations checked against captured sources, with editorial acceptance pending. Review status and coverage describe which uses the data can support. Statistical analysis requires an assessment of measurement compatibility and completeness for the research question.
+The structured export contract is **1.5.0** and embeds metric contract **0.2.0**. A `research_preview` release contains extracted findings and annotations checked against captured sources, with editorial acceptance pending. Review status and coverage describe which uses the data can support. Statistical analysis requires an assessment of measurement compatibility and completeness for the research question.
 
 ## Build and validate
 
@@ -41,7 +41,7 @@ The bundle contains:
 | `review.html` | Readable comparison participants, source sections and review limits |
 | `manifest.json` | SHA-256 checksums of the bundle files |
 
-Run `atlas site-verify` before loading a bundle into an analysis or application, using the ATLAS release that produced it. The command checks the supported schema, file checksums, reference integrity, memberships and temporal support. It exits with an error for an incompatible or inconsistent export. A JSON Schema check alone cannot check references between entities. The manifest checks consistency; it is not a digital signature or publication approval.
+Run `atlas site-verify` before loading a bundle into an analysis or application. ATLAS verifies site contracts 1.2.0, 1.3.0, 1.4.0 and 1.5.0 against their exact versioned schemas and trusted selectors. Other contracts require a matching supported producer. The command checks the supported schema, file checksums, reference integrity, memberships and temporal support. It exits with an error for an incompatible or inconsistent export. A JSON Schema check alone cannot check references between entities. The manifest checks consistency; it is not a digital signature or publication approval.
 
 ## Entities and memberships
 
@@ -155,7 +155,7 @@ Use `selectView(...).reviewed_series` for Trends. Draw only its explicit connect
 
 `selectView(...).numeric_coverage` supplies selected record, measurement-coverage, reviewed-series and connection counts. `records_without_reviewed_measures` means unknown numeric review coverage, not no cases or no numeric information. Do not label these records as reviewed without numbers or unavailable. Count distinct document IDs separately for collection coverage.
 
-The TypeScript declarations describe site 1.2.0 and metrics 0.2.0. The selector also accepts site 1.0.0 and 1.1.0, returning empty lists for chain or series fields absent from those contracts. A producer verifies bundles with its matching release; consumers must explicitly support each accepted schema version. See [Longitudinal analysis](LONGITUDINAL_ANALYSIS.md) for review and maintenance rules.
+The TypeScript declarations describe site 1.5.0 and metrics 0.2.0. The selector also accepts site 1.0.0, 1.1.0, 1.2.0, 1.3.0 and 1.4.0, returning empty lists for chain or series fields absent from those contracts. Bundle verification dispatches by the declared contract, checks agreement between the manifest and data, and applies the matching schema plus scientific validation. Consumers must explicitly support each accepted schema version. See [Longitudinal analysis](LONGITUDINAL_ANALYSIS.md) for review and maintenance rules.
 
 ## Selection cost
 
@@ -182,3 +182,53 @@ Nodes and edges carry record, document, assertion and evidence IDs. Evidence IDs
 Use `selectView(...).reviewed_chains` for presentation. Supply the same selected record IDs used for source and topic filters. The selector retains only supported nodes and explicit edges whose endpoints and full evidence remain eligible. It preserves branches and unplaced nodes and never creates a connection across an excluded intermediate node. `selection_complete` identifies a partial view. `drawable_edge_ids` contains only retained edges with two located endpoints; geographic projection, extent fitting and presentation belong to the consumer. Coincident coordinates do not establish shared identity.
 
 Site annotations use contract `1.1.0` when they contain chains. Declare stable keys, explicit endpoint keys, typed relationships, direction, certainty, membership evidence and review provenance. Empty chain collections mean no chain was supplied for that review scope. Validation checks references, source spans, dependency completeness, place provenance, stable IDs, connectivity, directed cycles and reporting order. Semantic review establishes whether the quotations support the interpretation. Follow [Chain review](CHAIN_REVIEW.md) for production and reassessment.
+
+
+## Disease composition
+
+`diseases` defines stable ATLAS disease identifiers and readable labels. `disease_reviews` assigns a source-reviewed subject classification to a report entry, with quoted evidence, reviewer, time and an explanation. Annotation contract 1.2.0 carries these fields. Review the complete entry and its source context; a title, topic label or one measured disease does not establish its full subject scope. Include diseases that are subjects of the entry, not incidental background mentions or differential diagnoses. Stable identifiers describe the chosen disease grouping and do not imply an external clinical ontology. Preserve the grouping across releases and document any reclassification with its source evidence.
+
+Use `selectView(...).disease_composition` for a chart of **reported disease mix**. The counting unit is one selected report entry, and the denominator is every selected entry. Entries from a shared publication or repeated reports still count separately. This describes reporting attention, not incidence, case burden, outbreak counts or population risk. Extraction granularity and source selection affect the distribution.
+
+`categories` is an exclusive partition: one reviewed disease, multiple diseases, no disease-specific subject, or unclassified. Each entry appears once. Multiple diseases occupy one aggregate segment; their individual memberships are available in `overlapping_diseases`, whose counts can overlap and require a bar chart. Do not divide a multiple-disease entry among disease slices or discard the unclassified segment. `record_ids` supports drill-through. An empty selection has denominator zero, no segments and `chart: "empty"`.
+
+Unclassified entries distinguish absent reviews, unresolved reviews and supporting evidence outside the selection. Date, capture-cutoff and selected-record filters apply before counting. A review becomes unclassified when any supporting record is excluded. Consumers implement source and topic controls through the existing record-selection argument, then render selector results without classifying titles or reaggregating disease labels. Show the denominator and unclassified count beside the chart; a mostly unclassified result should not be described as the disease distribution of the archive.
+
+Site contract 1.3.0 adds the disease catalog and reviews. Existing scientific arrays retain their definitions. Consumers must import the matching selector and declarations and accept the contract explicitly. The selector treats older bundles without disease reviews as unclassified. For contracts 1.2.0 and 1.3.0, bundle verification checks the released schema, annotation schema and trusted selector, then applies evidence, chain, longitudinal and reference checks. Contract 1.2.0 retains its original fields and version throughout verification; no data are rewritten.
+
+## One Health evidence
+
+Site contracts 1.4.0 and 1.5.0 include `one_health_reviews`, `one_health_nodes` and `one_health_relations`. Annotation contracts 1.3.0 and 1.4.0 supply their source evidence and scientific interpretation. The [One Health procedure](ONE_HEALTH.md) defines their meaning and maintenance.
+
+`selectView(...).one_health` returns eligible observations, explicit relationships, section reviews and coverage. Its seventh argument accepts `domains`, `observation_from` and `observation_until`. Both observation bounds must be supplied together. Observation selection follows publication or capture selection; a known observation day or a complete reported interval must overlap the requested period. Entries without either remain in `undated_nodes`. Coverage states describe the selected report entries; observation and relationship counts describe the filtered evidence view.
+
+```js
+const view = selectView(bundle, '2026-01-01', '2026-09-27', 'publication', null, selectedRecordIds,
+  {domains: ['human', 'animal', 'environment', 'food'],
+   observation_from: '2026-01-01', observation_until: '2026-09-27'});
+```
+
+An eligible correction hides the relationship attached to the exact superseded `source_assertion_id`. An eligible contradiction marks that proposition `contested` and supplies its comparison IDs. Endpoint and source dependencies must all remain visible. The selector creates no replacement edge across a removed node. Node counts represent source observations, not unique outbreaks, infections or spillover events.
+
+Interfaces can use four domain lanes, separate surveillance panels and evidence tables. Show negative findings, source hypotheses and unresolved methods explicitly. Geographic projection uses reviewed node places; geographic arcs require the existing geographic relationship evidence. A multi-country node does not authorize every possible country pair. The [presentation rules](ONE_HEALTH.md#presentation) describe accessible labels and relationship styles.
+
+Use `label` for entity identity and `finding` for the observed result. A report-entry × domain overview groups by `record_id` and includes review outcomes; it does not count unique episodes. Relationship matrix cells indicate membership in `evidence_types`. Site 1.4.0 and 1.5.0 do not map a type to individual `evidence_ids`, so cell selection shows the relationship's full evidence with that limitation. Empty cells mean a type is not recorded, not that tests were negative or evidence contradictory. Source certainty and curator review remain separate.
+
+Content-derived One Health IDs are stable for identical inputs; they are not persistent entity or episode identifiers across different reports or edited labels. The [producer requirements and contract boundaries](ONE_HEALTH.md#producer-requirements-and-contract-boundaries) distinguish implemented fields from the versioned extensions needed for identity decisions, sampling structure, date precision, evidence bindings and genomic analysis. Consumers must not synthesize those missing fields or alter a sealed bundle to supply them.
+
+
+### One Health analytical panels
+
+Site 1.5.0 and annotations 1.4.0 include `one_health_timings`, `one_health_sampling_assessments` and `one_health_contexts`. Each record has source evidence, an exact `source_assertion_id`, review provenance and eligibility. Timings and sampling assessments reference one observation; contexts reference their explicitly associated observations and measurements. Empty context observation membership leaves the statement independent within its report entry.
+
+`selectView(...).one_health` returns `timings`, `reporting_cutoffs`, `undated_timings`, `sampling_assessments`, `undated_sampling_assessments`, `contexts` and `undated_contexts`. These lists respect source, capture and domain selection. A context without an observation link appears in the full view and is excluded by a domain filter. The dated lists respect observation bounds; undated lists preserve unavailable or incomplete dates. Reporting cutoffs are separate from those bounds. Selection adds `contested` and `comparison_ids`; exact eligible corrections suppress the affected panel statement. Older bundles return empty panel lists.
+
+`time` carries `kind`, `start`, `end`, `precision`, `certainty`, `label` and `reason`. Values retain their day (`YYYY-MM-DD`), month (`YYYY-MM`) or year (`YYYY`) precision. Calendar overlap is a selection operation, not a source observation of continuous duration. A known end without a known start does not define a complete interval.
+
+Sampling output includes `positive_measure_id`, `tested_measure_id`, `pair_status`, the reviewed sampling metadata, `display`, nullable `proportion` and `display_reason`. A proportion is the fraction among matched tested units, with explicit scope limitations. It is not a population estimate or confidence interval. Reuse the output eligibility decision; do not pair measures from nearby rows. Environmental and intervention `kind` values retain the distinction between measurements, reported conditions, hypotheses, actions and evaluated effects. See [Panel review records](ONE_HEALTH.md#panel-review-records).
+
+Panel selection excludes corrected primary propositions and corrected bound measurements. Contradictions on either reference mark the panel record as contested and supply their comparison IDs. Unrelated claim corrections do not remove the panel.
+
+`time.extent` distinguishes `point`, `closed_interval`, `open_interval` and `unknown`. Open intervals retain their known bound in the undated list; the selector does not invent the other boundary. The `detection` kind preserves source-reported detection periods when the source does not specify specimen collection or testing dates. Sampling eligibility periods describe the sampling frame and do not establish observed event dates.
+
+A source may supply a calendar date without identifying its epidemiological meaning. Preserve that value and precision with `kind: unknown` and explain the unresolved meaning in `reason`. The selector keeps it in the undated list, outside the dated timeline. Week labels remain source wording unless their calendar bounds are established by the source.

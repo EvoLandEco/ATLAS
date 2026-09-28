@@ -1,0 +1,973 @@
+{
+  "$defs": {
+    "Area": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "code_system": {
+          "const": "ISO_3166_1_alpha_2",
+          "default": "ISO_3166_1_alpha_2",
+          "title": "Code System",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "meaning": {
+          "const": "reporting_location_identifier",
+          "default": "reporting_location_identifier",
+          "title": "Meaning",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "label"
+      ],
+      "title": "Area",
+      "type": "object"
+    },
+    "AssertionInput": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_index": {
+          "minimum": 0,
+          "title": "Claim Index",
+          "type": "integer"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "statement",
+            "date"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "observation_date": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/TextValue"
+        }
+      },
+      "required": [
+        "key",
+        "record_id",
+        "claim_index",
+        "kind",
+        "text",
+        "evidence"
+      ],
+      "title": "AssertionInput",
+      "type": "object"
+    },
+    "ChainEdgeInput": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "minLength": 12,
+          "title": "Basis",
+          "type": "string"
+        },
+        "certainty": {
+          "enum": [
+            "established_by_source",
+            "reported",
+            "uncertain"
+          ],
+          "title": "Certainty",
+          "type": "string"
+        },
+        "directed": {
+          "title": "Directed",
+          "type": "boolean"
+        },
+        "direction_basis": {
+          "enum": [
+            "source_reported",
+            "reviewed_publication_order",
+            "not_reported"
+          ],
+          "title": "Direction Basis",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "from_node": {
+          "title": "From Node",
+          "type": "string"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "established_transmission",
+            "contact_exposure",
+            "travel_itinerary",
+            "reporting_sequence"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "to_node": {
+          "title": "To Node",
+          "type": "string"
+        },
+        "uncertainty": {
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "kind",
+        "directed",
+        "direction_basis",
+        "certainty",
+        "basis",
+        "uncertainty",
+        "from_node",
+        "to_node",
+        "evidence"
+      ],
+      "title": "ChainEdgeInput",
+      "type": "object"
+    },
+    "ChainInput": {
+      "additionalProperties": false,
+      "properties": {
+        "edges": {
+          "items": {
+            "$ref": "#/$defs/ChainEdgeInput"
+          },
+          "minItems": 1,
+          "title": "Edges",
+          "type": "array"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "established_transmission",
+            "contact_exposure",
+            "travel_itinerary",
+            "reporting_sequence"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "membership_review": {
+          "minLength": 12,
+          "title": "Membership Review",
+          "type": "string"
+        },
+        "nodes": {
+          "items": {
+            "$ref": "#/$defs/ChainNodeInput"
+          },
+          "minItems": 2,
+          "title": "Nodes",
+          "type": "array"
+        },
+        "review_state": {
+          "const": "source_checked_draft",
+          "default": "source_checked_draft",
+          "title": "Review State",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "scope": {
+          "minLength": 12,
+          "title": "Scope",
+          "type": "string"
+        },
+        "uncertainty": {
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "kind",
+        "label",
+        "scope",
+        "membership_review",
+        "uncertainty",
+        "reviewed_at",
+        "reviewed_by",
+        "nodes",
+        "edges"
+      ],
+      "title": "ChainInput",
+      "type": "object"
+    },
+    "ChainNodeInput": {
+      "additionalProperties": false,
+      "properties": {
+        "date_basis": {
+          "enum": [
+            "onset",
+            "travel",
+            "observation",
+            "unknown"
+          ],
+          "title": "Date Basis",
+          "type": "string"
+        },
+        "date_note": {
+          "minLength": 1,
+          "title": "Date Note",
+          "type": "string"
+        },
+        "entity_kind": {
+          "enum": [
+            "person",
+            "case",
+            "case_group",
+            "contact_group",
+            "travel_stop",
+            "report"
+          ],
+          "title": "Entity Kind",
+          "type": "string"
+        },
+        "event_date": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "location_note": {
+          "minLength": 1,
+          "title": "Location Note",
+          "type": "string"
+        },
+        "membership_basis": {
+          "minLength": 12,
+          "title": "Membership Basis",
+          "type": "string"
+        },
+        "place_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Place Id"
+        },
+        "uncertainty": {
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "entity_kind",
+        "place_id",
+        "location_note",
+        "date_basis",
+        "date_note",
+        "membership_basis",
+        "uncertainty",
+        "evidence"
+      ],
+      "title": "ChainNodeInput",
+      "type": "object"
+    },
+    "Channel": {
+      "additionalProperties": false,
+      "properties": {
+        "acquisition_source": {
+          "title": "Acquisition Source",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "organization_id": {
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "snapshot_source": {
+          "title": "Snapshot Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "organization_id",
+        "snapshot_source",
+        "acquisition_source"
+      ],
+      "title": "Channel",
+      "type": "object"
+    },
+    "ComparisonInput": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "independence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Independence"
+        },
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "lineage": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Lineage",
+          "type": "array"
+        },
+        "participant_labels": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 2,
+          "title": "Participant Labels",
+          "type": "array"
+        },
+        "participants": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 2,
+          "title": "Participants",
+          "type": "array"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "scope_review": {
+          "title": "Scope Review",
+          "type": "string"
+        },
+        "status": {
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "kind",
+        "status",
+        "participants",
+        "participant_labels",
+        "reason",
+        "scope_review",
+        "evidence"
+      ],
+      "title": "ComparisonInput",
+      "type": "object"
+    },
+    "DateValue": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Complete date in YYYY-MM-DD form. Use null when the day is not reported.",
+          "title": "Value"
+        }
+      },
+      "title": "DateValue",
+      "type": "object"
+    },
+    "Disease": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^disease:[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label"
+      ],
+      "title": "Disease",
+      "type": "object"
+    },
+    "DiseaseReviewInput": {
+      "additionalProperties": false,
+      "properties": {
+        "disease_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Disease Ids",
+          "type": "array"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "kind": {
+          "enum": [
+            "single_disease",
+            "multiple_diseases",
+            "not_disease_specific",
+            "unresolved"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "review_status": {
+          "const": "source_checked_draft",
+          "default": "source_checked_draft",
+          "title": "Review Status",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "kind",
+        "disease_ids",
+        "reason",
+        "reviewed_at",
+        "reviewed_by",
+        "evidence"
+      ],
+      "title": "DiseaseReviewInput",
+      "type": "object"
+    },
+    "EndpointInput": {
+      "additionalProperties": false,
+      "properties": {
+        "from_place_id": {
+          "title": "From Place Id",
+          "type": "string"
+        },
+        "relationship_id": {
+          "title": "Relationship Id",
+          "type": "string"
+        },
+        "to_place_id": {
+          "title": "To Place Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "relationship_id",
+        "from_place_id",
+        "to_place_id"
+      ],
+      "title": "EndpointInput",
+      "type": "object"
+    },
+    "EvidenceInput": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_index": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Claim Index"
+        },
+        "occurrence": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Occurrence",
+          "type": "integer"
+        },
+        "quote": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quote"
+        },
+        "quote_index": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quote Index"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "section": {
+          "minLength": 1,
+          "title": "Section",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "section"
+      ],
+      "title": "EvidenceInput",
+      "type": "object"
+    },
+    "LocationInput": {
+      "additionalProperties": false,
+      "properties": {
+        "area_code": {
+          "title": "Area Code",
+          "type": "string"
+        },
+        "claim_index": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Claim Index"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "occurrence",
+            "travel_origin",
+            "travel_destination",
+            "exposure",
+            "context",
+            "reporting_scope"
+          ],
+          "title": "Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "area_code",
+        "role",
+        "evidence",
+        "reason"
+      ],
+      "title": "LocationInput",
+      "type": "object"
+    },
+    "Organization": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "title": "Organization",
+      "type": "object"
+    },
+    "PlaceInput": {
+      "additionalProperties": false,
+      "properties": {
+        "area_codes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Area Codes",
+          "type": "array"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "latitude": {
+          "maximum": 90,
+          "minimum": -90,
+          "title": "Latitude",
+          "type": "number"
+        },
+        "longitude": {
+          "maximum": 180,
+          "minimum": -180,
+          "title": "Longitude",
+          "type": "number"
+        },
+        "precision": {
+          "title": "Precision",
+          "type": "string"
+        },
+        "topic_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Topic Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "longitude",
+        "latitude",
+        "precision",
+        "area_codes",
+        "topic_ids"
+      ],
+      "title": "PlaceInput",
+      "type": "object"
+    },
+    "Status": {
+      "enum": [
+        "reported",
+        "not_reported",
+        "unknown",
+        "not_applicable",
+        "pending_verification",
+        "conflicting",
+        "not_extracted",
+        "not_comparable",
+        "access_restricted"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "TextValue": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "title": "TextValue",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "areas": {
+      "items": {
+        "$ref": "#/$defs/Area"
+      },
+      "title": "Areas",
+      "type": "array"
+    },
+    "assertions": {
+      "items": {
+        "$ref": "#/$defs/AssertionInput"
+      },
+      "title": "Assertions",
+      "type": "array"
+    },
+    "channels": {
+      "items": {
+        "$ref": "#/$defs/Channel"
+      },
+      "title": "Channels",
+      "type": "array"
+    },
+    "comparisons": {
+      "items": {
+        "$ref": "#/$defs/ComparisonInput"
+      },
+      "title": "Comparisons",
+      "type": "array"
+    },
+    "contract_version": {
+      "enum": [
+        "1.0.0",
+        "1.1.0",
+        "1.2.0"
+      ],
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "disease_reviews": {
+      "items": {
+        "$ref": "#/$defs/DiseaseReviewInput"
+      },
+      "title": "Disease Reviews",
+      "type": "array"
+    },
+    "diseases": {
+      "items": {
+        "$ref": "#/$defs/Disease"
+      },
+      "title": "Diseases",
+      "type": "array"
+    },
+    "endpoints": {
+      "items": {
+        "$ref": "#/$defs/EndpointInput"
+      },
+      "title": "Endpoints",
+      "type": "array"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "locations": {
+      "items": {
+        "$ref": "#/$defs/LocationInput"
+      },
+      "title": "Locations",
+      "type": "array"
+    },
+    "organizations": {
+      "items": {
+        "$ref": "#/$defs/Organization"
+      },
+      "title": "Organizations",
+      "type": "array"
+    },
+    "places": {
+      "items": {
+        "$ref": "#/$defs/PlaceInput"
+      },
+      "title": "Places",
+      "type": "array"
+    },
+    "records_sha256": {
+      "title": "Records Sha256",
+      "type": "string"
+    },
+    "reviewed_at": {
+      "title": "Reviewed At",
+      "type": "string"
+    },
+    "reviewed_by": {
+      "title": "Reviewed By",
+      "type": "string"
+    },
+    "reviewed_chains": {
+      "items": {
+        "$ref": "#/$defs/ChainInput"
+      },
+      "title": "Reviewed Chains",
+      "type": "array"
+    }
+  },
+  "required": [
+    "contract_version",
+    "records_sha256",
+    "reviewed_at",
+    "reviewed_by",
+    "organizations",
+    "channels",
+    "areas",
+    "places",
+    "endpoints",
+    "locations",
+    "assertions",
+    "comparisons",
+    "limitations"
+  ],
+  "title": "SiteAnnotations",
+  "type": "object"
+}

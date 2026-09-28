@@ -10,7 +10,7 @@ const original = JSON.parse(fs.readFileSync(bundlePath));
 const {selectView} = await import(pathToFileURL(path.resolve(selectorPath)));
 const reference = referencePath ? (await import(pathToFileURL(path.resolve(referencePath)))).selectView : null;
 // Only fields consumed by the selector are replicated; source text and file parsing are outside the timing.
-const base = Object.fromEntries(['contract_version','records','assertions','comparisons','relationships','places','location_memberships','source_coverage'].map(k => [k,original[k]]));
+const base = Object.fromEntries(['contract_version','records','assertions','comparisons','relationships','places','location_memberships','source_coverage','reviewed_chains','diseases','disease_reviews','one_health_reviews','one_health_nodes','one_health_relations'].map(k => [k,original[k]]));
 base.metrics = Object.fromEntries(['measures','panels','reviewed_series'].map(k => [k,original.metrics[k]]));
 const ids = new Set();
 function collect(value) {

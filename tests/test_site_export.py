@@ -175,3 +175,19 @@ def test_place_memberships_preserve_reference_order(tmp_path):
         locs=[m['id'] for m in bundle['location_memberships'] if m['area_code'] in p['area_codes'] and
               (m['record_id'] in rids or any(m['record_id'] in r['eligibility']['record_ids'] for r in rels))]
         assert p['record_ids']==rids and p['relationship_ids']==[r['id'] for r in rels] and p['location_membership_ids']==locs
+
+
+def test_explicit_site_input_budget_preserves_export(tmp_path):
+    from atlas.site_export import export_site
+    paths,_=site_inputs(tmp_path)
+    expected=export_site(**paths,out=tmp_path/'small')
+    with paths['metrics_path'].open('a') as stream:stream.write(' '*64_000_000)
+    with pytest.raises(ValueError,match='file budget'):
+        export_site(**paths,out=tmp_path/'default')
+    actual=export_site(**paths,out=tmp_path/'larger',max_input_bytes=128_000_000)
+    for key in ['contract_version','records','assertions','comparisons','metrics','relationships']:
+        assert actual[key]==expected[key]
+    export_site(**paths,out=tmp_path/'exact',max_input_bytes=paths['metrics_path'].stat().st_size)
+    for limit in [0,128_000_001,True,1.5]:
+        with pytest.raises(ValueError,match='input budget'):
+            export_site(**paths,out=tmp_path/'invalid',max_input_bytes=limit)

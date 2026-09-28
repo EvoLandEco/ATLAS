@@ -141,5 +141,31 @@ const assert = require('node:assert/strict');
   chains.reviewed_chains[0].edges[2].eligibility.record_ids.push('new');
   assert.deepEqual(selectView(chains,'2026-07-01','2026-07-01').reviewed_chains[0].edges,[]);
   assert.deepEqual(selectView(chains,'2026-01-01','2026-01-02').reviewed_chains,[]);
+  const mix=structuredClone(data);mix.contract_version='1.3.0';
+  mix.records=Array.from({length:6},(_,i)=>({id:'r'+i,document_id:'d'+i,publication:'2026-07-0'+(i+1),capture:'2026-09-25T12:00:00Z'}));
+  mix.assertions=[];mix.comparisons=[];mix.metrics={measures:[],panels:[]};mix.source_coverage=[];
+  mix.diseases=[{id:'disease:a',label:'Disease A'},{id:'disease:b',label:'Disease B'}];
+  mix.disease_reviews=[
+    {record_id:'r0',kind:'single_disease',disease_ids:['disease:a'],eligibility:{record_ids:['r0','r5']}},
+    {record_id:'r1',kind:'multiple_diseases',disease_ids:['disease:a','disease:b'],eligibility:{record_ids:['r1']}},
+    {record_id:'r2',kind:'not_disease_specific',disease_ids:[],eligibility:{record_ids:['r2']}},
+    {record_id:'r3',kind:'unresolved',disease_ids:[],eligibility:{record_ids:['r3']}},
+    {record_id:'r5',kind:'single_disease',disease_ids:['disease:b'],eligibility:{record_ids:['r5']}},
+  ];
+  const composition=(...args)=>selectView(mix,...args).disease_composition;
+  const allMix=composition('2026-07-01','2026-07-06');
+  assert.equal(allMix.denominator,6);assert.equal(allMix.reviewed_record_count,5);
+  assert.equal(allMix.categories.reduce((n,c)=>n+c.count,0),6);
+  assert.equal(new Set(allMix.categories.flatMap(c=>c.record_ids)).size,6);
+  assert.equal(allMix.unclassified_record_count,2);
+  assert.equal(allMix.overlapping_diseases.partition,false);
+  assert.equal(allMix.overlapping_diseases.categories.reduce((n,c)=>n+c.count,0),4);
+  assert.deepEqual(composition('2026-07-01','2026-07-01').unknown_reasons.support_outside_selection,['r0']);
+  assert.equal(composition('2026-07-01','2026-07-06','publication',null,['r1']).categories[0].id,'multiple_diseases');
+  assert.equal(composition('2026-07-01','2026-07-06','publication','2026-09-24T00:00:00Z').denominator,0);
+  assert.equal(composition('2026-07-01','2026-07-06','publication','2026-09-24T00:00:00Z').chart,'empty');
+  assert.equal(composition('2026-09-25','2026-09-25','capture').denominator,6);
+  const legacy=structuredClone(mix);legacy.contract_version='1.2.0';delete legacy.disease_reviews;delete legacy.diseases;
+  assert.equal(selectView(legacy,'2026-07-01','2026-07-06').disease_composition.unclassified_record_count,6);
   console.log('ATLAS view rules pass: inclusive windows, capture cutoff, revision visibility, conflicts, zero, missing dates and geographic evidence.');
 })();

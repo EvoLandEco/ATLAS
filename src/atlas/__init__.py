@@ -1,3 +1,3 @@
-__version__ = "0.1.0a21"
+__version__ = "0.1.0a26"
 SCHEMA_VERSION = "0.1.2"
 TEMPLATE_VERSION = "0.1.2"

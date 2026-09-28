@@ -10,7 +10,7 @@ const ordered = value => Array.isArray(value) ? value.map(ordered) : value && ty
   ? Object.fromEntries(Object.keys(value).sort().map(key => [key, ordered(value[key])])) : value;
 
 export function selectView(data, from, until, basis = 'publication', knowledgeCutoff = null, recordSelection = null, oneHealthOptions = null) {
-  if (!['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0'].includes(data.contract_version)) throw new Error('Unsupported ATLAS site contract');
+  if (!['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0'].includes(data.contract_version)) throw new Error('Unsupported ATLAS site contract');
   const day = value => /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
   if (!day(from) || !day(until) || from > until || !['publication', 'capture'].includes(basis)) throw new Error('Invalid reporting window');
   const cutoff = knowledgeCutoff === null ? null : Date.parse(knowledgeCutoff);
@@ -177,51 +177,10 @@ export function selectView(data, from, until, basis = 'publication', knowledgeCu
     ohCoverage.relationships_by_kind[r.kind] = (ohCoverage.relationships_by_kind[r.kind] ?? 0) + 1;
     ohCoverage.relationships_by_basis[r.basis] = (ohCoverage.relationships_by_basis[r.basis] ?? 0) + 1;
   }
-  const eligibleNodeIds = new Set(eligibleNodes.map(n => n.id));
-  const timeBounds = t => {
-    const start = t.start.value, end = t.end.value;
-    if (!start || ['unknown','reporting_cutoff'].includes(t.kind) || ['unknown','open_interval'].includes(t.extent)) return null;
-    const last = end ?? start;
-    if (t.precision === 'day') return [start, last];
-    if (t.precision === 'year') return [start + '-01-01', last + '-12-31'];
-    if (t.precision === 'month') {
-      const [year, month] = last.split('-').map(Number);
-      const days = new Date(Date.UTC(year, month, 0)).getUTCDate();
-      return [start + '-01', last + '-' + String(days).padStart(2, '0')];
-    }
-    return null;
-  };
-  const panelMeasures = r => r.measure_ids ?? [r.positive_measure_id, r.tested_measure_id].filter(Boolean);
-  const measureAssertions = new Map([...assertionMeasures].map(([aid, mid]) => [mid, aid]));
-  const panelSupported = r => supported(r.eligibility) && !superseded.has(r.source_assertion_id) &&
-    panelMeasures(r).every(id => measureIds.has(id)) &&
-    (r.node_id ? eligibleNodeIds.has(r.node_id) : r.node_ids.length ? r.node_ids.every(id => eligibleNodeIds.has(id)) : !domains);
-  const panelReview = r => {
-    const ids = [r.source_assertion_id, ...panelMeasures(r).map(id => measureAssertions.get(id))];
-    const comparison_ids = [...new Set(ids.flatMap(id => contested.get(id) ?? []))].sort();
-    return {...r, contested: comparison_ids.length > 0, comparison_ids};
-  };
-  const partitionPanel = rows => {
-    const eligible = (rows ?? []).filter(panelSupported).map(panelReview), dated = [], undated = [];
-    for (const r of eligible) {
-      const bounds = timeBounds(r.time);
-      if (!bounds) undated.push(r);
-      else if (obsFrom === null || (bounds[0] <= obsUntil && bounds[1] >= obsFrom)) dated.push(r);
-    }
-    return {dated, undated};
-  };
-  const timingRows = data.one_health_timings ?? [];
-  const timing = partitionPanel(timingRows.filter(r => r.time.kind !== 'reporting_cutoff'));
-  const sampling = partitionPanel(data.one_health_sampling_assessments);
-  const contexts = partitionPanel(data.one_health_contexts);
   const oneHealth = {nodes: ohNodes, relations: ohRelations, coverage: ohCoverage,
     undated_nodes: obsFrom === null ? [] : eligibleNodes.filter(n => interval(n) === null),
     reviews: [...ohReviews.values()].filter(r => recordIds.has(r.record_id) && supported(r.eligibility)),
     observation_window: obsFrom === null ? null : {from: obsFrom, until: obsUntil},
-    timings: timing.dated, undated_timings: timing.undated,
-    reporting_cutoffs: timingRows.filter(r => r.time.kind === 'reporting_cutoff' && panelSupported(r)).map(panelReview),
-    sampling_assessments: sampling.dated, undated_sampling_assessments: sampling.undated,
-    contexts: contexts.dated, undated_contexts: contexts.undated,
     geographic_projection: 'reviewed_places_only_no_inferred_arcs',
     counting_unit: 'source_observation', comparability: 'no_cross_domain_aggregation'};
   return {

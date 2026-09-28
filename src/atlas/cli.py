@@ -38,10 +38,11 @@ def parser():
     c=s.add_parser('approve');c.add_argument('bundle',type=Path);c.add_argument('--editor',required=True);c.add_argument('--note',required=True);c.add_argument('--out',type=Path,required=True)
     c=s.add_parser('verify-approval');c.add_argument('bundle',type=Path);c.add_argument('approval',type=Path)
     c=s.add_parser('schemas');c.add_argument('--out',type=Path,default=Path('schemas'))
-    c=s.add_parser('metrics');c.add_argument('--snapshot',type=Path,required=True);c.add_argument('--annotations',type=Path,required=True);c.add_argument('--source-dir',type=Path,required=True);c.add_argument('--out',type=Path,required=True);c.add_argument('--since',required=True);c.add_argument('--until',required=True);c.add_argument('--basis',choices=['publication','capture'],default='publication');c.add_argument('--knowledge-cutoff')
+    c=s.add_parser('metrics');c.add_argument('--snapshot',type=Path,required=True);c.add_argument('--annotations',type=Path,required=True);c.add_argument('--source-dir',type=Path,required=True);c.add_argument('--out',type=Path,required=True);c.add_argument('--since',required=True);c.add_argument('--until',required=True);c.add_argument('--basis',choices=['publication','capture'],default='publication');c.add_argument('--knowledge-cutoff');c.add_argument('--max-annotation-bytes',type=int,default=16_000_000,help='Annotation input limit in bytes; default 16000000, maximum 64000000')
     c=s.add_parser('site-export')
     for flag in ['snapshot','results','metrics','annotations','source-dir','out','schedule']:
         c.add_argument('--'+flag,type=Path,required=True)
+    c.add_argument('--max-input-bytes',type=int,default=64_000_000,help='Per-file input limit in bytes; default 64000000, maximum 128000000')
     c=s.add_parser('site-verify');c.add_argument('bundle',type=Path)
     c=s.add_parser('handoff');c.add_argument('--cycle',required=True);c.add_argument('--out',type=Path,default=Path('reports/publication-handoff.json'))
     c.add_argument('--initial-bundle',type=Path);c.add_argument('--initial-snapshot',type=Path)
@@ -52,14 +53,14 @@ def parser():
 def execute(a):
     if a.command=='site-export':
         from .site_export import export_site
-        result=export_site(a.snapshot,a.results,a.metrics,a.annotations,a.source_dir,a.out,a.schedule)
+        result=export_site(a.snapshot,a.results,a.metrics,a.annotations,a.source_dir,a.out,a.schedule,max_input_bytes=a.max_input_bytes)
         return {'out':str(a.out),'contract_version':result['contract_version'],'records':len(result['records']),'comparisons':len(result['comparisons'])}
     if a.command=='site-verify':
         from .site_export import verify_site
         return verify_site(a.bundle)
     if a.command=='metrics':
         from .metrics import export_metrics
-        result=export_metrics(a.snapshot,a.annotations,a.source_dir,a.out,a.since,a.until,a.basis,a.knowledge_cutoff)
+        result=export_metrics(a.snapshot,a.annotations,a.source_dir,a.out,a.since,a.until,a.basis,a.knowledge_cutoff,max_annotation_bytes=a.max_annotation_bytes)
         return {'out':str(a.out),'contract_version':result['contract_version'],**result['coverage']}
     if a.command=='demo':
         from .demo import demo

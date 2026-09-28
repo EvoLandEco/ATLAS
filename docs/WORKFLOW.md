@@ -24,9 +24,17 @@ Read retained enrichment receipts under `.runtime-state/enrichment/` before prod
 
 Choose a defined source programme and analytical question for numeric enrichment. Read the captured table headers, reporting periods, definitions and revision notes, then add only missing measurement annotations. Retain existing values and IDs. Record the reviewed document IDs, sections, fields and unresolved questions in the batch receipt. Unknown numeric coverage remains unknown; a completed digest is not a certificate of exhaustive extraction.
 
+Numeric anchoring recognises explicit thousand, million and billion quantities using decimal arithmetic. Preserve source qualifiers and units when expanding those quantities. Equivalent decimal forms such as 1.60 and 1.6 share a numeric anchor. Fractional wording and number words outside the recognised vocabulary require a source-specific numeric evidence review that preserves the original expression and qualifier. An anchored number still needs evidence for its population, period and meaning; a projected treatment need remains a projection.
+
+Check other entries from the same publication before adding an observation from a shared section. A broad respiratory assessment can cite a disease series already represented by a dedicated entry. Record where that evidence is represented and keep the entry's own sampling and environmental findings distinct. Matching values identify review candidates; they do not authorize an automatic merge.
+
 Prioritize repeated tables with explicit periods, followed by useful single-report counts and source-described subgroup or exposure findings. A table can support separate observations before it supports a continuous series. Follow [longitudinal review](LONGITUDINAL_ANALYSIS.md) before connecting those observations. Preserve different case classifications, suspected cases investigated versus reported cases, animal detections versus affected animals, and source-reported ratios versus calculated risks.
 
 Reuse validated digest findings and captured source text. Enrichment requires targeted interpretation of the selected sections rather than another acquisition or a full archive extraction. Record API or CLI extraction calls separately from agent-session review; an absence of external extraction calls does not measure the session's token use. Keep run-specific inventories and candidate examples with the research artifacts.
+
+## Disease subject review
+
+Classify the reporting subject of each selected entry using captured evidence and the rules in [Disease composition](SITE_EXPORT.md#disease-composition). Reuse unchanged source-bound reviews; review new entries and reclassifications alongside numeric and geographic work. Record one disease, multiple diseases, no disease-specific subject or an unresolved question. Keep unreviewed entries unclassified. Report classification coverage separately from collection and extraction coverage. Preserve stable disease identifiers and all supporting record references, and verify the selected partition and drill-through membership before handoff. Do not accept an outbreak identity through disease classification.
 
 ## Collection and document selection
 
@@ -90,6 +98,8 @@ The inbox does not approve publication or contact external parties. With no new 
 
 ## One concise extraction per source
 
+Resolve missing and incomplete documents through [Source recovery](SOURCE_RECOVERY.md). Check official coauthor copies, licensed repository deposits and exact literature matches, preserving edition and access provenance. Keep abstracts, complete articles and pending attachments distinct. Recovery work enters the same extraction and evidence review stages as other collected reports.
+
 Ask the model for briefing facts from the selected source: relevant events and developments, key measurements, uncertainty, and research resources. Do not add a separate model call merely to classify relevance. An irrelevant source can return an empty result with a short reason in the same call.
 
 Retain:
@@ -115,6 +125,14 @@ Define missing-value encodings in the contract. A field deliberately left for de
 
 Expansion into registry records must be deterministic and validated. It may restore declared defaults and references; it may not infer missing scientific facts, repair unsupported claims, or invent dates. Reject unresolved references or inconsistent context for review. A compact representation must reconstruct every retained claim with its original meaning and evidence.
 
+Preparation files can use compact JSON and omit values that equal the schema's declared defaults. Validate the reconstructed object against the complete original object before using this representation, and record their common content hash and file sizes. This reduces repeated metadata within the existing file limits. Exported fields and scientific missingness states remain governed by their contracts. Large local annotation sets can use the explicit `atlas metrics --max-annotation-bytes` allowance described in [Operations](OPERATIONS.md#large-annotation-files); record the allocation before running the export.
+
+For agent preparation, a packet can assign each report a local integer and ask the model to return claim and quotation indexes. Resolve those indexes against that exact packet, validate every bound, and copy quotations from the captured input when expanding the response. Retain the packet hash, prompt, schema, raw response and expanded result. Expansion produces the standard export fields with their measurement context and evidence.
+
+Quote and occurrence indexes start at zero. Check them against the captured text before export, including repeated passages and PDF line breaks. Export quotations from their captured source spans, preserving case and whitespace. A match that ignores letter case requires a unique source span and a recorded binding; ambiguous matches require review. A quotation that joins separate passages needs separate references. Record source-based repairs alongside the retained model output. Written counts and split digits can require an explicit numeric evidence review; inspect the PDF when text order or typography is uncertain.
+
+Evaluate compressed review formats on the same sources. Sharing context must preserve each geographic scope, population, period and threshold as a distinct observation. Compare reconstructed values and meanings as well as token use and elapsed time. A shorter response that combines those observations does not pass evaluation. Complete a small export validation before allocating the remaining source reviews.
+
 ## Editorial review and detailed extraction
 
 Review the digest against captured sources before accepting events. Resolve event continuity, duplicate reporting, conflicting totals, and corrections explicitly. Mechanical quote checks support this review but do not establish scientific accuracy.
@@ -127,6 +145,8 @@ Detailed extraction uses the full evidence and measurement requirements. It does
 
 The briefing presents developments, source dates, evidence links, uncertainty, research leads, and unresolved coverage. Distinguish source statements from analyst questions. Label the analytical dataset as the reviewed claims selected for the digest; it is not an exhaustive transcription of all source measurements.
 
+Use `percent` for a bounded percentage share. For a source-reported percentage increase or decrease, retain the stated magnitude with `metric: other` and `unit: other`, name “percent change” and its direction in the label, and preserve the comparison periods and baseline in the measurement context. A relative increase can exceed 100%; it is distinct from a percentage share or a change in percentage points. Keep printed changes separate from calculations based on the reported counts.
+
 Keep outbreak entities, individual cases, surveillance aggregates, and research context separate. Never sum overlapping cumulative counts or describe their differences as incident cases without supporting source evidence. Absence from the digest does not establish absence of disease or resolution of an event.
 
 ## Structured data preparation and export
@@ -137,8 +157,11 @@ ATLAS prepares analysis-ready outputs that researchers can reuse across evidence
 2. Review the measurements needed for the question. Preserve units, case definitions, classifications, populations, geography, periods and denominators. Leave fields awaiting extraction explicitly marked `not_extracted`; retain qualitative findings where numerical review is incomplete.
 3. Review related assertions together. Distinguish contradictions, corrections, supersessions, independent corroboration, republication, different scope and unresolved associations. Record the participants, source sections, reason, evidence and review status. A numerical difference alone does not establish a conflict.
 4. Prepare document, topic, reporting-channel and geographic memberships. Use neutral reporting-location names and codes, with explicit roles such as occurrence, exposure and travel origin. Source coverage describes reporting activity; epidemiological links require their own evidence.
-5. Build the metric export and structured bundle from the saved inputs. Validate schemas, entity references, evidence spans, comparison lineage and checksums. Record review coverage and pending source questions in the bundle.
-6. Select the relevant reporting window and measurement context for reuse. The supplied selector applies both date boundaries, exact evidence requirements and eligible corrections to figures. Analysts and applications use these definitions consistently across reports, maps and research views.
+5. Complete the [One Health evidence review](ONE_HEALTH.md) for identified human, animal, environmental and food observations. Preserve negative tests, sampling context and explicit source propositions. Record reviewed sections and pending work, and enrich concrete numerical opportunities using the existing metric contract.
+6. Build the metric export and structured bundle from the saved inputs. Validate schemas, entity references, evidence spans, comparison lineage and checksums. Record review coverage and pending source questions in the bundle.
+7. Select the relevant reporting window and measurement context for reuse. The supplied selector applies both date boundaries, exact evidence requirements and eligible corrections to figures. Analysts and applications use these definitions consistently across reports, maps and research views.
+
+Read each One Health observation with its own geographic evidence. A country mentioned elsewhere in a report does not locate every animal, environmental sample or human observation. Preserve month-only or year-only dates in the period label; exact date fields stay null with a missingness reason. Review repeated paragraphs against their observation cutoff before treating later publication as a new epidemiological update.
 
 The export carries separate source assertions through disagreements and revisions. A later correction affects an earlier assertion only when its supporting evidence is eligible in the selected view. Publication and capture windows describe reporting activity; observation dates describe the underlying findings. Historical source filtering remains distinct from reconstructing historical editorial decisions.
 
@@ -179,3 +202,18 @@ Write for a reader who understands public health but may be unfamiliar with the 
 Describe what the data show. Use “suspected transmission” when that is the source assessment, and name the uncertainty that matters. Present a limitation once beside the relevant result. Put detailed methods and coverage information in their own sections. Avoid repeated statements defending the workflow or contrasting it with claims nobody has made.
 
 Interface labels should guide exploration: “Explore connections”, “Shared event”, “Reported exposure”, “Read the source”. Keep the main view brief and place longer explanations in expandable panels. Source quotations, extracted findings, report contents and scientific identifiers retain their wording during a docs or interface edit.
+
+## One Health processing in each cycle
+
+Apply [One Health review](ONE_HEALTH.md) during preceding-batch checks, weekly production and historical expansion. Inspect changed sources and boundary reports, reuse valid source assessments, and reassess explicit dependent relationships. Record incomplete section review and unreviewed entries in the export. Include unresolved sampling, host, environmental and food evidence in the historical review inbox. Unanswered items remain pending. Validate the metric bundle, exact proposition corrections, date and source selection, and the geographic preview before publication handoff.
+
+Complete the [producer source review requirements](ONE_HEALTH.md#source-review-requirements) for each inspected observation: entity wording and identity evidence, sampling unit and denominator context, observation dates, relationship evidence, genomic methods and geographic roles. Record supported measurements and their method limitations, keeping unavailable metadata explicit. Use reviewed entity labels separately from finding status. Keep details that require a contract extension in the source-bound private review artifact; a workflow note cannot add fields to an export schema.
+
+The handoff names the exact supported views and their limits. Site 1.5.0 supports source-bound timing, sampling assessments and context records alongside domain columns, a report-entry × domain overview and a relationship-level evidence-type matrix. Matrix cells open the relationship's full evidence; individual quotations are not mapped to evidence types. Review the date precision, sampling scope match and environmental/intervention meaning under the [panel rules](ONE_HEALTH.md#panel-review-records). Episode grouping, population estimates and phylogenies require their further documented prerequisites. Follow the [contract acceptance requirements](ONE_HEALTH.md#contract-acceptance-requirements) before implementing those extensions. Preserve the adopted candidate while a consumer tests presentation changes.
+
+
+For an authorized review backlog, inventory every selected entry and its saved source before calls. Keep a private worklist with prior scope, source hash, inspected sections, outcome, findings, remaining work and usage receipts. A completed source review can retain scientific unknowns; inaccessible methods or missing pages remain partial or unresolved. Reuse existing observations and measurements, then annotate the concrete findings that the source review identifies. A list of findings alone does not complete their enrichment. Check the scope of completed reviews for the requested views and expand only the sections that need it. Preserve prior annotations and the adopted candidate; seal one separately validated candidate after the accounted review pass and consumer handoff.
+
+For source review, an ordered paragraph catalogue can retain the complete captured text while replacing repeated output quotations with paragraph references. Label each paragraph with its index; do not require the model to count list positions. Expand references to exact source spans before validation, preserving headings and adjacent context. For annotation, reuse the reviewed findings, their source quotations and existing measurement keys. Include case and death measurements in that catalogue so an observation can reuse a reported count without extracting it again. Repeated field values can use exact lookup tables, with reconstruction checks before model evaluation. Record the source hash and retain missing context as a specific investigation item. Evaluate a changed prompt or encoding against saved results, inspect scope disagreements, and preserve both receipts. A valid JSON response establishes structural validity; factual scope, sampling denominators and date meaning still require source review.
+
+Express value and missingness consistency in the model-facing schema. Reported values must be present; an interval must carry the boundaries required by its declared extent. Retain producer validation after expansion. Source dates with unresolved meaning remain available outside dated analysis.

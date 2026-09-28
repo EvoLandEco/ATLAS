@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from copy import deepcopy
 from bisect import bisect_right
 from datetime import date, datetime, timedelta
 from pathlib import Path
@@ -13,14 +14,14 @@ import html
 
 import pycountry
 import yaml
-from pydantic import Field, model_validator
+from pydantic import Field, model_validator, create_model
 
 from . import __version__
 from .metrics import MetricsExport
 from .models import StrictModel, TextValue, DateValue
 from .util import canonical_url, digest, read_json, stamp, uid, utcnow, write_json
 
-SITE_VERSION = '1.2.0'
+SITE_VERSION = '1.5.0'
 
 
 class Eligibility(StrictModel):
@@ -400,8 +401,298 @@ class ReviewedChain(ChainDescription):
     edges: list[ChainEdge] = Field(min_length=1)
 
 
+class Disease(StrictModel):
+    id: str = Field(pattern=r'^disease:[a-z0-9]+(?:-[a-z0-9]+)*$')
+    label: str = Field(min_length=1)
+
+
+class DiseaseReviewDetails(StrictModel):
+    record_id: str
+    kind: Literal['single_disease', 'multiple_diseases', 'not_disease_specific', 'unresolved']
+    disease_ids: list[str]
+    reason: str = Field(min_length=1)
+    reviewed_at: str
+    reviewed_by: str = Field(min_length=1)
+    review_status: Literal['source_checked_draft'] = 'source_checked_draft'
+
+    @model_validator(mode='after')
+    def partition(self):
+        n = len(self.disease_ids)
+        if n != len(set(self.disease_ids)):
+            raise ValueError('Duplicate reviewed disease')
+        if (self.kind == 'single_disease' and n != 1 or
+            self.kind == 'multiple_diseases' and n < 2 or
+            self.kind in {'not_disease_specific', 'unresolved'} and n):
+            raise ValueError('Disease review kind and membership disagree')
+        stamp(self.reviewed_at)
+        return self
+
+
+class DiseaseReviewInput(DiseaseReviewDetails):
+    evidence: list[EvidenceInput] = Field(min_length=1)
+
+
+class DiseaseReview(DiseaseReviewDetails):
+    id: str
+    evidence_ids: list[str] = Field(min_length=1)
+    eligibility: Eligibility
+
+
+class OneHealthDates(StrictModel):
+    observation_date: DateValue
+    period_start: DateValue
+    period_end: DateValue
+    date_basis: Literal['onset','diagnosis','sample_collection','test_result','notification','shipment','reporting_cutoff','unknown']
+    period_label: TextValue
+    date_note: str = Field(min_length=1)
+
+    @model_validator(mode='after')
+    def dates(self):
+        if any(v.value for v in (self.observation_date, self.period_start, self.period_end)) and self.date_basis == 'unknown':
+            raise ValueError('One Health observation date requires a basis')
+        if self.period_start.value and self.period_end.value and self.period_start.value > self.period_end.value:
+            raise ValueError('One Health period is reversed')
+        return self
+
+
+class OneHealthSampling(StrictModel):
+    sample_unit: TextValue
+    frame: TextValue
+    collection_method: TextValue
+    test_method: TextValue
+
+
+class OneHealthReviewDetails(StrictModel):
+    record_id: str
+    outcome: Literal['reviewed','no_relevant_observation','partial','unresolved']
+    scope: str = Field(min_length=1)
+    reviewed_sections: list[str] = Field(min_length=1)
+    reason: str = Field(min_length=1)
+    pending_items: list[str]
+    reviewed_at: str
+    reviewed_by: str = Field(min_length=1)
+    review_state: Literal['source_checked_draft'] = 'source_checked_draft'
+
+    @model_validator(mode='after')
+    def review(self):
+        stamp(self.reviewed_at)
+        if self.outcome in {'partial','unresolved'} and not self.pending_items:
+            raise ValueError('Incomplete One Health review requires pending work')
+        return self
+
+
+class OneHealthReviewInput(OneHealthReviewDetails):
+    evidence: list[EvidenceInput] = Field(min_length=1)
+
+
+class OneHealthReview(OneHealthReviewDetails):
+    id: str
+    evidence_ids: list[str] = Field(min_length=1)
+    eligibility: Eligibility
+
+
+class OneHealthNodeDetails(OneHealthDates):
+    key: str = Field(min_length=1)
+    record_id: str
+    label: str = Field(min_length=1)
+    domain: Literal['human','animal','environment','food','unknown']
+    entity_kind: Literal['person','population','animal_group','sample','food_product','commodity_lot','environmental_setting']
+    roles: list[Literal['host','reservoir','vector','exposed_population','exposure_source','food_vehicle','commodity','sampled_matrix','ecological_context']]
+    scope: Literal['episode','surveillance','background']
+    taxon: TextValue
+    material: TextValue
+    agent: TextValue
+    agent_kind: Literal['pathogen','toxin','other','unknown']
+    finding: Literal['infection_reported','illness_reported','agent_detected','agent_not_detected','exposure_reported','movement_reported','context','unresolved']
+    sampling: OneHealthSampling
+    place_ids: list[str]
+    location_note: str = Field(min_length=1)
+    uncertainty: str = Field(min_length=1)
+
+    @model_validator(mode='after')
+    def domains(self):
+        if len(self.roles)!=len(set(self.roles)) or len(self.place_ids)!=len(set(self.place_ids)):
+            raise ValueError('Duplicate One Health role or place')
+        if 'vector' in self.roles and self.domain!='animal':raise ValueError('Vectors are animal observations')
+        if {'host','reservoir'} & set(self.roles) and self.domain not in {'human','animal'}:
+            raise ValueError('Host and reservoir roles require a host domain')
+        if 'food_vehicle' in self.roles and self.domain!='food':raise ValueError('Food vehicle requires food domain')
+        kinds={'person':{'human'},'animal_group':{'animal'},'food_product':{'food'},'environmental_setting':{'environment'}}
+        if self.entity_kind in kinds and self.domain not in kinds[self.entity_kind]:raise ValueError('One Health entity domain differs')
+        if self.finding=='infection_reported' and (self.domain not in {'human','animal'} or self.agent_kind!='pathogen'):
+            raise ValueError('Infection requires a host and pathogen')
+        return self
+
+
+class OneHealthNodeInput(OneHealthNodeDetails):
+    measure_keys: list[str]
+    evidence: list[EvidenceInput] = Field(min_length=1)
+
+
+class OneHealthNode(OneHealthNodeDetails, ChainSupport):
+    id: str
+    topic_ids: list[str] = Field(min_length=1)
+    measure_ids: list[str]
+
+
+class OneHealthNodeRef(StrictModel):
+    record_id: str
+    key: str
+
+
+class OneHealthRelationDetails(OneHealthDates):
+    key: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    kind: Literal['cross_species_transmission','exposure','commodity_movement','genomic_association','vector_involvement','environmental_association']
+    basis: Literal['source_reported','source_hypothesis']
+    evidence_types: list[Literal['epidemiological_investigation','human_testing','animal_testing','environmental_testing','food_testing','genomic_analysis','traceback','experimental_study','ecological_analysis','source_assessment']] = Field(min_length=1)
+    directed: bool
+    direction_basis: Literal['source_reported','not_reported']
+    source_certainty: TextValue
+    scope: str = Field(min_length=1)
+    reason: str = Field(min_length=1)
+    uncertainty: str = Field(min_length=1)
+    reviewed_at: str
+    reviewed_by: str = Field(min_length=1)
+    review_state: Literal['source_checked_draft'] = 'source_checked_draft'
+
+    @model_validator(mode='after')
+    def semantics(self):
+        stamp(self.reviewed_at)
+        if self.directed != (self.direction_basis=='source_reported'):raise ValueError('One Health direction requires source support')
+        if self.kind=='genomic_association' and (self.directed or 'genomic_analysis' not in self.evidence_types):
+            raise ValueError('Genomic association is undirected and requires genomic evidence')
+        if self.kind=='commodity_movement' and (not self.directed or 'traceback' not in self.evidence_types):
+            raise ValueError('Commodity movement requires reviewed direction and tracing')
+        if len(set(self.evidence_types))!=len(self.evidence_types):raise ValueError('Duplicate evidence type')
+        return self
+
+
+class OneHealthRelationInput(OneHealthRelationDetails):
+    from_node: OneHealthNodeRef
+    to_node: OneHealthNodeRef
+    source_assertion_key: str
+    evidence: list[EvidenceInput] = Field(min_length=1)
+
+
+class OneHealthRelation(OneHealthRelationDetails, ChainSupport):
+    id: str
+    from_node_id: str
+    to_node_id: str
+    source_assertion_id: str
+
+
+class ObservationTime(StrictModel):
+    kind: Literal['onset','diagnosis','detection','sample_collection','test_result','notification','shipment','exposure','intervention','reporting_cutoff','unknown']
+    extent: Literal['point','closed_interval','open_interval','unknown'] = 'unknown'
+    start: TextValue
+    end: TextValue
+    precision: Literal['day','month','year','unknown']
+    certainty: Literal['exact','approximately','uncertain','unknown']
+    label: str = Field(min_length=1)
+    reason: str = Field(min_length=1)
+
+    @model_validator(mode='after')
+    def temporal_scope(self):
+        values=[x.value for x in (self.start,self.end) if x.value is not None]
+        if self.extent=='unknown' and values:raise ValueError('A panel date needs its temporal extent')
+        if self.extent=='point' and (not self.start.value or (self.end.value and self.end.value!=self.start.value)):raise ValueError('A point requires one reported date')
+        if self.extent=='closed_interval' and (not self.start.value or not self.end.value):raise ValueError('A closed interval requires both bounds')
+        if self.extent=='open_interval' and len(values)!=1:raise ValueError('An open interval requires one known bound')
+        if values and self.precision=='unknown':
+            raise ValueError('A panel date needs its precision')
+        for value in values:
+            pattern={'day':r'\d{4}-\d{2}-\d{2}','month':r'\d{4}-\d{2}','year':r'\d{4}'}[self.precision]
+            if not re.fullmatch(pattern,value):raise ValueError('Panel date precision differs')
+            date.fromisoformat(value+{'day':'','month':'-01','year':'-01-01'}[self.precision])
+        if self.start.value and self.end.value and self.start.value>self.end.value:
+            raise ValueError('Panel date interval is reversed')
+        return self
+
+
+class OneHealthPanelReview(StrictModel):
+    key: str = Field(min_length=1)
+    record_id: str
+    reason: str = Field(min_length=1)
+    reviewed_at: str
+    reviewed_by: str = Field(min_length=1)
+    review_state: Literal['source_checked_draft'] = 'source_checked_draft'
+    time: ObservationTime
+
+    @model_validator(mode='after')
+    def review_stamp(self):
+        stamp(self.reviewed_at)
+        return self
+
+
+class OneHealthTimingInput(OneHealthPanelReview):
+    source_assertion_key: str
+    node: OneHealthNodeRef
+    evidence: list[EvidenceInput] = Field(min_length=1)
+
+
+class OneHealthTiming(OneHealthPanelReview, ChainSupport):
+    source_assertion_id: str
+    id: str
+    node_id: str
+
+
+class SamplingDetails(OneHealthPanelReview):
+    pair_status: Literal['matched','unresolved','not_applicable']
+    unit: TextValue
+    frame: TextValue
+    population: TextValue
+    target: TextValue
+    method: TextValue
+    pooling: TextValue
+    clustering: TextValue
+    repeated_sampling: TextValue
+
+
+class OneHealthSamplingInput(SamplingDetails):
+    source_assertion_key: str
+    node: OneHealthNodeRef
+    positive_measure_key: str | None
+    tested_measure_key: str | None
+    evidence: list[EvidenceInput] = Field(min_length=1)
+
+
+class OneHealthSamplingAssessment(SamplingDetails, ChainSupport):
+    source_assertion_id: str
+    id: str
+    node_id: str
+    positive_measure_id: str | None
+    tested_measure_id: str | None
+    display: Literal['proportion','counts_only']
+    proportion: float | None = Field(ge=0,le=1)
+    display_reason: str
+
+
+class ContextDetails(OneHealthPanelReview):
+    label: str = Field(min_length=1)
+    kind: Literal['measured_covariate','reported_condition','source_hypothesis','reported_intervention','evaluated_effect']
+    variable: TextValue
+    method: TextValue
+    place_ids: list[str]
+    linkage_note: str = Field(min_length=1)
+
+
+class OneHealthContextInput(ContextDetails):
+    source_assertion_key: str
+    node_refs: list[OneHealthNodeRef]
+    measure_keys: list[str]
+    evidence: list[EvidenceInput] = Field(min_length=1)
+
+
+class OneHealthContext(ContextDetails, ChainSupport):
+    source_assertion_id: str
+    id: str
+    node_ids: list[str]
+    measure_ids: list[str]
+
+
 class SiteAnnotations(StrictModel):
-    contract_version: Literal['1.0.0', '1.1.0']
+    contract_version: Literal['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0']
     records_sha256: str
     reviewed_at: str
     reviewed_by: str
@@ -415,11 +706,26 @@ class SiteAnnotations(StrictModel):
     comparisons: list[ComparisonInput]
     limitations: list[str]
     reviewed_chains: list[ChainInput] = Field(default_factory=list)
+    diseases: list[Disease] = Field(default_factory=list)
+    disease_reviews: list[DiseaseReviewInput] = Field(default_factory=list)
+
+    one_health_reviews: list[OneHealthReviewInput] = Field(default_factory=list)
+    one_health_nodes: list[OneHealthNodeInput] = Field(default_factory=list)
+    one_health_relations: list[OneHealthRelationInput] = Field(default_factory=list)
+    one_health_timings: list[OneHealthTimingInput] = Field(default_factory=list)
+    one_health_sampling_assessments: list[OneHealthSamplingInput] = Field(default_factory=list)
+    one_health_contexts: list[OneHealthContextInput] = Field(default_factory=list)
 
     @model_validator(mode='after')
     def chain_version(self):
-        if self.reviewed_chains and self.contract_version != '1.1.0':
-            raise ValueError('Chain annotations require contract 1.1.0')
+        if self.reviewed_chains and self.contract_version == '1.0.0':
+            raise ValueError('Chain annotations require contract 1.1.0 or 1.2.0')
+        if (self.diseases or self.disease_reviews) and self.contract_version not in {'1.2.0','1.3.0','1.4.0'}:
+            raise ValueError('Disease annotations require contract 1.2.0')
+        if (self.one_health_reviews or self.one_health_nodes or self.one_health_relations) and self.contract_version not in {'1.3.0','1.4.0'}:
+            raise ValueError('One Health annotations require contract 1.3.0 or 1.4.0')
+        if (self.one_health_timings or self.one_health_sampling_assessments or self.one_health_contexts) and self.contract_version!='1.4.0':
+            raise ValueError('One Health panel annotations require contract 1.4.0')
         return self
 
 
@@ -451,7 +757,7 @@ class Snapshot(StrictModel):
 
 
 class SiteBundle(StrictModel):
-    contract_version: Literal['1.2.0']
+    contract_version: Literal['1.5.0']
     software_version: str
     release_status: Literal['research_preview']
     snapshot: Snapshot
@@ -468,10 +774,54 @@ class SiteBundle(StrictModel):
     comparisons: list[Comparison]
     location_memberships: list[LocationMembership]
     relationships: list[SourceRelation]
+    diseases: list[Disease]
+    disease_reviews: list[DiseaseReview]
     reviewed_chains: list[ReviewedChain]
+    one_health_reviews: list[OneHealthReview]
+    one_health_nodes: list[OneHealthNode]
+    one_health_relations: list[OneHealthRelation]
+    one_health_timings: list[OneHealthTiming]
+    one_health_sampling_assessments: list[OneHealthSamplingAssessment]
+    one_health_contexts: list[OneHealthContext]
     source_coverage: list[CoverageEdge]
     metrics: MetricsExport
     limitations: list[str]
+
+
+# Contract 1.2 shares the scientific models and excludes disease reviews.
+# The released schema digest prevents shared model changes from altering it.
+SiteBundleV12 = create_model('SiteBundle', __base__=StrictModel,
+    contract_version=(Literal['1.2.0'], ...),
+    **{name: (field.annotation, deepcopy(field)) for name, field in SiteBundle.model_fields.items()
+       if name not in {'contract_version', 'diseases', 'disease_reviews', 'one_health_reviews', 'one_health_nodes', 'one_health_relations','one_health_timings','one_health_sampling_assessments','one_health_contexts'}})
+SiteBundleV13 = create_model('SiteBundle', __base__=StrictModel,
+    contract_version=(Literal['1.3.0'], ...),
+    **{name: (field.annotation, deepcopy(field)) for name, field in SiteBundle.model_fields.items()
+       if name not in {'contract_version','one_health_reviews','one_health_nodes','one_health_relations','one_health_timings','one_health_sampling_assessments','one_health_contexts'}})
+SiteBundleV14 = create_model('SiteBundle', __base__=StrictModel,
+    contract_version=(Literal['1.4.0'], ...),
+    **{name: (field.annotation, deepcopy(field)) for name, field in SiteBundle.model_fields.items()
+       if name not in {'contract_version','one_health_timings','one_health_sampling_assessments','one_health_contexts'}})
+SITE_MODELS = {'1.2.0': SiteBundleV12, '1.3.0': SiteBundleV13, '1.4.0': SiteBundleV14, SITE_VERSION: SiteBundle}
+V14_SCHEMA_SHA256 = 'a902b28d61bd3a23567136f97b7fb9613866c5ffea793e33de7e2c70e0534824'
+V14_ANNOTATIONS_SHA256 = '12aa5226c3c8c7d91f3e9d6312447cab6e069c3160876bf047da20aadbc691d0'
+V13_SCHEMA_SHA256 = '28496cbe0699c432d703a8b752bc09106f253ae17e8f40f0242cedbd4384a867'
+V13_ANNOTATIONS_SHA256 = '3eb4c5cf2a7d0cd9446891955e7e70b4f5e5dcdef5d62d43f68d45cfe0f6c71a'
+V12_SCHEMA_SHA256 = '3bac561d88ebe8481507cc996580f1bd817e3bd9496b087597dd748a540622ba'
+V12_ANNOTATIONS_SHA256 = '257487e1d3b7e3a9f2642bcd627e52df0aff6e3b5755955bcbd679fe3693989a'
+
+
+def site_model(version):
+    if version not in SITE_MODELS:
+        raise ValueError('Unsupported site contract: ' + str(version))
+    model = SITE_MODELS[version]
+    if version == '1.2.0' and digest(model.model_json_schema()) != V12_SCHEMA_SHA256:
+        raise ValueError('Contract 1.2 validation model differs from its released schema')
+    if version == '1.3.0' and digest(model.model_json_schema()) != V13_SCHEMA_SHA256:
+        raise ValueError('Contract 1.3 validation model differs from its sealed schema')
+    if version == '1.4.0' and digest(model.model_json_schema()) != V14_SCHEMA_SHA256:
+        raise ValueError('Contract 1.4 validation model differs from its sealed schema')
+    return model
 
 
 def _index(rows, key='id'):
@@ -496,7 +846,7 @@ def _comparisons_by_record(comparisons, assertions):
 
 def validate_bundle(data):
     """Validate schema and graph integrity at export and website build time."""
-    SiteBundle.model_validate(data)
+    site_model(data.get('contract_version')).model_validate(data)
     names=['organizations','channels','places','display_groups','topics','documents','records','assertions','evidence','comparisons','location_memberships','relationships','source_coverage']
     ix={name:_index(data[name]) for name in names};ix['areas']=_index(data['areas'],'code')
     topic_records=_group_by(data['records'],lambda r:r['topic_id'])
@@ -512,6 +862,17 @@ def validate_bundle(data):
     def rule(item, expected):
         require('records',item['eligibility']['record_ids'])
         if set(item['eligibility']['record_ids'])!=set(expected):raise ValueError('Temporal support must match all evidence')
+    diseases = _index(data.get('diseases', []))
+    disease_reviews = data.get('disease_reviews', [])
+    _index(disease_reviews)
+    if len({r['record_id'] for r in disease_reviews}) != len(disease_reviews):
+        raise ValueError('Multiple disease reviews for one record')
+    for review in disease_reviews:
+        require('records', [review['record_id']]); require('evidence', review['evidence_ids'])
+        if not set(review['disease_ids']) <= diseases.keys(): raise ValueError('Unknown disease reference')
+        evidence_records = {ix['evidence'][eid]['record_id'] for eid in review['evidence_ids']}
+        if review['record_id'] not in evidence_records: raise ValueError('Disease review needs evidence from its record')
+        rule(review, evidence_records)
     for c in data['channels']:require('organizations',[c['organization_id']])
     for r in data['records']:
         require('documents',[r['document_id']]);require('topics',[r['topic_id']]);require('channels',[r['channel_id']])
@@ -615,6 +976,8 @@ def validate_bundle(data):
         if set(r['location_membership_ids'])!={m['id'] for m in record_locations[r['id']]}:raise ValueError('Record location membership mismatch')
     from .chains import validate_chains
     validate_chains(data['reviewed_chains'], ix)
+    from .one_health import validate_one_health
+    validate_one_health(data, ix)
     counts=data['snapshot']
     if (counts['selected_record_count'],counts['selected_document_count'],counts['selected_topic_count'])!=(len(data['records']),len(data['documents']),len(data['topics'])):raise ValueError('Snapshot counts differ from entity memberships')
     if counts['captured_at']!=max(r['capture'] for r in data['records']) or counts['capture_until']!=counts['captured_at']:raise ValueError('Snapshot capture timestamp mismatch')
@@ -637,10 +1000,12 @@ def planned_update(captured_at: str, schedule: Path):
                 schedule_source_sha256=digest(schedule.read_bytes()),schedule_activation='not_verified')
 
 
-def export_site(snapshot: Path, results: Path, metrics_path: Path, annotations: Path, source_dir: Path, out: Path, schedule: Path):
+def export_site(snapshot: Path, results: Path, metrics_path: Path, annotations: Path, source_dir: Path, out: Path, schedule: Path, *, max_input_bytes: int = 64_000_000):
+    if type(max_input_bytes) is not int or not 0 < max_input_bytes <= 128_000_000:
+        raise ValueError('Site input budget must be an integer from 1 to 128000000 bytes')
     if out.exists() and any(out.iterdir()):raise ValueError('Site export target must be empty')
     for path in [snapshot,results,metrics_path,annotations]:
-        if path.stat().st_size>64_000_000:raise ValueError('Site export input exceeds the file budget')
+        if path.stat().st_size>max_input_bytes:raise ValueError('Site export input exceeds the file budget')
     data=read_json(snapshot);metrics=MetricsExport.model_validate(read_json(metrics_path)).model_dump(mode='json')
     if 'geographic_review' in data:
         from .geography import validate_coverage
@@ -775,7 +1140,14 @@ def export_site(snapshot: Path, results: Path, metrics_path: Path, annotations: 
               **planned_update(max(r['capture'] for r in records),schedule))
     from .chains import prepare_chains
     chains=prepare_chains(ann.reviewed_chains, evrefs, evidence, rs, keys, {p['id']:p for p in places})
-    bundle=SiteBundle.model_validate(dict(contract_version=SITE_VERSION,software_version=__version__,release_status='research_preview',snapshot=meta,organizations=[o.model_dump() for o in ann.organizations],channels=[c.model_dump() for c in ann.channels],areas=[a.model_dump() for a in ann.areas],places=places,display_groups=display,topics=topics,documents=documents,records=records,assertions=assertions,evidence=list(evidence.values()),comparisons=comparisons,location_memberships=memberships,relationships=relations,source_coverage=coverage,metrics=metrics,reviewed_chains=chains,limitations=ann.limitations)).model_dump(mode='json')
+    disease_reviews=[]
+    for review in ann.disease_reviews:
+        ids=evrefs(review.evidence)
+        disease_reviews.append(dict(**review.model_dump(exclude={'evidence'}), id=uid('disease-review', review.record_id),
+            evidence_ids=ids, eligibility=dict(record_ids=sorted({evidence[e]['record_id'] for e in ids}))))
+    from .one_health import prepare_one_health
+    oh=prepare_one_health(ann, evrefs, evidence, rs, keys, ai, metrics['measures'])
+    bundle=SiteBundle.model_validate(dict(contract_version=SITE_VERSION,software_version=__version__,release_status='research_preview',snapshot=meta,organizations=[o.model_dump() for o in ann.organizations],channels=[c.model_dump() for c in ann.channels],areas=[a.model_dump() for a in ann.areas],places=places,display_groups=display,topics=topics,documents=documents,records=records,assertions=assertions,evidence=list(evidence.values()),comparisons=comparisons,location_memberships=memberships,relationships=relations,source_coverage=coverage,metrics=metrics,reviewed_chains=chains,diseases=[d.model_dump() for d in ann.diseases],disease_reviews=disease_reviews,**oh,limitations=ann.limitations)).model_dump(mode='json')
     validate_bundle(bundle)
     out.mkdir(parents=True,exist_ok=True)
     write_json(out/'atlas-site.json',bundle);write_json(out/'atlas-site.schema.json',SiteBundle.model_json_schema())
@@ -788,13 +1160,19 @@ def export_site(snapshot: Path, results: Path, metrics_path: Path, annotations: 
 
 def verify_site(path: Path):
     manifest=read_json(path/'manifest.json')
-    if manifest['contract_version']!=SITE_VERSION or set(manifest['files'])!={'atlas-site.json','atlas-site.schema.json','annotations.schema.json','review.html','view.mjs'}:raise ValueError('Unsupported site bundle')
+    version=manifest['contract_version'];model=site_model(version)
+    if set(manifest['files'])!={'atlas-site.json','atlas-site.schema.json','annotations.schema.json','review.html','view.mjs'}:raise ValueError('Unsupported site bundle')
     for name,sha in manifest['files'].items():
         if digest((path/name).read_bytes())!=sha:raise ValueError('Bundle checksum mismatch: '+name)
-    if read_json(path/'atlas-site.schema.json')!=SiteBundle.model_json_schema():raise ValueError('Unsupported site schema')
-    if (path/'view.mjs').read_text()!=files('atlas').joinpath('assets/site_view.js').read_text():raise ValueError('Unsupported view rules')
-    data=validate_bundle(read_json(path/'atlas-site.json'))
-    return dict(contract_version=SITE_VERSION,records=len(data['records']),documents=len(data['documents']),assertions=len(data['assertions']),comparisons=len(data['comparisons']),status='valid')
+    if read_json(path/'atlas-site.schema.json')!=model.model_json_schema():raise ValueError('Unsupported site schema')
+    expected_annotations={'1.2.0':V12_ANNOTATIONS_SHA256,'1.3.0':V13_ANNOTATIONS_SHA256,'1.4.0':V14_ANNOTATIONS_SHA256}.get(version,digest(SiteAnnotations.model_json_schema()))
+    if digest(read_json(path/'annotations.schema.json'))!=expected_annotations:raise ValueError('Unsupported annotation schema')
+    selector={'1.2.0':'assets/site_view_v1_2.js','1.3.0':'assets/site_view_v1_3.js','1.4.0':'assets/site_view_v1_4.js'}.get(version,'assets/site_view.js')
+    if (path/'view.mjs').read_bytes()!=files('atlas').joinpath(selector).read_bytes():raise ValueError('Unsupported view rules')
+    data=read_json(path/'atlas-site.json')
+    if data.get('contract_version')!=version:raise ValueError('Manifest and data contract versions differ')
+    validate_bundle(data)
+    return dict(contract_version=version,records=len(data['records']),documents=len(data['documents']),assertions=len(data['assertions']),comparisons=len(data['comparisons']),status='valid')
 
 
 def render_review(data):

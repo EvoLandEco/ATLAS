@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: "Cite the version used in the report's run manifest."
 title: "ATLAS: Agentic Tracking and Longitudinal Analysis for Surveillance"
-version: 0.1.0-alpha.21
-date-released: 2026-09-27
+version: 0.1.0-alpha.26
+date-released: 2026-09-28
 type: software
 repository-code: "https://github.com/EvoLandEco/ATLAS"
 authors:

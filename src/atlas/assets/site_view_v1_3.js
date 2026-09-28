@@ -9,8 +9,8 @@ const figureFields = ['label', 'metric', 'value', 'value_status', 'unit', 'count
 const ordered = value => Array.isArray(value) ? value.map(ordered) : value && typeof value === 'object'
   ? Object.fromEntries(Object.keys(value).sort().map(key => [key, ordered(value[key])])) : value;
 
-export function selectView(data, from, until, basis = 'publication', knowledgeCutoff = null, recordSelection = null, oneHealthOptions = null) {
-  if (!['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0'].includes(data.contract_version)) throw new Error('Unsupported ATLAS site contract');
+export function selectView(data, from, until, basis = 'publication', knowledgeCutoff = null, recordSelection = null) {
+  if (!['1.0.0', '1.1.0', '1.2.0', '1.3.0'].includes(data.contract_version)) throw new Error('Unsupported ATLAS site contract');
   const day = value => /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
   if (!day(from) || !day(until) || from > until || !['publication', 'capture'].includes(basis)) throw new Error('Invalid reporting window');
   const cutoff = knowledgeCutoff === null ? null : Date.parse(knowledgeCutoff);
@@ -141,91 +141,7 @@ export function selectView(data, from, until, basis = 'publication', knowledgeCu
       categories: [...overlapping.values()].map(s => ({...s, count: s.record_ids.length}))
         .sort((a, b) => b.count - a.count || a.id.localeCompare(b.id))},
   };
-  const ohOptions = oneHealthOptions ?? {};
-  if (Object.keys(ohOptions).some(k => !['domains','observation_from','observation_until'].includes(k))) throw new Error('Unknown One Health selection option');
-  const domains = ohOptions.domains == null ? null : new Set(ohOptions.domains);
-  if (domains && [...domains].some(d => !['human','animal','environment','food','unknown'].includes(d))) throw new Error('Unknown One Health domain');
-  const obsFrom = ohOptions.observation_from ?? null, obsUntil = ohOptions.observation_until ?? null;
-  if ((obsFrom === null) !== (obsUntil === null) || (obsFrom !== null && (!day(obsFrom) || !day(obsUntil) || obsFrom > obsUntil))) throw new Error('Invalid observation window');
-  const eligibleNodes = (data.one_health_nodes ?? []).filter(n => supported(n.eligibility) && (!domains || domains.has(n.domain)));
-  const interval = n => n.observation_date.value ? [n.observation_date.value,n.observation_date.value] :
-    n.period_start.value && n.period_end.value ? [n.period_start.value,n.period_end.value] : null;
-  const ohNodes = eligibleNodes.filter(n => obsFrom === null || (interval(n) && interval(n)[0] <= obsUntil && interval(n)[1] >= obsFrom));
-  const ohNodeIds = new Set(ohNodes.map(n => n.id));
-  const contested = new Map();
-  for (const c of comparisons.filter(c => c.kind === 'contradiction')) for (const aid of c.participant_ids) {
-    if (!contested.has(aid)) contested.set(aid, []); contested.get(aid).push(c.id);
-  }
-  const ohRelations = (data.one_health_relations ?? []).filter(r => ohNodeIds.has(r.from_node_id) && ohNodeIds.has(r.to_node_id) &&
-    supported(r.eligibility) && !superseded.has(r.source_assertion_id)).map(r => ({...r,
-      contested: contested.has(r.source_assertion_id), comparison_ids: contested.get(r.source_assertion_id) ?? []}));
-  const ohReviews = new Map((data.one_health_reviews ?? []).map(r => [r.record_id,r]));
-  const ohCoverage = {selected_records: records.length, reviewed: 0, partial: 0, unresolved: 0, no_relevant_observation: 0,
-    not_reviewed: 0, support_outside_selection: 0, pending_record_ids: [], observations_by_domain: {}, records_by_domain: {}, relationships_by_kind: {}, relationships_by_basis: {}};
-  for (const r of records) {
-    const review = ohReviews.get(r.id), state = !review ? 'not_reviewed' : !supported(review.eligibility) ? 'support_outside_selection' : review.outcome;
-    ohCoverage[state]++;
-    if (!['reviewed','no_relevant_observation'].includes(state)) ohCoverage.pending_record_ids.push(r.id);
-  }
-  const domainRecords = new Map();
-  for (const n of ohNodes) {
-    ohCoverage.observations_by_domain[n.domain] = (ohCoverage.observations_by_domain[n.domain] ?? 0) + 1;
-    if (!domainRecords.has(n.domain)) domainRecords.set(n.domain,new Set());domainRecords.get(n.domain).add(n.record_id);
-  }
-  for (const [domain, ids] of domainRecords) ohCoverage.records_by_domain[domain] = ids.size;
-  for (const r of ohRelations) {
-    ohCoverage.relationships_by_kind[r.kind] = (ohCoverage.relationships_by_kind[r.kind] ?? 0) + 1;
-    ohCoverage.relationships_by_basis[r.basis] = (ohCoverage.relationships_by_basis[r.basis] ?? 0) + 1;
-  }
-  const eligibleNodeIds = new Set(eligibleNodes.map(n => n.id));
-  const timeBounds = t => {
-    const start = t.start.value, end = t.end.value;
-    if (!start || ['unknown','reporting_cutoff'].includes(t.kind) || ['unknown','open_interval'].includes(t.extent)) return null;
-    const last = end ?? start;
-    if (t.precision === 'day') return [start, last];
-    if (t.precision === 'year') return [start + '-01-01', last + '-12-31'];
-    if (t.precision === 'month') {
-      const [year, month] = last.split('-').map(Number);
-      const days = new Date(Date.UTC(year, month, 0)).getUTCDate();
-      return [start + '-01', last + '-' + String(days).padStart(2, '0')];
-    }
-    return null;
-  };
-  const panelMeasures = r => r.measure_ids ?? [r.positive_measure_id, r.tested_measure_id].filter(Boolean);
-  const measureAssertions = new Map([...assertionMeasures].map(([aid, mid]) => [mid, aid]));
-  const panelSupported = r => supported(r.eligibility) && !superseded.has(r.source_assertion_id) &&
-    panelMeasures(r).every(id => measureIds.has(id)) &&
-    (r.node_id ? eligibleNodeIds.has(r.node_id) : r.node_ids.length ? r.node_ids.every(id => eligibleNodeIds.has(id)) : !domains);
-  const panelReview = r => {
-    const ids = [r.source_assertion_id, ...panelMeasures(r).map(id => measureAssertions.get(id))];
-    const comparison_ids = [...new Set(ids.flatMap(id => contested.get(id) ?? []))].sort();
-    return {...r, contested: comparison_ids.length > 0, comparison_ids};
-  };
-  const partitionPanel = rows => {
-    const eligible = (rows ?? []).filter(panelSupported).map(panelReview), dated = [], undated = [];
-    for (const r of eligible) {
-      const bounds = timeBounds(r.time);
-      if (!bounds) undated.push(r);
-      else if (obsFrom === null || (bounds[0] <= obsUntil && bounds[1] >= obsFrom)) dated.push(r);
-    }
-    return {dated, undated};
-  };
-  const timingRows = data.one_health_timings ?? [];
-  const timing = partitionPanel(timingRows.filter(r => r.time.kind !== 'reporting_cutoff'));
-  const sampling = partitionPanel(data.one_health_sampling_assessments);
-  const contexts = partitionPanel(data.one_health_contexts);
-  const oneHealth = {nodes: ohNodes, relations: ohRelations, coverage: ohCoverage,
-    undated_nodes: obsFrom === null ? [] : eligibleNodes.filter(n => interval(n) === null),
-    reviews: [...ohReviews.values()].filter(r => recordIds.has(r.record_id) && supported(r.eligibility)),
-    observation_window: obsFrom === null ? null : {from: obsFrom, until: obsUntil},
-    timings: timing.dated, undated_timings: timing.undated,
-    reporting_cutoffs: timingRows.filter(r => r.time.kind === 'reporting_cutoff' && panelSupported(r)).map(panelReview),
-    sampling_assessments: sampling.dated, undated_sampling_assessments: sampling.undated,
-    contexts: contexts.dated, undated_contexts: contexts.undated,
-    geographic_projection: 'reviewed_places_only_no_inferred_arcs',
-    counting_unit: 'source_observation', comparability: 'no_cross_domain_aggregation'};
   return {
-    one_health: oneHealth,
     disease_composition: diseaseComposition,
     compact_grouping_version: COMPACT_GROUPING_VERSION,
     record_ids: records.map(r => r.id), document_ids: [...new Set(records.map(r => r.document_id))],

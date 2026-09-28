@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.1.0a26 — 2026-09-28
+
+- Local site preparation accepts an explicit per-file input allowance from 1 to 128 MB, with a 64 MB default and full evidence validation.
+- Site contract 1.5.0 and annotations 1.4.0 describe source-bound timing, reviewed sampling count pairs, environmental context and interventions. Date precision, reporting cutoffs and missing metadata remain explicit.
+- Sampling proportions require an explicit scope match and valid positive/tested sample references. The selector keeps undated panel records separate and preserves source dependencies.
+- Reported calendar dates with an unresolved epidemiological meaning retain their value outside the dated timeline.
+- Measurement anchoring recognises explicit thousand, million and billion quantities using decimal arithmetic. Source scope, qualifiers and measurement meaning remain subject to evidence review.
+- Numerically equal decimal values retain their source anchor when a source prints trailing zeros, such as 1.60 and 1.6.
+- An explicit “none” can anchor a source-reported zero while preserving its stated population and period.
+- Sealed site 1.4.0 bundles retain their schema, observation identities and selector.
+
+## 0.1.0a25 — 2026-09-28
+
+- Metric preparation accepts an explicit annotation file budget, bounded at 64 MB. The default is 16 MB. Source validation and export contracts govern every allowance.
+
+## 0.1.0a24 — 2026-09-28
+
+- Numeric evidence checks recognise the source cardinal words “single” and “eleven”. Geographic scope and measurement meaning require source review.
+
+## 0.1.0a23 — 2026-09-28
+
+- Site contract 1.4.0 and annotation contract 1.3.0 carry One Health observations, source propositions and section review coverage, with exact evidence dependencies and content identities.
+- The selector supports domain and observation period filters, explicit undated observations, proposition corrections and contested relationships. Source selection never creates connections between excluded nodes.
+- Sealed site 1.2.0 and 1.3.0 bundles retain their exact schemas and selectors.
+- Metric previews render missing geographic context without changing exported values.
+
+## 0.1.0a22 — 2026-09-27
+
+- Version-aware site verification accepts sealed 1.2.0 and 1.3.0 bundles with exact schema and selector checks, full scientific validation and no data rewriting.
+
+- Site contract 1.3.0 and annotation contract 1.2.0 carry source-reviewed disease subjects, stable identifiers and quoted support.
+- The selector supplies reporting-entry composition, a complete partition, overlapping disease memberships and explicit missing-review states under all selection filters.
+- Disease review forms part of weekly and historical processing. Existing scientific arrays retain their definitions.
+
 ## v0.1.0-alpha.21 — 2026-09-27
 
 - Site contract 1.2.0 exports reviewed transmission, contact, travel and reporting chains with stable identities, exact evidence and explicit membership.

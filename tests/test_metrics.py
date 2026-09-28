@@ -126,3 +126,61 @@ def test_panel_membership_order_and_single_source_normalization(tmp_path,monkeyp
     assert len(next(p for p in result['panels'] if p['id']=='both')['measure_ids'])==2
     assert len(next(p for p in result['panels'] if p['kind']=='record' and p['id']==first['id'])['measure_ids'])==1
     assert len(calls)==1
+
+
+def test_preview_preserves_unknown_geography(tmp_path):
+    from atlas.metrics import render_preview
+    bundle=run(inputs(tmp_path),tmp_path/'out')
+    first=bundle['measures'][0]
+    first['geography']={'value':None,'status':'not_extracted'}
+    second=copy.deepcopy(first);second.update(measure_id='second',observation_date='2026-07-02')
+    bundle['measures'].append(second);bundle['series'][0]['measure_ids'].append('second')
+    assert 'Location: not extracted' in render_preview(bundle)
+    assert first['geography']['value'] is None
+
+
+@pytest.mark.parametrize('quote,value,valid',[
+    ('Activity increased in single countries in Western and Southern Asia.',1,True),
+    ('Eleven countries reported active transmission.',11,True),
+    ('Eleven countries reported active transmission.',1,False),
+    ('Five cases recovered and none are currently in treatment.',0,True),
+    ('None are currently in treatment.',1,False),
+    ('The source reports CFR 1.60%.',1.6,True),
+    ('The source reports a proportion of 0.050.',0.05,True),
+    ('The source reports CFR 1.601%.',1.6,False),
+    ('The source reports CFR 11.60%.',1.6,False),
+    ('The analysis projects that 4.18 million children will require treatment.',4180000,True),
+    ('More than 1.35 million children will require treatment.',1350000,True),
+    ('Approximately 1.54 million women are expected to need treatment.',1540000,True),
+    ('Supplies reached 2.5 thousand people.',2500,True),
+    ('The total is 1,200 million doses.',1200000000,True),
+    ('The estimate is 1.2 billion doses.',1200000000,True),
+    ('The reported change is -1.2 million people.',1200000,False),
+    ('The estimate is 4.18 million people.',418000,False),
+    ('The estimate is 14.18 million people.',4180000,False),
+    ('A population of millions was described; 4.18 was the ratio.',4180000,False),
+])
+def test_source_cardinal_word_anchors(tmp_path,quote,value,valid):
+    paths=inputs(tmp_path);batch,data=paths[3:];record=data['records'][0]
+    record['claims'][0]['quotes']=[quote];record['claims'][0]['text']=quote
+    (paths[2]/(record['document_id']+'.txt')).write_text('\n'.join(q for c in record['claims'] for q in c['quotes']))
+    batch['records_sha256']=digest(data['records']);m=batch['measures'][0]
+    m.update(value=value,metric='other',unit='other',label='Reporting countries')
+    m['evidence']['quote']=quote
+    write_json(paths[0],data);write_json(paths[1],batch)
+    if valid:assert run(paths,tmp_path/'out')['measures'][0]['value']==value
+    else:
+        with pytest.raises(ValueError,match='Numeric anchor missing'):run(paths,tmp_path/'out')
+
+
+def test_explicit_annotation_budget_preserves_export(tmp_path):
+    paths=inputs(tmp_path)
+    expected=run(paths,tmp_path/'small')
+    with paths[1].open('a') as stream:stream.write(' ' * 16_000_000)
+    with pytest.raises(ValueError,match='file budget'):run(paths,tmp_path/'default')
+    actual=run(paths,tmp_path/'larger',max_annotation_bytes=32_000_000)
+    assert actual['annotations_sha256']==digest(paths[1].read_bytes())
+    assert {k:v for k,v in actual.items() if k!='annotations_sha256'}=={k:v for k,v in expected.items() if k!='annotations_sha256'}
+    assert run(paths,tmp_path/'exact',max_annotation_bytes=paths[1].stat().st_size)==actual
+    for limit in [0,64_000_001,True,1.5]:
+        with pytest.raises(ValueError,match='annotation budget'):run(paths,tmp_path/'invalid',max_annotation_bytes=limit)

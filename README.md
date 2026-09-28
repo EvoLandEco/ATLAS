@@ -4,13 +4,13 @@
 
 One Health outbreak intelligence across sources, places, and time.
 
-![Release](https://img.shields.io/badge/release-v0.1.0--alpha.21-orange)
+![Release](https://img.shields.io/badge/release-v0.1.0--alpha.26-orange)
 ![Stage](https://img.shields.io/badge/stage-research_preview-orange)
 [![Tests](https://github.com/EvoLandEco/ATLAS/actions/workflows/ci.yml/badge.svg)](https://github.com/EvoLandEco/ATLAS/actions/workflows/ci.yml)
-![Export contract](https://img.shields.io/badge/export_contract-1.2.0-blue)
+![Export contract](https://img.shields.io/badge/export_contract-1.5.0-blue)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-Python package `0.1.0a21` · Core data schema `0.1.2` · Metrics contract `0.2.0`
+Python package `0.1.0a26` · Core data schema `0.1.2` · Metrics contract `0.2.0`
 
 ATLAS automates weekly outbreak surveillance and longitudinal analysis for research groups, with human review of scientific decisions. It collects public health and animal health reports, extracts evidence, follows reported counts over time, and prepares geographic relationships for analysis. Its products are reports and versioned, analysis-ready exports that other applications can present and explore.
 
@@ -22,6 +22,7 @@ The research profile covers One Health, disease spread over time and space, tran
 - **Longitudinal analysis maintained each week.** The weekly procedure reviews source revisions, adds eligible observations to reviewed surveillance series and reassesses affected comparisons. Reporting periods, case definitions, gaps and conflicting figures travel with the data. [Explicit comparison rules](docs/LONGITUDINAL_ANALYSIS.md) determine which observations can be connected.
 - **Scaling considered at each stage.** Saved extractions and geographic assessments avoid repeated model work. Indexed memberships, shared source normalization and cached quotation searches reduce local processing costs. [Measured benchmarks and documented scaling limits](#rescanning-and-archive-growth) guide archive expansion and targeted reassessment.
 - **Geographic assessment and evidence networks.** Location roles, source-described travel, shared exposures and epidemiological hypotheses connect reports across places and time. Exported endpoints, dates and quoted support let interfaces show maps and temporal replay, with a [reassessment procedure](docs/LINK_REASSESSMENT.md) for historical additions and weekly updates.
+- **One Health evidence across domains.** Source observations connect people, animals, environmental samples and food through reviewed exposure, genomic and epidemiological relationships. Sampling context, negative results, exact quotations and review coverage accompany each observation. [One Health review](docs/ONE_HEALTH.md) governs interpretation and weekly reassessment.
 - **Stable outputs and reproducible analysis.** Frozen source snapshots, saved model responses, reviewed annotations and fixed software versions support deterministic scientific content and replay. Stable identifiers, versioned schemas and preserved decision history keep releases traceable; generation timestamps record each run. Analysis-ready exports support reuse without repeating extraction.
 - **Open methods and collaboration.** The [MIT-licensed](LICENSE) code, prompts, schemas, workflow rules and evaluation methods make the process inspectable. Source references and documented decisions support scrutiny of the findings. [Contributions](CONTRIBUTING.md), scientific review, source improvements and corrections are welcome.
 
@@ -31,7 +32,9 @@ The [weekly digest guide](docs/WORKFLOW.md) describes a concise briefing focused
 
 ## Agent setup
 
-The reference agent setup uses **GPT-6 Astra with High reasoning in Codex**. Codex is the only agent harness tested for the complete workflow. Individual extraction runs record their actual model and prompt versions; this setup does not describe every historical run.
+For literature searches during [document recovery](docs/SOURCE_RECOVERY.md), connect the **Consensus plugin** to the agent harness. It is a prerequisite for the Consensus discovery branch. Official source collection uses the configured adapters; recovered papers retain their original source, edition and evidence provenance.
+
+The reference agent setup uses **GPT-6 Astra with High reasoning in Codex**. Codex is the only agent harness tested for the complete workflow. Extraction receipts record the requested model and prompt version. The provider may not return the actual model identifier when the Codex CLI default is used.
 
 **Model capability matters.** Less capable LLMs can produce poorer results, including missed evidence, incorrect measurement scope and unsupported links. **Claude Opus 5.5 is a safer substitute to evaluate than a less capable model**, based on its strong [general benchmark performance](https://artificialanalysis.ai/articles/claude-opus-5-5). This is a model selection recommendation; Opus 5.5 has not been validated in ATLAS. Assess substitutions with the same captured sources and [extraction evaluation protocol](docs/EVALUATION.md) before operational use.
 
@@ -146,6 +149,8 @@ ATLAS turns source reports into [versioned research datasets](docs/SITE_EXPORT.m
 
 [Longitudinal review](docs/LONGITUDINAL_ANALYSIS.md) prepares comparable sequences of reported counts within a defined surveillance programme. Reviewed series retain case definitions, reporting periods, cumulative baselines and source evidence, with explicit connections between eligible observations. Trends preserve missing periods, conflicting values and reporting revisions. These permissions describe reported counts; incidence, rates and fatality-risk comparisons require further evidence.
 
+Source-reviewed disease composition describes reporting attention across selected report entries. The selector supplies a complete partition with explicit multiple-disease and unclassified groups, stable disease identifiers and drill-through references. It does not treat report frequency as case burden. See [Disease composition](docs/SITE_EXPORT.md#disease-composition).
+
 The export distinguishes conflicting assertions, explicit corrections, independent corroboration, repeated reporting and differences in scope. Geographic roles and reporting dates support consistent filtering across analyses and visualizations. Review status, missing values and extraction coverage accompany the data; statistical comparisons require suitable populations, periods and denominators.
 
 The supplied selector prepares [compact figures](docs/SITE_EXPORT.md#compact-figures) for information cards. Matching recorded figures appear once with all eligible reporting sources and measure IDs attached. Conflicts and differences in scope remain separate. The full assertions and source-specific contexts remain available for inspection and analysis.
@@ -243,6 +248,8 @@ The backfill configuration permits 40 pages per index and 2,000 documents per so
 
 Local reports, captured evidence, and installation records are excluded from Git. Hosted collection requires the repository variables and secrets in [Operations](docs/OPERATIONS.md); the schedule is gated by `ATLAS_SCHEDULE_ENABLED`.
 
+Large annotation sets use lossless compact preparation files. The per-run `atlas metrics --max-annotation-bytes` allowance defaults to 16 MB and is bounded at 64 MB; [Operations](docs/OPERATIONS.md#large-annotation-files) describes its recorded use. Source validation and export contracts apply to every allowance.
+
 ## Compact digest trial
 
 Run a separate digest experiment against captured publications:
@@ -317,7 +324,7 @@ Larger workloads replicate the graph with distinct identities. Five warmups and 
 
 On the captured dataset, structured export took 2.75 seconds with repeated place-membership scans and 0.93 seconds with indexed joins, measured across three fresh Python processes. Peak process memory was about 265 and 260 MiB. Scientific output and ordering matched; generation timestamps differ. Metrics preparation took 0.28 seconds and bundle verification 0.16 seconds. These figures exclude startup and imports. The [evaluation methods](docs/EVALUATION.md#selector-and-geographic-export-scaling) describe the checks and limits.
 
-Most stages hold their selected datasets in memory. Parsing, validation, serialization and compression still grow with data size. Retaining a full growing export every week produces quadratic cumulative storage at a steady publication rate. Metric input limits are 32 MB for the snapshot and 16 MB for annotations; structured-export inputs are bounded at 64 MB each and source text at 4 MB per document. A replicated selector graph is not an end-to-end capacity test.
+Most stages hold their selected datasets in memory. Parsing, validation, serialization and compression still grow with data size. Retaining a full growing export every week produces quadratic cumulative storage at a steady publication rate. Metric inputs allow 32 MB for the snapshot and default to 16 MB for annotations, with an explicit annotation allowance up to 64 MB. Structured export defaults to 64 MB per prepared input file; `--max-input-bytes` permits a recorded allowance up to 128 MB. Source text remains bounded at 4 MB per document. A replicated selector graph is not an end-to-end capacity test.
 
 ### Operating at larger scale
 
