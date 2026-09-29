@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.0a28 — 2026-09-29
+
+Network analysis contract 0.2.0 separates source assessment from resolved repeat-report identity. Source-reviewed movement categories define human-travel eligibility, with product shipments, human remains and vessel-only itineraries excluded from that metric. Collection history retains recovery receipts without assigning missing inclusion probabilities.
+
+## 0.1.0a27 — 2026-09-29
+
+- Network analysis contract 0.1.1 supplies separate reporting counts, reviewed repeat-report groups, coverage histories and source, organization, month and topic sensitivity.
+- Exact replay checks analysis inputs, counts, evidence membership and checksums. Unsupported episode and surveillance-adjusted estimates retain explicit reasons.
+
 ## 0.1.0a26 — 2026-09-28
 
 - Local site preparation accepts an explicit per-file input allowance from 1 to 128 MB, with a 64 MB default and full evidence validation.

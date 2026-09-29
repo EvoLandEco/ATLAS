@@ -69,6 +69,9 @@ def execute(a):
     if a.command=='approve':return approve(a.bundle,a.editor,a.note,a.out)
     if a.command=='verify-approval':return approved_bundle(a.bundle,a.approval)
     if a.command=='schemas':
+        from .network_analysis import schema as network_schema,transport_schema
+        write_json(a.out/'network-analysis.schema.json',network_schema())
+        write_json(a.out/'network-transport.schema.json',transport_schema())
         from .geography import Reviews
         write_json(a.out/'geographic-review.schema.json',Reviews.model_json_schema())
         from .handoff import WeeklyReceipt

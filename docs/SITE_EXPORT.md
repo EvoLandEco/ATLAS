@@ -137,6 +137,8 @@ Publication, capture and observation dates have separate meanings. Publication m
 
 ## Coverage and interpretation
 
+The [network analysis sidecar](NETWORK_ANALYSIS.md) carries descriptive country and pair statistics, source-bound repeat-report reviews, pipeline coverage and sensitivity results. Its independent contract is `0.2.0`; it is bound to the exact site file hash and does not enlarge this bundle. Consumers require a matching scope or recompute descriptive counts under the supplied selection rules. Partial repeat-report correction, collection adjustment and surveillance adjustment have distinct status and interpretation.
+
 Each bundle records document and record coverage, the number of reviewed measures, pending candidates and material limitations. Qualitative findings remain available where numerical extraction is incomplete. Geographic memberships and quoted authorities carry their own review or extraction status.
 
 Read coverage alongside the selected measurements. A reviewed comparison establishes the stated relationship among its participants; it does not establish that every possible conflict or revision in the corpus has been examined. Report-level geographic scope also does not imply that every claim has a reviewed occurrence or travel role.
@@ -232,3 +234,5 @@ Panel selection excludes corrected primary propositions and corrected bound meas
 `time.extent` distinguishes `point`, `closed_interval`, `open_interval` and `unknown`. Open intervals retain their known bound in the undated list; the selector does not invent the other boundary. The `detection` kind preserves source-reported detection periods when the source does not specify specimen collection or testing dates. Sampling eligibility periods describe the sampling frame and do not establish observed event dates.
 
 A source may supply a calendar date without identifying its epidemiological meaning. Preserve that value and precision with `kind: unknown` and explain the unresolved meaning in `reason`. The selector keeps it in the undated list, outside the dated timeline. Week labels remain source wording unless their calendar bounds are established by the source.
+
+The network analysis sidecar uses contract `0.2.0`. Consumers distinguish assessment coverage from resolved repeat-report membership and use the source-reviewed movement category for human-travel eligibility. Product shipments, human remains and vessel-only itineraries remain available in general reporting-network summaries. See [Network analysis](NETWORK_ANALYSIS.md) for selection, category definitions, uncertainty and transport verification.

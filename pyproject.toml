@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "atlas-surveillance"
-version = "0.1.0a26"
+version = "0.1.0a28"
 description = "Versioned One Health outbreak intelligence with a longitudinal event ledger"
 requires-python = ">=3.11"
 readme = "README.md"

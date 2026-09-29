@@ -4,13 +4,13 @@
 
 One Health outbreak intelligence across sources, places, and time.
 
-![Release](https://img.shields.io/badge/release-v0.1.0--alpha.26-orange)
+![Release](https://img.shields.io/badge/release-v0.1.0--alpha.28-orange)
 ![Stage](https://img.shields.io/badge/stage-research_preview-orange)
 [![Tests](https://github.com/EvoLandEco/ATLAS/actions/workflows/ci.yml/badge.svg)](https://github.com/EvoLandEco/ATLAS/actions/workflows/ci.yml)
 ![Export contract](https://img.shields.io/badge/export_contract-1.5.0-blue)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-Python package `0.1.0a26` · Core data schema `0.1.2` · Metrics contract `0.2.0`
+Python package `0.1.0a28` · Core data schema `0.1.2` · Metrics contract `0.2.0`
 
 ATLAS automates weekly outbreak surveillance and longitudinal analysis for research groups, with human review of scientific decisions. It collects public health and animal health reports, extracts evidence, follows reported counts over time, and prepares geographic relationships for analysis. Its products are reports and versioned, analysis-ready exports that other applications can present and explore.
 
@@ -22,6 +22,7 @@ The research profile covers One Health, disease spread over time and space, tran
 - **Longitudinal analysis maintained each week.** The weekly procedure reviews source revisions, adds eligible observations to reviewed surveillance series and reassesses affected comparisons. Reporting periods, case definitions, gaps and conflicting figures travel with the data. [Explicit comparison rules](docs/LONGITUDINAL_ANALYSIS.md) determine which observations can be connected.
 - **Scaling considered at each stage.** Saved extractions and geographic assessments avoid repeated model work. Indexed memberships, shared source normalization and cached quotation searches reduce local processing costs. [Measured benchmarks and documented scaling limits](#rescanning-and-archive-growth) guide archive expansion and targeted reassessment.
 - **Geographic assessment and evidence networks.** Location roles, source-described travel, shared exposures and epidemiological hypotheses connect reports across places and time. Exported endpoints, dates and quoted support let interfaces show maps and temporal replay, with a [reassessment procedure](docs/LINK_REASSESSMENT.md) for historical additions and weekly updates.
+- **Network analysis with explicit coverage.** A separate [analysis export](docs/NETWORK_ANALYSIS.md) counts reporting relationships, applies source-supported repeat-report groupings and compares source, period and topic selections. Review coverage and unavailable estimates keep partial deduplication distinct from surveillance adjustment.
 - **One Health evidence across domains.** Source observations connect people, animals, environmental samples and food through reviewed exposure, genomic and epidemiological relationships. Sampling context, negative results, exact quotations and review coverage accompany each observation. [One Health review](docs/ONE_HEALTH.md) governs interpretation and weekly reassessment.
 - **Stable outputs and reproducible analysis.** Frozen source snapshots, saved model responses, reviewed annotations and fixed software versions support deterministic scientific content and replay. Stable identifiers, versioned schemas and preserved decision history keep releases traceable; generation timestamps record each run. Analysis-ready exports support reuse without repeating extraction.
 - **Open methods and collaboration.** The [MIT-licensed](LICENSE) code, prompts, schemas, workflow rules and evaluation methods make the process inspectable. Source references and documented decisions support scrutiny of the findings. [Contributions](CONTRIBUTING.md), scientific review, source improvements and corrections are welcome.

@@ -1,0 +1,2367 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "analysis_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "citations": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "citation": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "doi": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "citation",
+          "doi"
+        ],
+        "type": "object"
+      },
+      "type": "array",
+      "uniqueItems": false
+    },
+    "contract_version": {
+      "const": "0.2.0"
+    },
+    "coverage": {
+      "additionalProperties": false,
+      "properties": {
+        "discovered_or_selected_urls": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "frame_completeness": {
+          "const": "unknown"
+        },
+        "interpretation": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "ledger_content_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "selected_documents": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "source_independence": {
+          "const": "not_established"
+        }
+      },
+      "required": [
+        "ledger_content_sha256",
+        "discovered_or_selected_urls",
+        "selected_documents",
+        "frame_completeness",
+        "source_independence",
+        "interpretation"
+      ],
+      "type": "object"
+    },
+    "definitions": {
+      "additionalProperties": false,
+      "properties": {
+        "incident_strength": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "incoming_travel": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "pair_multiplicity": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "repeat_report_corrected": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "reviewed_group_subset": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "incident_strength",
+        "pair_multiplicity",
+        "incoming_travel",
+        "repeat_report_corrected",
+        "reviewed_group_subset"
+      ],
+      "type": "object"
+    },
+    "excluded": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "enum": [
+              "hypothesis",
+              "domestic",
+              "ambiguous_or_non_country_endpoint"
+            ]
+          },
+          "record_ids": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "relationship_id": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "relationship_id",
+          "reason",
+          "record_ids"
+        ],
+        "type": "object"
+      },
+      "type": "array",
+      "uniqueItems": false
+    },
+    "granularity_reviews": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "evidence_ids": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "granularity": {
+            "enum": [
+              "individual_journey",
+              "aggregate_travellers",
+              "shared_episode",
+              "product_consignment",
+              "human_remains_transfer",
+              "vessel_voyage",
+              "unresolved"
+            ]
+          },
+          "movement_category": {
+            "enum": [
+              "living_travellers",
+              "product_shipments",
+              "human_remains",
+              "vessel_only",
+              "unresolved",
+              "not_applicable"
+            ]
+          },
+          "relationship_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "reviewed_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "reviewed_by": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "relationship_id",
+          "granularity",
+          "movement_category",
+          "evidence_ids",
+          "basis",
+          "reviewed_at",
+          "reviewed_by"
+        ],
+        "type": "object"
+      },
+      "type": "array",
+      "uniqueItems": false
+    },
+    "identity_reviews": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "candidate_relationship_ids": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "evidence_ids": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "relationship_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "reviewed_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "reviewed_by": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "relationship_id",
+          "evidence_ids",
+          "candidate_relationship_ids",
+          "basis",
+          "reviewed_at",
+          "reviewed_by"
+        ],
+        "type": "object"
+      },
+      "type": "array",
+      "uniqueItems": false
+    },
+    "inputs": {
+      "additionalProperties": false,
+      "properties": {
+        "collection_sha256": {
+          "items": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": false
+        },
+        "reviews_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "site_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "site_sha256",
+        "reviews_sha256",
+        "collection_sha256"
+      ],
+      "type": "object"
+    },
+    "method": {
+      "additionalProperties": false,
+      "properties": {
+        "code_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "id": {
+          "const": "reporting-network-3"
+        },
+        "software_version": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "code_sha256",
+        "software_version"
+      ],
+      "type": "object"
+    },
+    "movement_category_definitions": {
+      "additionalProperties": false,
+      "properties": {
+        "human_remains": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "living_travellers": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "not_applicable": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "product_shipments": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "unresolved": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "vessel_only": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "living_travellers",
+        "product_shipments",
+        "human_remains",
+        "vessel_only",
+        "unresolved",
+        "not_applicable"
+      ],
+      "type": "object"
+    },
+    "publication_authorized": {
+      "const": false
+    },
+    "records": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "capture": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "channel_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "document_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "organization_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "publication": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "topic_id": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "document_id",
+          "channel_id",
+          "organization_id",
+          "topic_id",
+          "publication",
+          "capture"
+        ],
+        "type": "object"
+      },
+      "type": "array",
+      "uniqueItems": false
+    },
+    "release_status": {
+      "const": "research_preview"
+    },
+    "repeat_report_reviews": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "evidence_ids": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "relationship_ids": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "reviewed_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "reviewed_by": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "source_lineage": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "const": "source_checked_draft"
+          }
+        },
+        "required": [
+          "id",
+          "relationship_ids",
+          "evidence_ids",
+          "reviewed_at",
+          "reviewed_by",
+          "basis",
+          "source_lineage",
+          "status"
+        ],
+        "type": "object"
+      },
+      "type": "array",
+      "uniqueItems": false
+    },
+    "scopes": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "by_type": {
+            "additionalProperties": false,
+            "properties": {
+              "movement": {
+                "additionalProperties": false,
+                "allOf": [
+                  {
+                    "if": {
+                      "properties": {
+                        "correction_status": {
+                          "const": "partial"
+                        }
+                      }
+                    },
+                    "then": {
+                      "properties": {
+                        "repeat_report_corrected": {
+                          "properties": {
+                            "ranking_status": {
+                              "const": "unavailable_partial_identity_review"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "properties": {
+                  "correction_status": {
+                    "enum": [
+                      "partial",
+                      "reviewed_scope",
+                      "empty_selection"
+                    ]
+                  },
+                  "identity_coverage": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "active_group_ids": {
+                        "items": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "type": "array",
+                        "uniqueItems": true
+                      },
+                      "assessed_relationships": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "grouped_relationships": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "unassessed_relationships": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "ungrouped_relationships": {
+                        "minimum": 0,
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "grouped_relationships",
+                      "ungrouped_relationships",
+                      "active_group_ids",
+                      "assessed_relationships",
+                      "unassessed_relationships"
+                    ],
+                    "type": "object"
+                  },
+                  "movement_coverage": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "human_remains": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "living_travellers": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "not_applicable": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "product_shipments": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "unresolved": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "vessel_only": {
+                        "minimum": 0,
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "living_travellers",
+                      "product_shipments",
+                      "human_remains",
+                      "vessel_only",
+                      "unresolved",
+                      "not_applicable"
+                    ],
+                    "type": "object"
+                  },
+                  "raw": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "incident_strength": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": "integer"
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "incoming_travel": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": "integer"
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "pair_multiplicity": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": "integer"
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "units": {
+                        "minimum": 0,
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "units",
+                      "incident_strength",
+                      "pair_multiplicity",
+                      "incoming_travel"
+                    ],
+                    "type": "object"
+                  },
+                  "relationship_ids": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "type": "array",
+                    "uniqueItems": true
+                  },
+                  "repeat_report_corrected": {
+                    "additionalProperties": false,
+                    "allOf": [
+                      {
+                        "if": {
+                          "properties": {
+                            "ranking_status": {
+                              "const": "unavailable_partial_identity_review"
+                            }
+                          }
+                        },
+                        "then": {
+                          "properties": {
+                            "incident_strength": {
+                              "items": {
+                                "properties": {
+                                  "rank": {
+                                    "type": "null"
+                                  }
+                                }
+                              }
+                            },
+                            "incoming_travel": {
+                              "items": {
+                                "properties": {
+                                  "rank": {
+                                    "type": "null"
+                                  }
+                                }
+                              }
+                            },
+                            "pair_multiplicity": {
+                              "items": {
+                                "properties": {
+                                  "rank": {
+                                    "type": "null"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "if": {
+                          "properties": {
+                            "ranking_status": {
+                              "const": "reviewed_scope"
+                            }
+                          }
+                        },
+                        "then": {
+                          "properties": {
+                            "incident_strength": {
+                              "items": {
+                                "properties": {
+                                  "rank": {
+                                    "minimum": 1,
+                                    "type": "integer"
+                                  }
+                                }
+                              }
+                            },
+                            "incoming_travel": {
+                              "items": {
+                                "properties": {
+                                  "rank": {
+                                    "minimum": 1,
+                                    "type": "integer"
+                                  }
+                                }
+                              }
+                            },
+                            "pair_multiplicity": {
+                              "items": {
+                                "properties": {
+                                  "rank": {
+                                    "minimum": 1,
+                                    "type": "integer"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "properties": {
+                      "incident_strength": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": [
+                                "integer",
+                                "null"
+                              ]
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "incoming_travel": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": [
+                                "integer",
+                                "null"
+                              ]
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "pair_multiplicity": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": [
+                                "integer",
+                                "null"
+                              ]
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "ranking_status": {
+                        "enum": [
+                          "unavailable_partial_identity_review",
+                          "reviewed_scope"
+                        ]
+                      },
+                      "units": {
+                        "minimum": 0,
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "units",
+                      "ranking_status",
+                      "incident_strength",
+                      "pair_multiplicity",
+                      "incoming_travel"
+                    ],
+                    "type": "object"
+                  },
+                  "reviewed_group_subset": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "incident_strength": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": "integer"
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "incoming_travel": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": "integer"
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "pair_multiplicity": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": "integer"
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "units": {
+                        "minimum": 0,
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "units",
+                      "incident_strength",
+                      "pair_multiplicity",
+                      "incoming_travel"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "relationship_ids",
+                  "raw",
+                  "repeat_report_corrected",
+                  "reviewed_group_subset",
+                  "identity_coverage",
+                  "movement_coverage",
+                  "correction_status"
+                ],
+                "type": "object"
+              },
+              "shared_event": {
+                "additionalProperties": false,
+                "allOf": [
+                  {
+                    "if": {
+                      "properties": {
+                        "correction_status": {
+                          "const": "partial"
+                        }
+                      }
+                    },
+                    "then": {
+                      "properties": {
+                        "repeat_report_corrected": {
+                          "properties": {
+                            "ranking_status": {
+                              "const": "unavailable_partial_identity_review"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "properties": {
+                  "correction_status": {
+                    "enum": [
+                      "partial",
+                      "reviewed_scope",
+                      "empty_selection"
+                    ]
+                  },
+                  "identity_coverage": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "active_group_ids": {
+                        "items": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "type": "array",
+                        "uniqueItems": true
+                      },
+                      "assessed_relationships": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "grouped_relationships": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "unassessed_relationships": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "ungrouped_relationships": {
+                        "minimum": 0,
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "grouped_relationships",
+                      "ungrouped_relationships",
+                      "active_group_ids",
+                      "assessed_relationships",
+                      "unassessed_relationships"
+                    ],
+                    "type": "object"
+                  },
+                  "movement_coverage": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "human_remains": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "living_travellers": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "not_applicable": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "product_shipments": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "unresolved": {
+                        "minimum": 0,
+                        "type": "integer"
+                      },
+                      "vessel_only": {
+                        "minimum": 0,
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "living_travellers",
+                      "product_shipments",
+                      "human_remains",
+                      "vessel_only",
+                      "unresolved",
+                      "not_applicable"
+                    ],
+                    "type": "object"
+                  },
+                  "raw": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "incident_strength": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": "integer"
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "incoming_travel": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": "integer"
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "pair_multiplicity": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": "integer"
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "units": {
+                        "minimum": 0,
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "units",
+                      "incident_strength",
+                      "pair_multiplicity",
+                      "incoming_travel"
+                    ],
+                    "type": "object"
+                  },
+                  "relationship_ids": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "type": "array",
+                    "uniqueItems": true
+                  },
+                  "repeat_report_corrected": {
+                    "additionalProperties": false,
+                    "allOf": [
+                      {
+                        "if": {
+                          "properties": {
+                            "ranking_status": {
+                              "const": "unavailable_partial_identity_review"
+                            }
+                          }
+                        },
+                        "then": {
+                          "properties": {
+                            "incident_strength": {
+                              "items": {
+                                "properties": {
+                                  "rank": {
+                                    "type": "null"
+                                  }
+                                }
+                              }
+                            },
+                            "incoming_travel": {
+                              "items": {
+                                "properties": {
+                                  "rank": {
+                                    "type": "null"
+                                  }
+                                }
+                              }
+                            },
+                            "pair_multiplicity": {
+                              "items": {
+                                "properties": {
+                                  "rank": {
+                                    "type": "null"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "if": {
+                          "properties": {
+                            "ranking_status": {
+                              "const": "reviewed_scope"
+                            }
+                          }
+                        },
+                        "then": {
+                          "properties": {
+                            "incident_strength": {
+                              "items": {
+                                "properties": {
+                                  "rank": {
+                                    "minimum": 1,
+                                    "type": "integer"
+                                  }
+                                }
+                              }
+                            },
+                            "incoming_travel": {
+                              "items": {
+                                "properties": {
+                                  "rank": {
+                                    "minimum": 1,
+                                    "type": "integer"
+                                  }
+                                }
+                              }
+                            },
+                            "pair_multiplicity": {
+                              "items": {
+                                "properties": {
+                                  "rank": {
+                                    "minimum": 1,
+                                    "type": "integer"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "properties": {
+                      "incident_strength": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": [
+                                "integer",
+                                "null"
+                              ]
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "incoming_travel": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": [
+                                "integer",
+                                "null"
+                              ]
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "pair_multiplicity": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": [
+                                "integer",
+                                "null"
+                              ]
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "ranking_status": {
+                        "enum": [
+                          "unavailable_partial_identity_review",
+                          "reviewed_scope"
+                        ]
+                      },
+                      "units": {
+                        "minimum": 0,
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "units",
+                      "ranking_status",
+                      "incident_strength",
+                      "pair_multiplicity",
+                      "incoming_travel"
+                    ],
+                    "type": "object"
+                  },
+                  "reviewed_group_subset": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "incident_strength": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": "integer"
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "incoming_travel": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": "integer"
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "pair_multiplicity": {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "key": {
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            "rank": {
+                              "minimum": 1,
+                              "type": "integer"
+                            },
+                            "value": {
+                              "minimum": 0,
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "key",
+                            "value",
+                            "rank"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                      },
+                      "units": {
+                        "minimum": 0,
+                        "type": "integer"
+                      }
+                    },
+                    "required": [
+                      "units",
+                      "incident_strength",
+                      "pair_multiplicity",
+                      "incoming_travel"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "relationship_ids",
+                  "raw",
+                  "repeat_report_corrected",
+                  "reviewed_group_subset",
+                  "identity_coverage",
+                  "movement_coverage",
+                  "correction_status"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "movement",
+              "shared_event"
+            ],
+            "type": "object"
+          },
+          "combined": {
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "correction_status": {
+                      "const": "partial"
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "repeat_report_corrected": {
+                      "properties": {
+                        "ranking_status": {
+                          "const": "unavailable_partial_identity_review"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "properties": {
+              "correction_status": {
+                "enum": [
+                  "partial",
+                  "reviewed_scope",
+                  "empty_selection"
+                ]
+              },
+              "identity_coverage": {
+                "additionalProperties": false,
+                "properties": {
+                  "active_group_ids": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "type": "array",
+                    "uniqueItems": true
+                  },
+                  "assessed_relationships": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "grouped_relationships": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "unassessed_relationships": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "ungrouped_relationships": {
+                    "minimum": 0,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "grouped_relationships",
+                  "ungrouped_relationships",
+                  "active_group_ids",
+                  "assessed_relationships",
+                  "unassessed_relationships"
+                ],
+                "type": "object"
+              },
+              "movement_coverage": {
+                "additionalProperties": false,
+                "properties": {
+                  "human_remains": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "living_travellers": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "not_applicable": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "product_shipments": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "unresolved": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "vessel_only": {
+                    "minimum": 0,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "living_travellers",
+                  "product_shipments",
+                  "human_remains",
+                  "vessel_only",
+                  "unresolved",
+                  "not_applicable"
+                ],
+                "type": "object"
+              },
+              "raw": {
+                "additionalProperties": false,
+                "properties": {
+                  "incident_strength": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "rank": {
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "value": {
+                          "minimum": 0,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "value",
+                        "rank"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array",
+                    "uniqueItems": false
+                  },
+                  "incoming_travel": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "rank": {
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "value": {
+                          "minimum": 0,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "value",
+                        "rank"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array",
+                    "uniqueItems": false
+                  },
+                  "pair_multiplicity": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "rank": {
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "value": {
+                          "minimum": 0,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "value",
+                        "rank"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array",
+                    "uniqueItems": false
+                  },
+                  "units": {
+                    "minimum": 0,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "units",
+                  "incident_strength",
+                  "pair_multiplicity",
+                  "incoming_travel"
+                ],
+                "type": "object"
+              },
+              "relationship_ids": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              },
+              "repeat_report_corrected": {
+                "additionalProperties": false,
+                "allOf": [
+                  {
+                    "if": {
+                      "properties": {
+                        "ranking_status": {
+                          "const": "unavailable_partial_identity_review"
+                        }
+                      }
+                    },
+                    "then": {
+                      "properties": {
+                        "incident_strength": {
+                          "items": {
+                            "properties": {
+                              "rank": {
+                                "type": "null"
+                              }
+                            }
+                          }
+                        },
+                        "incoming_travel": {
+                          "items": {
+                            "properties": {
+                              "rank": {
+                                "type": "null"
+                              }
+                            }
+                          }
+                        },
+                        "pair_multiplicity": {
+                          "items": {
+                            "properties": {
+                              "rank": {
+                                "type": "null"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "if": {
+                      "properties": {
+                        "ranking_status": {
+                          "const": "reviewed_scope"
+                        }
+                      }
+                    },
+                    "then": {
+                      "properties": {
+                        "incident_strength": {
+                          "items": {
+                            "properties": {
+                              "rank": {
+                                "minimum": 1,
+                                "type": "integer"
+                              }
+                            }
+                          }
+                        },
+                        "incoming_travel": {
+                          "items": {
+                            "properties": {
+                              "rank": {
+                                "minimum": 1,
+                                "type": "integer"
+                              }
+                            }
+                          }
+                        },
+                        "pair_multiplicity": {
+                          "items": {
+                            "properties": {
+                              "rank": {
+                                "minimum": 1,
+                                "type": "integer"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ],
+                "properties": {
+                  "incident_strength": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "rank": {
+                          "minimum": 1,
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "value": {
+                          "minimum": 0,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "value",
+                        "rank"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array",
+                    "uniqueItems": false
+                  },
+                  "incoming_travel": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "rank": {
+                          "minimum": 1,
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "value": {
+                          "minimum": 0,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "value",
+                        "rank"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array",
+                    "uniqueItems": false
+                  },
+                  "pair_multiplicity": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "rank": {
+                          "minimum": 1,
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "value": {
+                          "minimum": 0,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "value",
+                        "rank"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array",
+                    "uniqueItems": false
+                  },
+                  "ranking_status": {
+                    "enum": [
+                      "unavailable_partial_identity_review",
+                      "reviewed_scope"
+                    ]
+                  },
+                  "units": {
+                    "minimum": 0,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "units",
+                  "ranking_status",
+                  "incident_strength",
+                  "pair_multiplicity",
+                  "incoming_travel"
+                ],
+                "type": "object"
+              },
+              "reviewed_group_subset": {
+                "additionalProperties": false,
+                "properties": {
+                  "incident_strength": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "rank": {
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "value": {
+                          "minimum": 0,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "value",
+                        "rank"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array",
+                    "uniqueItems": false
+                  },
+                  "incoming_travel": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "rank": {
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "value": {
+                          "minimum": 0,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "value",
+                        "rank"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array",
+                    "uniqueItems": false
+                  },
+                  "pair_multiplicity": {
+                    "items": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "key": {
+                          "minLength": 1,
+                          "type": "string"
+                        },
+                        "rank": {
+                          "minimum": 1,
+                          "type": "integer"
+                        },
+                        "value": {
+                          "minimum": 0,
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "value",
+                        "rank"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array",
+                    "uniqueItems": false
+                  },
+                  "units": {
+                    "minimum": 0,
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "units",
+                  "incident_strength",
+                  "pair_multiplicity",
+                  "incoming_travel"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "relationship_ids",
+              "raw",
+              "repeat_report_corrected",
+              "reviewed_group_subset",
+              "identity_coverage",
+              "movement_coverage",
+              "correction_status"
+            ],
+            "type": "object"
+          },
+          "id": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "key": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "selection": {
+            "additionalProperties": false,
+            "allOf": [
+              {
+                "else": {
+                  "properties": {
+                    "value": {
+                      "minLength": 1,
+                      "type": "string"
+                    }
+                  }
+                },
+                "if": {
+                  "properties": {
+                    "kind": {
+                      "const": "full"
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "value": {
+                      "type": "null"
+                    }
+                  }
+                }
+              }
+            ],
+            "properties": {
+              "basis": {
+                "const": "publication"
+              },
+              "kind": {
+                "enum": [
+                  "full",
+                  "reviewed_group_support",
+                  "source_omission",
+                  "organization_omission",
+                  "publication_month",
+                  "reporting_topic"
+                ]
+              },
+              "since": {
+                "format": "date",
+                "type": "string"
+              },
+              "until": {
+                "format": "date",
+                "type": "string"
+              },
+              "value": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "kind",
+              "value",
+              "since",
+              "until",
+              "basis"
+            ],
+            "type": "object"
+          },
+          "selection_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "key",
+          "selection_sha256",
+          "selection",
+          "combined",
+          "by_type"
+        ],
+        "type": "object"
+      },
+      "type": "array",
+      "uniqueItems": false
+    },
+    "selection_rules": {
+      "additionalProperties": false,
+      "properties": {
+        "date_meaning": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "groups": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "relationships": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "unsupported_filters": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "relationships",
+        "groups",
+        "unsupported_filters",
+        "date_meaning"
+      ],
+      "type": "object"
+    },
+    "sensitivity_interpretation": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "source_span_reuse": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "end": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "relationship_ids": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "source_text_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "start": {
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "source_text_sha256",
+          "start",
+          "end",
+          "relationship_ids"
+        ],
+        "type": "object"
+      },
+      "type": "array",
+      "uniqueItems": false
+    },
+    "target": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "unavailable": {
+      "additionalProperties": false,
+      "properties": {
+        "collection_adjusted": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "complete_episode_ranking": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "confidence_intervals": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "surveillance_adjusted": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "complete_episode_ranking",
+        "collection_adjusted",
+        "surveillance_adjusted",
+        "confidence_intervals"
+      ],
+      "type": "object"
+    },
+    "uncertainty": {
+      "additionalProperties": false,
+      "properties": {
+        "lower": {
+          "type": "null"
+        },
+        "reason": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "status": {
+          "const": "not_estimated"
+        },
+        "upper": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "status",
+        "lower",
+        "upper",
+        "reason"
+      ],
+      "type": "object"
+    },
+    "units": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "assertion_ids": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "directed": {
+            "type": "boolean"
+          },
+          "evidence_ids": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "from_country": {
+            "pattern": "^[A-Z]{2}$",
+            "type": "string"
+          },
+          "granularity": {
+            "enum": [
+              "individual_journey",
+              "aggregate_travellers",
+              "shared_episode",
+              "product_consignment",
+              "human_remains_transfer",
+              "vessel_voyage",
+              "unresolved"
+            ]
+          },
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "identity_status": {
+            "enum": [
+              "unreviewed",
+              "source_checked_repeat_report_group",
+              "source_checked_identity_unresolved"
+            ]
+          },
+          "kind": {
+            "enum": [
+              "movement",
+              "shared_event"
+            ]
+          },
+          "movement_category": {
+            "enum": [
+              "living_travellers",
+              "product_shipments",
+              "human_remains",
+              "vessel_only",
+              "unresolved",
+              "not_applicable"
+            ]
+          },
+          "record_ids": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "to_country": {
+            "pattern": "^[A-Z]{2}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "directed",
+          "from_country",
+          "to_country",
+          "record_ids",
+          "assertion_ids",
+          "evidence_ids",
+          "identity_status",
+          "movement_category",
+          "granularity"
+        ],
+        "type": "object"
+      },
+      "type": "array",
+      "uniqueItems": false
+    }
+  },
+  "required": [
+    "contract_version",
+    "analysis_id",
+    "method",
+    "inputs",
+    "release_status",
+    "publication_authorized",
+    "target",
+    "definitions",
+    "selection_rules",
+    "unavailable",
+    "uncertainty",
+    "records",
+    "units",
+    "excluded",
+    "repeat_report_reviews",
+    "granularity_reviews",
+    "identity_reviews",
+    "movement_category_definitions",
+    "scopes",
+    "citations",
+    "coverage",
+    "source_span_reuse",
+    "sensitivity_interpretation"
+  ],
+  "title": "ATLAS network analysis 0.2.0",
+  "type": "object"
+}

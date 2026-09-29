@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "analysis": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "relative_path": {
+          "pattern": "^(releases|network-analysis)/[0-9a-f]{64}/[a-z-]+([.]schema)?[.](json|mjs)$",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "relative_path",
+        "bytes",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "analysis_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "coverage": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "relative_path": {
+          "pattern": "^(releases|network-analysis)/[0-9a-f]{64}/[a-z-]+([.]schema)?[.](json|mjs)$",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "relative_path",
+        "bytes",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "hash_basis": {
+      "const": "sha256_file_bytes"
+    },
+    "map": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "relative_path": {
+          "pattern": "^(releases|network-analysis)/[0-9a-f]{64}/[a-z-]+([.]schema)?[.](json|mjs)$",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "relative_path",
+        "bytes",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "publication_authorized": {
+      "const": false
+    },
+    "resolution": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "relative_path": {
+          "pattern": "^(releases|network-analysis)/[0-9a-f]{64}/[a-z-]+([.]schema)?[.](json|mjs)$",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "relative_path",
+        "bytes",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "selector": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "relative_path": {
+          "pattern": "^(releases|network-analysis)/[0-9a-f]{64}/[a-z-]+([.]schema)?[.](json|mjs)$",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "relative_path",
+        "bytes",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "site": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "relative_path": {
+          "pattern": "^(releases|network-analysis)/[0-9a-f]{64}/[a-z-]+([.]schema)?[.](json|mjs)$",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "relative_path",
+        "bytes",
+        "sha256"
+      ],
+      "type": "object"
+    },
+    "site_release_id": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "transport_version": {
+      "const": "0.1.0"
+    }
+  },
+  "required": [
+    "transport_version",
+    "publication_authorized",
+    "analysis_id",
+    "site_release_id",
+    "hash_basis",
+    "resolution",
+    "site",
+    "map",
+    "selector",
+    "analysis",
+    "schema",
+    "coverage"
+  ],
+  "title": "ATLAS network transport 0.1.0",
+  "type": "object"
+}
