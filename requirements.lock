@@ -16,7 +16,7 @@ jsonschema-specifications==2025.9.1
 markdown-it-py==4.2.0
 mdurl==0.1.2
 protego==0.6.2
-pycountry==24.6.1
+pycountry==26.2.16
 pydantic==2.13.4
 pydantic_core==2.46.4
 pypdf==5.9.0
