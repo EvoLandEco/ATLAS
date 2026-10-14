@@ -56,6 +56,19 @@ test('snapshot evidence must exist, packet publication preserves history',async(
   await assert.rejects(()=>route(request('api/sync/snapshot',p),e,service),/evidence/);
   assert.equal((await e.DB.prepare('SELECT COUNT(*) AS n FROM snapshots').first()).n,1);
 });
+test('twenty pending issues fit the D1 Free query allowance',async()=>{
+  const e=env(),p=await seed(e),prepare=e.DB.prepare.bind(e.DB);let queries=0;
+  e.DB.prepare=sql=>{queries++;return prepare(sql);};
+  p.snapshot_id='e'.repeat(64);p.sequence=2;
+  p.issues=Array.from({length:20},(_,i)=>({...p.issues[0],issue_id:`issue-${i+1}`}));
+  assert.equal((await route(request('api/sync/snapshot',p),e,service)).status,200);
+  assert.ok(queries<=50,`${queries} database queries exceed the Free allowance`);
+  queries=0;
+  const list=await (await route(request('api/issues'),e,reviewer)).json();
+  assert.equal(list.issues.length,20);assert.ok(queries<=50);
+  p.snapshot_id='f'.repeat(64);p.sequence=3;p.issues[0].title='Different content under the same revision';
+  await assert.rejects(()=>route(request('api/sync/snapshot',p),e,service),/revision has different content/);
+});
 test('duplicate submission returns same decision and competing reviewers conflict',async()=>{
   const e=env(),p=await seed(e),first=await submit(e,p);
   const retry=await submit(e,p);assert.deepEqual(retry,first);

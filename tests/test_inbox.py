@@ -35,6 +35,25 @@ def test_registry_packet_has_historical_captured_evidence(store, config, tmp_pat
     assert not any('/Users/' in str(i) for i in packet.model_dump().values())
 
 
+@pytest.mark.parametrize('publication', read_json(Path(__file__).parent / 'fixtures/inbox-publication-times.json'))
+def test_registry_source_publication_time_retains_its_calendar_date(store, config, tmp_path, publication):
+    from atlas.sources import save_document
+    from atlas.extraction import add_extraction
+    from atlas.models import Extraction
+    mention = sample_mention()
+    text = mention['evidence'][0]['quote']
+    document = save_document(store, config['sources'][0], text=text, raw=text.encode(),
+        url='https://example.org/timestamped-report', content_url='https://example.org/timestamped-report',
+        title=mention['title'], published_at=publication['published_at'], publication_precision='instant', at=AT)
+    add_extraction(store, document, Extraction(outcome='extracted', mentions=[mention]),
+        at=AT, extraction_key='timestamped-report', provenance={'provider': 'editorial'})
+    export_inbox(store, 'atlas', tmp_path / 'packet', config=config)
+    issue = Packet.model_validate(read_json(tmp_path / 'packet/inbox.json')).issues[0]
+    assert issue.evidence[0].published_at == publication['date']
+    assert issue.context['captured_publication_versions'][0]['published_at'] == publication['published_at']
+    assert store.get(document)['payload']['published_at'] == publication['published_at']
+
+
 def test_apply_once_including_retry_after_other_reviews(store, config, tmp_path):
     cid, _, decision = packet_and_decision(store, config, tmp_path)
     receipt = apply_decision(store, decision)
@@ -78,6 +97,18 @@ def test_validation_failure_is_retained_without_applying(store, config, tmp_path
     receipts = import_decisions(store, Decisions(inbox_version='1.0.0', decisions=[bad]))
     assert receipts.receipts[0].status == 'invalid'
     assert not store.records('review')
+
+
+def test_sync_reports_pending_work_after_the_service_acknowledges_it(store, config, tmp_path, monkeypatch):
+    _, _, decision = packet_and_decision(store, config, tmp_path)
+    apply_decision(store, decision)
+    class Client:
+        def request(self, method, path, **kwargs):
+            return {'inbox_version': '1.0.0', 'decisions': []}
+    monkeypatch.setattr('atlas.inbox.InboxClient', Client)
+    result = sync_decisions(store)
+    assert result['received'] == 0
+    assert result['pending_validation'] == [decision.decision_id]
 
 
 def test_source_tampering_fails_export(store, config, tmp_path):

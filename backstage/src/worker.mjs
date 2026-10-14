@@ -142,11 +142,14 @@ async function publishSnapshot(request, env, db) {
   }
   const current = await active(db);
   if (current && packet.sequence <= current.sequence) throw new HttpError(409, 'A later archive snapshot is active.');
+  const versions = await db.prepare(`SELECT v.issue_id,v.payload FROM issue_versions v JOIN json_each(?) i
+    ON v.issue_id=json_extract(i.value,'$.issue_id') AND v.revision=json_extract(i.value,'$.revision')`)
+    .bind(JSON.stringify(packet.issues.map(({issue_id,revision})=>({issue_id,revision})))).all();
+  const previous = new Map(versions.results.map(row=>[row.issue_id,row.payload]));
   const checked = new Set();
   for (const issue of packet.issues) {
     if (new TextEncoder().encode(canonical(issue)).byteLength > 500_000) throw new HttpError(413, 'Issue exceeds 500000 bytes.');
-    const previous = await db.prepare('SELECT payload FROM issue_versions WHERE issue_id=? AND revision=?').bind(issue.issue_id, issue.revision).first();
-    if (previous && previous.payload !== canonical(issue)) throw new HttpError(409, 'Issue revision has different content.');
+    if (previous.has(issue.issue_id) && previous.get(issue.issue_id) !== canonical(issue)) throw new HttpError(409, 'Issue revision has different content.');
     for (const evidence of issue.evidence) {
       if (checked.has(evidence.sha256)) continue;
       const object = await env.EVIDENCE.head(`evidence/${evidence.sha256}.txt`);

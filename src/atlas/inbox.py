@@ -204,7 +204,7 @@ def registry_issues(store) -> list[Issue]:
         if not path.is_relative_to(store.home.resolve()):
             raise ValueError('Source object is outside the archive')
         evidence = Evidence(document_id=document['id'], source_id=doc['source_id'], title=doc['title'],
-            url=doc['url'], published_at=doc['published_at'], captured_at=document['recorded_at'],
+            url=doc['url'], published_at=doc['published_at'][:10], captured_at=document['recorded_at'],
             sha256=doc['text_sha256'], bytes=path.stat().st_size, quotes=list(dict.fromkeys(quotes)))
         checked_text(evidence, path.read_bytes())
         dependencies = {candidate['id']: candidate['record_hash'], document['id']: document['record_hash']}
@@ -225,7 +225,8 @@ def registry_issues(store) -> list[Issue]:
             changed_at=max([candidate['recorded_at']] + [store.get(r)['recorded_at'] for r in dependencies]),
             candidate_id=candidate['id'], affected_ids=[candidate['id']], dependencies=dependencies,
             evidence=[evidence.model_dump()], context={**{k: item[k] for k in ('mention', 'validation_errors', 'suggested_matches')},
-                'captured_publication_versions': [dict(document_id=r['id'], captured_at=r['recorded_at'], text_sha256=r['payload']['text_sha256']) for r in versions]})
+                'captured_publication_versions': [dict(document_id=r['id'], published_at=r['payload']['published_at'],
+                    captured_at=r['recorded_at'], text_sha256=r['payload']['text_sha256']) for r in versions]})
         data['revision'] = issue_revision(data)
         result.append(Issue.model_validate(data))
     return result
@@ -475,6 +476,8 @@ def sync_decisions(store) -> dict:
               if row['kind'] in ('inbox_receipt', 'inbox_completion') and row['payload']['decision_id'] in ids]
     for start in range(0, len(values), 200):
         client.request('POST', 'receipts', json=Receipts(inbox_version=VERSION, receipts=values[start:start+200]).model_dump())
+    latest = {row['payload']['decision_id']: row['payload'] for row in store.records()
+              if row['kind'] in ('inbox_receipt', 'inbox_completion')}
     return {'received': len(decisions.decisions), 'receipts_sent': len(values),
-        'pending_application': [r.decision_id for r in receipts.receipts if r.status == 'recorded'],
-        'pending_validation': [r.decision_id for r in receipts.receipts if r.status == 'applied']}
+        'pending_application': [key for key, receipt in latest.items() if receipt['status'] == 'recorded'],
+        'pending_validation': [key for key, receipt in latest.items() if receipt['status'] == 'applied']}

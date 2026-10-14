@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.0a55
+
+- Review packets include the full source publication time alongside the date shown to readers. Synchronization reports outstanding application and validation work from the full decision history.
+- Backstage 1.0.1 checks existing issue revisions in one database query. A packet of 20 issues fits the D1 Free query allowance.
+
 ## 0.1.0a54
 
 - Validated dependency pins cover Pydantic 2.13.5 and core 2.46.5, Beautiful Soup 4.15.0, pycountry 26.2.16, tzdata 2026.4 and setuptools 84.0.0. Package requirements and lockfiles must agree; installation checks verify the dependency closure.

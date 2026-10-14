@@ -4,24 +4,23 @@
 
 One Health outbreak intelligence across sources, places, and time.
 
-![Release](https://img.shields.io/badge/release-v0.1.0--alpha.54-orange)
+![Release](https://img.shields.io/badge/release-v0.1.0--alpha.55-orange)
 ![Stage](https://img.shields.io/badge/stage-research_preview-orange)
 [![Tests](https://github.com/EvoLandEco/ATLAS/actions/workflows/ci.yml/badge.svg)](https://github.com/EvoLandEco/ATLAS/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-ATLAS brings outbreak and surveillance reporting into a shared framework for One Health research. It collects publications, extracts findings with supporting evidence, and organizes observations across sources, locations and reporting periods.
+ATLAS helps researchers follow outbreak and surveillance reporting across human, animal, environmental and food health. It gathers publications from multiple sources and turns their findings into material for scientific review and analysis.
 
-Researchers can follow developments, inspect the evidence behind a finding, and examine numerical trends and geographic relationships. Human review governs outbreak identities, interpretation and publication. Source observations, analytical hypotheses and research questions remain distinct.
+Readers can trace findings to the original reports, explore how a situation develops over time, and examine connections between places and hosts. Outbreak identities, epidemiological relationships and publication decisions require human review.
 
 [Explore ATLAS](https://qtj.me/atlas/)
 
 ## Capabilities
 
-- **Surveillance briefings.** Weekly reports and daily Trends bring together recent findings, developments to watch and research questions.
-- **Traceable evidence.** Findings retain source quotations, publication and observation dates, measurement context and uncertainty.
-- **Longitudinal and geographic analysis.** Reviewed comparisons connect compatible measurements and source-supported travel, exposure and transmission relationships.
-- **One Health perspectives.** Human, animal, environmental and food observations retain their sampling context and supporting evidence.
-- **Research datasets.** Versioned exports carry consistent identifiers, provenance and selection rules for analysis and visualization. Sealed reports support reproducible replay.
+- **Follow developments.** Weekly briefings and daily Trends summarize recent reports and highlight questions worth investigating.
+- **Examine the evidence.** Source passages accompany each finding, together with dates, locations and explanations of what is uncertain or missing.
+- **Compare observations.** Numerical series and geographic views draw on assessed comparisons, including evidence of travel, exposure and transmission. Reporting periods, case definitions and sampling methods help readers judge what can be compared.
+- **Work with the data.** Export datasets for analysis and visualization, with source references and documented selection rules. Archived reports can be reproduced from their saved inputs.
 
 ## Workflow
 
@@ -31,7 +30,7 @@ Dual-provider extraction is being tested. [Download the workflow figure](docs/fi
 
 ## Sources
 
-ATLAS draws on 17 configured source profiles spanning international agencies, national surveillance and news reporting.
+The collection covers 17 source profiles from international agencies, national surveillance bodies and news outlets.
 
 | Group | Sources |
 | --- | --- |
@@ -41,7 +40,7 @@ ATLAS draws on 17 configured source profiles spanning international agencies, na
 | Animal and food health | EFSA; FAO avian influenza situation updates |
 | News | CBS News Health; IRK.ru |
 
-Coverage varies by source, reporting period and access conditions. The [source catalog](docs/SOURCES.md) describes collection routes and coverage limits.
+Coverage varies by source, reporting period and access conditions. See the [source catalog](docs/SOURCES.md) for details.
 
 ## Quick start
 
