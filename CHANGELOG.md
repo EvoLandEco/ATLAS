@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0a59
+
+- Backstage 1.1.0 presents review issues, evidence and decision history in bounded panes with ATLAS scroll cues, fixed controls and consistent edge spacing. Source cards separate quotations from reference metadata. Scroll cues support keyboard focus, reduced motion and changing content.
+
 ## 0.1.0a58
 
 - Backstage 1.0.4 groups review navigation, search, filters, account and Close in one toolbar. The embedded content fills the Reports panel width. Close messages require the authenticated frame and its exact origin.

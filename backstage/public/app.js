@@ -1,4 +1,5 @@
 import {connectParent} from './embedded.js';
+import {connectScrollCue} from './scroll.js';
 const $ = id => document.getElementById(id);
 function setTheme(dark) {
   document.documentElement.dataset.theme=dark?'dark':'light';
@@ -39,13 +40,13 @@ function contextSection(issue){
     for(const quote of evidence.quotes)source.append(el('blockquote',quote));
     const button=el('button','Read captured source','secondary');button.type='button';
     button.onclick=async()=>{button.disabled=true;try{const response=await fetch(`./api/evidence/${evidence.sha256}`);if(!response.ok||!response.headers.get('content-type')?.startsWith('text/plain'))throw new Error('Captured source could not be loaded.');const text=await response.text();source.append(el('pre',text));button.remove();}catch(error){message(error.message,true);button.disabled=false;}};
-    source.append(button,metadata(`Evidence SHA-256: ${evidence.sha256}`));section.append(source);
+    source.append(button);section.append(source);
   }
-  const details=el('details'),summary=el('summary','Scientific context and dependency references');details.append(summary,el('pre',JSON.stringify({affected_ids:issue.affected_ids,dependencies:issue.dependencies,...issue.context},null,2)));section.append(details);return section;
+  const details=el('details'),summary=el('summary','Scientific context and dependency references');details.append(summary,el('pre',JSON.stringify({issue_id:issue.issue_id,revision:issue.revision,first_seen:issue.first_seen,changed_at:issue.changed_at,affected_ids:issue.affected_ids,dependencies:issue.dependencies,evidence:issue.evidence.map(e=>({sha256:e.sha256,url:e.url})),context:issue.context},null,2)));section.append(details);return section;
 }
 function field(form,labelText,input){const label=el('label',labelText);label.append(input);form.append(label);return input;}
 function showIssue(issue){
-  const detail=$('detail');detail.replaceChildren();detail.append(badge(status(issue)),metadata(`${kinds[issue.kind]} · ${issue.issue_id}`),el('h2',issue.title),el('p',issue.question,'question'),el('p',issue.impact,'impact'),metadata(`First seen ${time(issue.first_seen)} · Issue changed ${time(issue.changed_at)}`),contextSection(issue));
+  const detail=$('detail');detail.replaceChildren();const heading=el('header',undefined,'issue-heading'),meta=el('div',undefined,'meta-row');meta.append(el('span',kinds[issue.kind],'meta'),badge(status(issue)));heading.append(meta,el('h2',issue.title));detail.append(heading,el('p',issue.question,'question'),el('p',issue.impact,'impact'),contextSection(issue));$('detail-scroll').scrollTo({top:0});
   if(issue.last){const note=el('div',undefined,'notice');note.append(el('strong',labels[status(issue)]),el('p',issue.last.receipt?.detail||'The decision is saved. ATLAS has not acknowledged application.'),metadata(`${issue.last.decision.reviewer} · ${time(issue.last.decision.submitted_at)}`));detail.append(note);}
   const history=el('button','View decision history','secondary');history.type='button';history.onclick=()=>showHistory(issue.issue_id);detail.append(history);
   if(['submitted','recorded','applied'].includes(status(issue))){detail.append(metadata('A decision is awaiting application or validation. Its receipt will appear here.'));return;}
@@ -81,6 +82,11 @@ async function refresh(){
 }
 $('refresh').onclick=refresh;for(const id of ['search','kind','status'])$(id).addEventListener('input',showList);
 $('inbox-tab').onclick=()=>selectTab('inbox');$('history-tab').onclick=()=>showHistory();$('older').onclick=()=>showHistory(historyIssue,true);
+
+for (const cue of document.querySelectorAll('.atlas-scroll-cue')) {
+  const scroll=$(cue.getAttribute('aria-controls'));
+  connectScrollCue(scroll,scroll.firstElementChild,cue);
+}
 
 for (const menu of document.querySelectorAll('.control-menu')) {
   document.addEventListener('pointerdown', event => { if (!menu.contains(event.target)) menu.open=false; });

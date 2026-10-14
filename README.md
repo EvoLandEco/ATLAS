@@ -4,7 +4,7 @@
 
 One Health outbreak intelligence across sources, places, and time.
 
-![Release](https://img.shields.io/badge/release-v0.1.0--alpha.58-orange)
+![Release](https://img.shields.io/badge/release-v0.1.0--alpha.59-orange)
 ![Stage](https://img.shields.io/badge/stage-research_preview-orange)
 [![Tests](https://github.com/EvoLandEco/ATLAS/actions/workflows/ci.yml/badge.svg)](https://github.com/EvoLandEco/ATLAS/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
