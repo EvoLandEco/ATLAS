@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0a57
+
+- Backstage 1.0.3 provides an authenticated completion page for reviewer sign-in from ATLAS. Cloudflare verification runs in a separate window before the portal loads inside Reports. The completion signal contains no credentials or reviewer data.
+
 ## 0.1.0a56
 
 - Backstage 1.0.2 supports the ATLAS Reports panel with compact navigation and the enclosing page’s theme. Its content policy permits framing only by the ATLAS website. Theme messages require the exact parent origin and window.

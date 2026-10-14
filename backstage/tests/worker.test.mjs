@@ -49,6 +49,9 @@ test('permissions distinguish reviewers and synchronization identity',()=>{
 test('authenticated reviewer cannot use producer API; service cannot submit decisions',async()=>{
   const e=env();await assert.rejects(()=>route(request('api/sync/decisions'),e,reviewer),/service identity/);
   await assert.rejects(()=>route(request('api/decisions',{}),e,service),/synchronization API/);
+  await assert.rejects(()=>route(request('sign-in'),e,service),/synchronization API/);
+  assert.equal((await worker.fetch(request('sign-in'),e)).status,401);
+  assert.equal((await route(request('sign-in'),e,reviewer)).status,200);
   const response=await worker.fetch(request(''),{...e,ACCESS_ISSUER:''});assert.equal(response.status,503);assert.match(response.headers.get('Cache-Control'),/no-store/);
 });
 test('body limit counts streamed bytes without trusting Content-Length',async()=>{
