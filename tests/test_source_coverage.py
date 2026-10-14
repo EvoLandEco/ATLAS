@@ -9,6 +9,52 @@ class Pages:
         return self.pages[url].encode(),{},url,200
 
 
+def test_cdc_mmwr_issue_dates_require_publisher_heading():
+    source=dict(adapter='cdc_mmwr',index_url='https://www.cdc.gov/mmwr/index2026.html')
+    article='<ul><li><a href="/mmwr/volumes/75/wr/mm7538a1.htm">Report</a></li></ul>'
+    pages=Pages({source['index_url']:'<div class="syndicate"><h1>Archive</h1></div><div class="syndicate"><p><strong>October 1, 2026 / No. 38</strong></p>'+article+'</div>'})
+    entries,notes=sources.discover(source,pages,'2026-09-30',{})
+    assert entries[0]['published_at']=='2026-10-01' and not notes
+    assert not sources.discover(source,pages,'2026-10-02',{})[0]
+    pages.pages[source['index_url']]='<div class="syndicate">'+article+'</div>'
+    with pytest.raises(sources.SourceError,match='date heading'):sources.discover(source,pages,'2026-09-30',{})
+
+
+def test_explicit_collection_bounds_override_relative_window(store,monkeypatch):
+    source=dict(id='test',adapter='static',enabled=True,allowed_hosts=['example.org'])
+    config=dict(sources=[source],timezone='Europe/Amsterdam',publication_window_days=14,user_agent='test',
+        limits=dict(max_response_bytes=1000,max_documents_per_source=10))
+    entries=[dict(url='https://example.org/'+day,published_at=day) for day in ['2025-10-01','2025-10-02','2025-10-03']]
+    monkeypatch.setattr(sources,'discover',lambda *args:(entries,[]))
+    calls=[]
+    def retrieve(store,source,entry,fetcher):
+        calls.append(entry['published_at'])
+        return sources.save_document(store,source,text='A captured report.',raw=b'source',url=entry['url'],
+            content_url=entry['url'],title='Report',published_at=entry['published_at'],at='2026-10-07T12:00:00Z')
+    monkeypatch.setattr(sources,'retrieve_entry',retrieve)
+    sources.collect(store,config,'2025-10-02',until='2025-10-02')
+    assert calls==['2025-10-02']
+
+
+def test_who_revision_uses_the_configured_data_route(store):
+    import json
+    from urllib.parse import urlencode
+    url = 'https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON001'
+    endpoint = 'https://www.who.int/api/news/diseaseoutbreaknews'
+    source = dict(id='who_don', adapter='who_odata', index_url=endpoint)
+    query = endpoint + '?' + urlencode({'$filter': "UrlName eq '2026-DON001'", '$top': 2})
+    item = dict(Id='one', UrlName='2026-DON001', Title='Source report',
+                PublicationDateAndTime='2026-09-01T12:00:00Z', Summary='<p>Two reported cases.</p>')
+    pages = Pages({query: json.dumps({'value': [item]})})
+    did = sources.retrieve_entry(store, source, {'url': url}, pages)
+    assert pages.calls == [query]
+    assert 'Two reported cases.' in (store.home / store.get(did)['payload']['text_object']).read_text()
+    for rows in [[], [item, item], [dict(item, UrlName='different')], [dict(item, Summary='')]]:
+        pages.pages[query] = json.dumps({'value': rows})
+        with pytest.raises(sources.SourceError):
+            sources.retrieve_entry(store, source, {'url': url}, pages)
+
+
 def test_paginated_archive_and_page_cap():
     source={'adapter':'html_index','index_url':'https://example.org/archive',
             'row_selector':'article','entry_link_selector':'a','date_selector':'time',
@@ -241,3 +287,19 @@ def test_who_situation_archive_dates_and_download(store,monkeypatch):
     assert store.get(did)['payload']['modified_at']==item['LastModified']
     with pytest.raises(sources.SourceError,match='no published PDF'):
         sources.retrieve_entry(store,source,{**entries[0],'download_url':None},pages)
+
+
+def test_publisher_video_transcript_requires_exact_page_and_full_text(store):
+    from pathlib import Path
+    url='https://example.org/video/report/'
+    raw=(Path(__file__).parent/'fixtures/video-transcript.html').read_text()
+    source=dict(id='news',video_url_pattern=r'^https://example\.org/video/',content_selector='.article-body')
+    pages=Pages({url:raw})
+    did=sources.retrieve_entry(store,source,dict(url=url),pages)
+    doc=store.get(did)['payload'];text=(store.home/doc['text_object']).read_text()
+    assert 'Contact monitoring continues' in text and '900 cases' not in text
+    assert doc['published_at']=='2026-10-05T23:03:00.000000Z'
+    assert doc['title']=='Authority briefing'
+    for broken in [raw.replace('"transcript":','"absent":'),raw.replace('/video/report/','/video/another/')]:
+        pages.pages[url]=broken
+        with pytest.raises(sources.SourceError,match='transcript'):sources.retrieve_entry(store,source,dict(url=url),pages)

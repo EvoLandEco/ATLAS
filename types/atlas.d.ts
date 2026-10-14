@@ -1,4 +1,4 @@
-/** ATLAS data 1.5.0, metrics 0.2.0 and compact figures 1.0.0. Validate JSON before use. */
+/** ATLAS data 1.9.0, metrics 0.5.0 and compact figures 1.0.0. Validate JSON before use. */
 export type AtlasValueStatus = 'reported' | 'not_reported' | 'unknown' | 'not_applicable' | 'not_extracted' | 'conflicting' | 'pending_verification' | 'not_comparable' | 'access_restricted';
 export interface AtlasValue { value: string | null; status: AtlasValueStatus }
 export interface AtlasEligibility { rule: 'all_supporting_records_in_window'; record_ids: string[]; partial: 'hide_relationship_keep_visible_assertions' }
@@ -13,6 +13,7 @@ export interface AtlasMeasure {
   disease: AtlasValue; pathogen: AtlasValue; host: AtlasValue; geography: AtlasValue;
   acquisition: string; transmission_role: string; as_of: AtlasValue; period_label: string;
   denominator_population: AtlasValue; ratio_basis: string; cumulative_baseline: AtlasValue;
+  percentage_point_comparison?: { baseline: string; comparison: string; operation: 'comparison_minus_baseline' };
   source_reference: AtlasClaimReference; context_references: AtlasClaimReference[];
   evidence: { field: string; quote: string; locator: string }; evidence_references: AtlasMetricEvidence[];
   numeric_evidence_review: string | null; semantic_note: string; priority: number; conflict_set: string | null;
@@ -95,7 +96,7 @@ export interface AtlasReviewedSeries {
   members: AtlasSeriesMember[]; connections: AtlasSeriesConnection[]; evidence: AtlasSeriesEvidence[];
 }
 export interface AtlasMetrics {
-  contract_version: '0.2.0'; software_version: string; release_status: 'research_preview';
+  contract_version: '0.2.0' | '0.3.0' | '0.4.0' | '0.5.0'; software_version: string; release_status: 'research_preview';
   source_snapshot_sha256: string; records_sha256: string; input_sha256: string; annotations_sha256: string;
   measures: AtlasMeasure[]; panels: AtlasPanel[]; reviewed_series: AtlasReviewedSeries[];
   records: { record_id: string; document_id: string; track_id: string; publication: string; publication_basis: string; capture: string; url: string }[];
@@ -176,7 +177,7 @@ export interface AtlasOneHealthRelation extends AtlasChainSupport, AtlasOneHealt
 export interface AtlasObservationTime {
   kind: 'onset' | 'diagnosis' | 'detection' | 'sample_collection' | 'test_result' | 'notification' | 'shipment' | 'exposure' | 'intervention' | 'reporting_cutoff' | 'unknown';
   extent: "point" | "closed_interval" | "open_interval" | "unknown";
-  start: AtlasValue; end: AtlasValue; precision: 'day' | 'month' | 'year' | 'unknown';
+  start: AtlasValue; end: AtlasValue; precision: 'day' | 'month' | 'year' | 'mixed' | 'unknown';
   certainty: 'exact' | 'approximately' | 'uncertain' | 'unknown'; label: string; reason: string;
 }
 export interface AtlasOneHealthPanelReview extends AtlasChainSupport {
@@ -217,11 +218,21 @@ export interface AtlasSelectedOneHealth {
     relationships_by_kind: Record<string, number>; relationships_by_basis: Record<string, number>};
 }
 
+export interface AtlasReportAssessment {
+  id: string; record_id: string; document_id: string;
+  kind: 'source_authenticity' | 'diagnostic_status' | 'authority_response' | 'expert_appraisal';
+  status: 'authenticated' | 'unresolved' | 'unconfirmed' | 'source_suspected' | 'source_probable' | 'source_confirmed' | 'source_ruled_out' | 'disputed' | 'attributed';
+  authority: AtlasValue; label: string; scope: string; reason: string; source_text_sha256: string;
+  reviewed_at: string; reviewed_by: string; review_state: 'source_checked_draft';
+  assertion_ids: string[]; evidence_ids: string[]; eligibility: AtlasEligibility; supersedes: string[];
+}
+
 export interface AtlasSiteBundle {
+  report_assessments?: AtlasReportAssessment[];
   one_health_timings: AtlasOneHealthTiming[]; one_health_sampling_assessments: AtlasOneHealthSamplingAssessment[]; one_health_contexts: AtlasOneHealthContext[];
   one_health_reviews: AtlasOneHealthReview[]; one_health_nodes: AtlasOneHealthNode[]; one_health_relations: AtlasOneHealthRelation[];
   diseases: {id: string; label: string}[]; disease_reviews: AtlasDiseaseReview[];
-  contract_version: '1.5.0'; software_version: string; release_status: 'research_preview';
+  contract_version: '1.5.0' | '1.6.0' | '1.7.0' | '1.8.0' | '1.9.0'; software_version: string; release_status: 'research_preview';
   snapshot: { generated_at: string; captured_at: string; next_update_date: string; next_update_status: string;
     schedule_timezone: string; schedule_local_time: string; schedule_activation: string;
     publication_from: string; publication_until: string; capture_from: string; capture_until: string;
@@ -263,6 +274,7 @@ export interface AtlasMapSnapshot {
   tracks: { id: string; label: string; kind: string; disease_group: string | null; lat?: number | null; lon?: number | null; location_note?: string }[];
 }
 export interface AtlasSelectionView {
+  report_assessments?: AtlasReportAssessment[]; superseded_report_assessment_ids?: string[];
   one_health: AtlasSelectedOneHealth;
   disease_composition: AtlasDiseaseComposition;
   reviewed_chains: AtlasSelectedChain[];
@@ -277,6 +289,9 @@ export interface AtlasSelectionView {
 export declare const COMPACT_GROUPING_VERSION: '1.0.0';
 export declare function selectView(data: AtlasSiteBundle, from: string, until: string,
   basis?: 'publication' | 'capture', knowledgeCutoff?: string | null, recordSelection?: string[] | null, oneHealthOptions?: AtlasOneHealthOptions | null): AtlasSelectionView;
+/** Retain an immutable validated bundle for the returned selector's lifetime. */
+export declare function prepareView(data: AtlasSiteBundle): (from: string, until: string,
+  basis?: 'publication' | 'capture', knowledgeCutoff?: string | null, recordSelection?: string[] | null, oneHealthOptions?: AtlasOneHealthOptions | null) => AtlasSelectionView;
 
 export interface AtlasFileReference { path: string; sha256: string; bytes: number }
 export interface AtlasExportReference {

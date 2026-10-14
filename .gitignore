@@ -12,6 +12,8 @@
 !/README.md
 !/SECURITY.md
 !/pyproject.toml
+!/package.json
+!/package-lock.json
 !/requirements.lock
 !/requirements-dev.lock
 !/config/
@@ -22,6 +24,7 @@
 !/src/
 !/tests/
 !/types/
+!/backstage/
 
 # Credentials and local tooling, including files inside source directories.
 .env
@@ -36,6 +39,7 @@ __pycache__/
 .coverage.*
 htmlcov/
 .venv/
+node_modules/
 *.sqlite*
 *.db
 *.db-wal
@@ -58,3 +62,9 @@ generated-schemas/
 dist/
 build/
 INSTALLATION_REPORT.md
+
+# Reviewer service build and deployment state.
+.wrangler/
+.dev.vars*
+.generated/
+wrangler.local.json

@@ -29,6 +29,40 @@ research_profile:
     reproducible_analysis: 3
     data_call: 3
 sources:
+  - id: un_geneva_news
+    name: UN Geneva public health briefings
+    role: official_international_reporting
+    adapter: html_index
+    enabled: true
+    required: false
+    priority: 11
+    allowed_hosts: [www.unognewsroom.org]
+    index_url: https://www.unognewsroom.org/categories/edited-news
+    link_pattern: '^https://www\.unognewsroom\.org/story/en/[0-9]+/[^/]+$'
+    content_selector: '.tab-panel .content'
+    title_selector: title
+  - id: cbs_health
+    name: CBS News Health
+    role: original_news_reporting
+    adapter: rss_discovery
+    enabled: true
+    required: false
+    priority: 12
+    allowed_hosts: [www.cbsnews.com]
+    index_url: https://www.cbsnews.com/rss/
+    feed_labels: [Health]
+    feed_link_selector: 'a[href*="/latest/rss/"]'
+    video_url_pattern: '^https://www\.cbsnews\.com/video/'
+    content_selector: '.content__body'
+    content_exclude_selector: '.recirculation, .content__body--footer, .ad-wrapper'
+  - id: irk_news
+    name: IRK.ru local reporting
+    role: original_local_reporting
+    adapter: manual
+    enabled: true
+    required: false
+    priority: 13
+    allowed_hosts: [www.irk.ru]
   - id: who_don
     name: WHO Disease Outbreak News
     role: official_international_reporting
@@ -63,7 +97,7 @@ sources:
     enabled: true
     required: false
     priority: 3
-    allowed_hosts: [www.efsa.europa.eu, efsa.europa.eu, efsa.onlinelibrary.wiley.com]
+    allowed_hosts: [www.efsa.europa.eu, efsa.europa.eu, efsa.onlinelibrary.wiley.com, www.ecdc.europa.eu]
     row_selector: article.scientific-output
     entry_link_selector: .card-title a[href]
     date_selector: .field-published-date time[datetime]
@@ -201,3 +235,68 @@ sources:
     next_selector: a[rel=next]
     link_pattern: /outbreaks-under-monitoring-week-
     content_selector: main .govspeak
+
+  - id: france_spf
+    name: Santé publique France news
+    role: official_national_reporting
+    adapter: html_index
+    enabled: true
+    required: false
+    priority: 2
+    allowed_hosts: [www.santepubliquefrance.fr]
+    index_url: https://www.santepubliquefrance.fr/les-actualites
+    row_selector: '.view-content .node--type-article.record'
+    entry_link_selector: 'a.record__footer__link'
+    date_selector: 'time[datetime]'
+    date_order: descending
+    next_selector: 'a[rel=next]'
+    link_pattern: '/les-actualites/'
+    content_selector: 'main .node-full'
+    content_exclude_selector: '.node-full__header__bottom__sharing, .node-full__header__push, .node-full__content__bottom__push'
+    title_selector: 'main h1'
+  - id: rki_bulletin
+    name: Robert Koch Institute Epidemiologisches Bulletin
+    role: official_national_reporting
+    adapter: html_index
+    enabled: true
+    required: false
+    priority: 2
+    allowed_hosts: [www.rki.de]
+    index_url: https://www.rki.de/DE/Aktuelles/Publikationen/Epidemiologisches-Bulletin/2026/EB-2026-node.html
+    row_selector: 'table.downloadList tbody tr:has(a.Publication)'
+    entry_link_selector: 'a.Publication'
+    date_selector: 'td:last-child'
+    date_format: '%d.%m.%Y'
+    date_order: descending
+    next_selector: 'a[rel=next]'
+    link_pattern: '/[0-9_]+\.(pdf|html)'
+    attachment_selector: 'main a.Publication[href*=".pdf"]'
+  - id: china_cdc
+    name: China CDC surveillance reports
+    role: official_national_reporting
+    adapter: html_index
+    enabled: true
+    required: false
+    priority: 2
+    allowed_hosts: [www.chinacdc.cn]
+    row_selector: '.xw_list dd'
+    entry_link_selector: 'a[href]'
+    date_selector: 'a span'
+    date_order: descending
+    next_selector: 'a:-soup-contains("下一页")'
+    link_pattern: '/t[0-9]+_[0-9]+\.html'
+    content_selector: '#articleCon'
+    title_selector: '.containerBox h5'
+    indexes:
+      - index_url: https://www.chinacdc.cn/jksj/jksj04_14275/
+      - index_url: https://www.chinacdc.cn/jksj/jksj01/
+  - id: us_cdc_mmwr
+    name: US CDC MMWR Weekly
+    role: official_national_reporting
+    adapter: cdc_mmwr
+    enabled: true
+    required: false
+    priority: 2
+    allowed_hosts: [www.cdc.gov]
+    index_url: https://www.cdc.gov/mmwr/index2026.html
+    content_selector: '.syndicate'

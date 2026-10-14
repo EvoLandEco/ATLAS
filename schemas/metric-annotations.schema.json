@@ -186,6 +186,8 @@
             "approximately",
             "at_least",
             "at_most",
+            "more_than",
+            "less_than",
             "unknown"
           ],
           "title": "Qualifier",
@@ -250,7 +252,9 @@
             "percent",
             "proportion",
             "other",
-            "unknown"
+            "unknown",
+            "percent_change",
+            "percent_of_target"
           ],
           "title": "Unit",
           "type": "string"
@@ -417,6 +421,324 @@
         "section"
       ],
       "title": "MethodEvidence",
+      "type": "object"
+    },
+    "PercentagePointComparison": {
+      "additionalProperties": false,
+      "properties": {
+        "baseline": {
+          "minLength": 1,
+          "title": "Baseline",
+          "type": "string"
+        },
+        "comparison": {
+          "minLength": 1,
+          "title": "Comparison",
+          "type": "string"
+        },
+        "operation": {
+          "const": "comparison_minus_baseline",
+          "default": "comparison_minus_baseline",
+          "title": "Operation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "baseline",
+        "comparison"
+      ],
+      "title": "PercentagePointComparison",
+      "type": "object"
+    },
+    "PercentagePointMeasure": {
+      "additionalProperties": false,
+      "properties": {
+        "acquisition": {
+          "default": "unknown",
+          "enum": [
+            "imported",
+            "local",
+            "mixed",
+            "unknown"
+          ],
+          "title": "Acquisition",
+          "type": "string"
+        },
+        "annotation_key": {
+          "minLength": 1,
+          "title": "Annotation Key",
+          "type": "string"
+        },
+        "as_of": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "case_class": {
+          "enum": [
+            "confirmed",
+            "probable",
+            "suspected",
+            "confirmed_and_probable",
+            "all_reported",
+            "unknown"
+          ],
+          "title": "Case Class",
+          "type": "string"
+        },
+        "case_definition": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "conflict_set": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Conflict Set"
+        },
+        "context_references": {
+          "items": {
+            "$ref": "#/$defs/ClaimRef"
+          },
+          "title": "Context References",
+          "type": "array"
+        },
+        "count_kind": {
+          "enum": [
+            "cumulative",
+            "interval",
+            "point",
+            "unknown"
+          ],
+          "title": "Count Kind",
+          "type": "string"
+        },
+        "cumulative_baseline": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "date_basis": {
+          "enum": [
+            "onset",
+            "notification",
+            "specimen",
+            "death",
+            "report",
+            "unknown"
+          ],
+          "title": "Date Basis",
+          "type": "string"
+        },
+        "denominator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Denominator"
+        },
+        "denominator_population": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "denominator_status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "disease": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        },
+        "geography": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "host": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "metric": {
+          "enum": [
+            "cases",
+            "deaths",
+            "hospitalizations",
+            "affected_holdings",
+            "affected_animals",
+            "samples_tested",
+            "positive_samples",
+            "test_positivity",
+            "other"
+          ],
+          "title": "Metric",
+          "type": "string"
+        },
+        "numeric_evidence_review": {
+          "anyOf": [
+            {
+              "minLength": 20,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Numeric Evidence Review"
+        },
+        "origin_authority": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "pathogen": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "percentage_point_comparison": {
+          "$ref": "#/$defs/PercentagePointComparison"
+        },
+        "period_end": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "period_label": {
+          "minLength": 1,
+          "title": "Period Label",
+          "type": "string"
+        },
+        "period_start": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "population": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "priority": {
+          "default": 2,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Priority",
+          "type": "integer"
+        },
+        "proposal_candidates": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Proposal Candidates",
+          "type": "array"
+        },
+        "qualifier": {
+          "default": "unknown",
+          "enum": [
+            "exact",
+            "approximately",
+            "at_least",
+            "at_most",
+            "more_than",
+            "less_than",
+            "unknown"
+          ],
+          "title": "Qualifier",
+          "type": "string"
+        },
+        "ratio_basis": {
+          "default": "not_applicable",
+          "enum": [
+            "source_reported",
+            "not_applicable"
+          ],
+          "title": "Ratio Basis",
+          "type": "string"
+        },
+        "revision_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Revision Reason"
+        },
+        "semantic_note": {
+          "minLength": 12,
+          "title": "Semantic Note",
+          "type": "string"
+        },
+        "source_reference": {
+          "$ref": "#/$defs/ClaimRef"
+        },
+        "stratum": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "supersedes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Supersedes",
+          "type": "array"
+        },
+        "transmission_role": {
+          "default": "unknown",
+          "enum": [
+            "index",
+            "secondary",
+            "import_linked",
+            "unknown"
+          ],
+          "title": "Transmission Role",
+          "type": "string"
+        },
+        "unit": {
+          "const": "percentage_points",
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": -100,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "value_status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        }
+      },
+      "required": [
+        "metric",
+        "unit",
+        "count_kind",
+        "case_class",
+        "date_basis",
+        "evidence",
+        "annotation_key",
+        "label",
+        "disease",
+        "pathogen",
+        "host",
+        "geography",
+        "period_label",
+        "source_reference",
+        "semantic_note",
+        "percentage_point_comparison"
+      ],
+      "title": "PercentagePointMeasure",
       "type": "object"
     },
     "ReviewConnection": {
@@ -600,14 +922,24 @@
     "contract_version": {
       "enum": [
         "0.1.0",
-        "0.2.0"
+        "0.2.0",
+        "0.3.0",
+        "0.4.0",
+        "0.5.0"
       ],
       "title": "Contract Version",
       "type": "string"
     },
     "measures": {
       "items": {
-        "$ref": "#/$defs/CardMeasure"
+        "anyOf": [
+          {
+            "$ref": "#/$defs/CardMeasure"
+          },
+          {
+            "$ref": "#/$defs/PercentagePointMeasure"
+          }
+        ]
       },
       "title": "Measures",
       "type": "array"

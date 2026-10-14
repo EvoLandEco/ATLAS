@@ -1,5 +1,7 @@
 # Weekly digest workflow
 
+Report eligibility requires a source-supported publication, issue or release date. Exclude undated reports from extraction, review queues, dated counts, exports and watch selections. Keep captures and review history private with a missing-publication exclusion. Capture, observation and URL dates do not supply publication dates. Notification and sampling datasets retain their own date semantics. Public handoffs omit undated source supplements and collections.
+
 ## Purpose and implementation
 
 The weekly digest answers three questions: what deserves attention, what changed, and which sources or research resources merit a closer look. Detailed extraction covers concrete analytical opportunities found during review, using the relevant captured sections.
@@ -8,7 +10,7 @@ This document specifies the workflow design. The installed CLI supports collecti
 
 The reference workflow runs in Codex with GPT-6 Astra and High reasoning. Other harnesses and LLMs can implement the documented contracts, but the complete workflow has only been tested in Codex. Record the actual model and prompt for each extraction, and evaluate any different setup before operational use.
 
-Less capable LLMs can miss evidence, misread measurement scope or introduce unsupported links. Claude Opus 5.5 is a safer substitute to evaluate than a less capable model, based on the [benchmark comparison in the README](../README.md#agent-setup). It has not been validated in ATLAS. Compare a candidate model on identical captured sources using the [evaluation protocol](EVALUATION.md), record omissions and unsupported claims, and retain all evidence and editorial checks.
+Compare candidate models on identical captured sources using the [evaluation protocol](EVALUATION.md). Record missed evidence, incorrect measurement scope and unsupported links, and retain all evidence and editorial checks.
 
 Weekly production maintains reviewed longitudinal series through the procedure in [Longitudinal analysis](LONGITUDINAL_ANALYSIS.md). Reuse valid measurements, assess new observations and source revisions, and review affected comparison edges before export. Candidate enrichment opportunities remain pending until their measurements and comparisons have passed this review.
 
@@ -32,6 +34,10 @@ Prioritize repeated tables with explicit periods, followed by useful single-repo
 
 Reuse validated digest findings and captured source text. Enrichment requires targeted interpretation of the selected sections rather than another acquisition or a full archive extraction. Record API or CLI extraction calls separately from agent-session review; an absence of external extraction calls does not measure the session's token use. Keep run-specific inventories and candidate examples with the research artifacts.
 
+## Browser release preparation
+
+Browser release preparation follows [Browser transport](BROWSER_TRANSPORT.md#producer-handoff) after scientific bundle and map validation. Generate and verify a separate transport candidate for each export, including every-record selector checks. Deliver its content-bound `browser` handoff with the scientific release reference and matching analysis assets. Require consumer loading, interaction and memory checks before activation; retain the canonical archive and record adoption separately.
+
 ## Reporting network analysis
 
 Prepare the separate [reporting network analysis](NETWORK_ANALYSIS.md) candidate after geographic review. Audit repeated relationship statements using exact episode or journey evidence and source lineage. Export raw counts, the supported repeat-report correction, unresolved identity coverage and source, organization, period and topic sensitivity. Keep collection completion distinct from surveillance ascertainment. Estimates without an identified target and sufficient effort data remain unavailable. Validate the sidecar against its exact site bundle before handoff; the main geographic export retains its contract.
@@ -49,6 +55,8 @@ For the digest, select the latest captured version of each canonical publication
 Distinct publications remain distinct evidence, including reports that repeat the same outbreak total. Document selection does not establish event identity or permit addition of overlapping counts. Earlier versions remain available for correction review and historical analysis.
 
 ## Three weekly agent jobs
+
+The [daily Trends procedure](DAILY_TRENDS.md) supplies a separate source catalogue and concise findings. Review the daily acquisition and review receipts before each Wednesday job. Preserve pending daily reports across discovery windows and reuse their exact captures and validated work. Daily publication does not complete any weekly job.
 
 The Codex schedule uses three jobs in the project chat: a preceding-batch review on Wednesday at 07:00, weekly production at 08:37, and the review inbox at 12:00, all in Europe/Amsterdam. These are agent operating instructions using existing collection, extraction, review and export tools. The package does not install this schedule or provide a single command for the three jobs.
 
@@ -68,6 +76,8 @@ For geographic links, use the [reassessment procedure](LINK_REASSESSMENT.md) acr
 
 ### 1. Review the preceding batch
 
+Include the preceding batch's daily review versions and their source revisions. Check suspected diagnoses, attributed possible sources, counts and spatial claims against full source context. Record the daily review IDs requiring scientific reconciliation; keep incomplete source checks visible.
+
 Select documents from the preceding production receipt, including late captures and revised versions. On the first cycle without that receipt, use documents captured or revised during the preceding seven complete local dates and record this initial scope. Do not reopen the entire archive each week.
 
 Revisit canonical sources through authorized adapters for publisher corrections, withdrawals, changed attachments and follow-up notices. Compare metadata and content with saved versions. `--missing-only` skips captured URLs and therefore cannot perform this check. Preserve changed source objects and capture times. Failed retrieval is an access gap, not evidence of an unchanged source.
@@ -77,6 +87,8 @@ Review findings against quotations and surrounding context. Check material omiss
 Correct reproducible extraction or software errors through recorded corrections and focused validation, preserving original evidence and sealed outputs. A software fix needs a failing fixture before changing semantics. Re-extract only changed or invalid findings and rebuild affected derivatives. Accepted event identity, merges, splits, disputed interpretation and unresolved count scope require an explicit editor decision. Put those questions in the inbox. Produce a concise report of source changes, verified repairs, unchecked material and issues carried forward.
 
 ### 2. Produce the recent week's outputs
+
+Import eligible daily source objects and exact document identities with `atlas.daily.reuse_documents` under the weekly writer lock, preserving capture timestamps. Read `.local/daily-trends/state/daily-latest.json` and the dated daily annotations. Reuse concise findings after evidence review, and complete the scientific enrichment and comparison requirements below. Daily findings alone do not establish reviewed metrics or relationships. Include france_spf, rki_bulletin, china_cdc and us_cdc_mmwr alongside the configured WHO, UN Geneva, CBS and authorized Russian captures.
 
 Collect configured sources within their access and request limits. Keep EFSA within the agreed One Health topics. BEACON and WOAH WAHIS are possible sources, not used: collaboration is not established and no authorized route is available. Keep both disabled; retain recorded institutional-access and historical-coverage questions for other sources. Source caps, failed downloads and inaccessible attachments remain coverage gaps.
 
@@ -88,7 +100,13 @@ Complete the concrete enrichment inventory, including retained historical items.
 
 Record captured, reused, extracted, failed and pending counts, measured usage and output links. Model findings remain drafts until reviewed. Production completion does not imply acceptance of every event or approval for public release.
 
+Reuse the validated checkpoint when its exact inputs and build code match. After delivery, adoption and dependent investigations finish, perform the [checkpoint retention review](OPERATIONS.md#checkpoint-reuse-and-cleanup). Record removed intermediates, retained dependencies and measured storage reclaimed in a private cleanup receipt.
+
 ### 3. Present the review inbox and apply decisions
+
+For a configured [hosted inbox](REVIEWER_INBOX.md), run `inbox-sync` before preparing the cycle receipt. Apply recorded instructions through their scientific workflows, validate affected outputs and send completion receipts. Include unapplied instructions and pending output checks in the cycle receipt. Export and push a fresh private packet after processing decisions. The hosted queue includes historical issues supplied by each review workflow.
+
+After all three receipts and the exact scientific export validate, record each eligible daily review's reconciliation and regenerate the daily bundle against that export. Name the exact review version, weekly record IDs or exclusion rationale, export ID and inbox receipt hash. Clear **Weekly review pending** only for completed reconciliations. Keep unresolved documents pending and preserve reconciliation history. Send the matching scientific and daily release references to the authorized website workflow; delivery and adoption require separate records.
 
 Read both job receipts, source gaps, incomplete extractions, digest flags, export annotations and the historical review backlog. The CLI review export is date filtered; inspect the full registry review queue and unresolved annotations to include historical issues without re-extracting those documents.
 
@@ -149,7 +167,7 @@ Detailed extraction uses the full evidence and measurement requirements. It does
 
 The briefing presents developments, source dates, evidence links, uncertainty, research leads, and unresolved coverage. Distinguish source statements from analyst questions. Label the analytical dataset as the reviewed claims selected for the digest; it is not an exhaustive transcription of all source measurements.
 
-Use `percent` for a bounded percentage share. For a source-reported percentage increase or decrease, retain the stated magnitude with `metric: other` and `unit: other`, name “percent change” and its direction in the label, and preserve the comparison periods and baseline in the measurement context. A relative increase can exceed 100%; it is distinct from a percentage share or a change in percentage points. Keep printed changes separate from calculations based on the reported counts.
+Use `percent` for a bounded percentage share. For a source-reported percentage increase or decrease, use `metric: other` and `unit: percent_change`, preserve the signed value, and record the comparison periods and baseline. Administrative target attainment uses `unit: percent_of_target` with the stated target population. A relative increase can exceed 100%; it is distinct from a percentage share or a change in percentage points. Keep printed changes separate from calculations based on the reported counts.
 
 Keep outbreak entities, individual cases, surveillance aggregates, and research context separate. Never sum overlapping cumulative counts or describe their differences as incident cases without supporting source evidence. Absence from the digest does not establish absence of disease or resolution of an event.
 
@@ -200,6 +218,16 @@ Both date boundaries are inclusive. The selected date basis is publication or ed
 
 Keep outbreak follow-up, transmission, exposure and unresolved questions in the evidence panel. Use local diagrams when geographic endpoints are unknown. The [relationship rules](RELATIONSHIP_RULES.md) define each link; the [technical review](LINK_REVIEW.md) explains the research basis and data requirements.
 
+## Source language and English translations
+
+A scientific completion receipt does not establish English presentation completion. Record missing translations, unresolved language reviews and unreviewed drafts by exact text ID. Check translation availability and bilingual review completion separately, including texts with existing language annotations. See the [completion accounting rules](SOURCE_TEXT.md#completion-accounting).
+
+Follow [English presentation of source text](SOURCE_TEXT.md) when preparing titles and quotations for English readers. Reuse captured sources and exact text reviews across weekly work and historical expansion. Preserve original wording and scientific identities, distinguish publisher English from ATLAS translation, and account for every untranslated or unreviewed binding. Reassess a translation when its source text changes. Export and verify the text sidecar against the exact scientific release; record translation coverage and consumer adoption separately.
+
+Prepare [reviewed report selections](WATCH.md) when a watch view is requested. Inspect captured evidence for each reason, preserve source diagnostic assessments and account for the selected scope. Reassess changed source dependencies and retain the selection history. Use the full scientific selector before limiting displayed items; report recency does not establish urgency. A chronological report list needs no additional scientific selection algorithm.
+
+For a release with English text and a watch view, generate `source-text` from its exact scientific bundle and map snapshot, then generate `source-text-display` from that verified parent. Generate `watch` from the same bundle and snapshot with the saved review annotations. Run `text-verify`, `text-display-verify` and `watch-verify` before handoff. These commands read saved scientific material and leave its identities, evidence, measurements and selection rules intact. Retain the complete text catalogue as the audit artifact and supply the compact projection to browsers. Follow the [presentation attachment handoff](PUBLICATION_HANDOFF.md#presentation-attachments) for the exact file descriptors and separate publication approval.
+
 ## Language for docs and interfaces
 
 Write for a reader who understands public health but may be unfamiliar with the software. Start with the finding, purpose or action. Use short sentences and familiar epidemiological terms. Prefer “reporting period” to “temporal scope”, “source quotation” to “evidence anchor”, and “reporting topic” to “track” in interface text. Keep exact field names in technical documentation where readers need them.
@@ -226,3 +254,23 @@ Express value and missingness consistency in the model-facing schema. Reported v
 ### Network statement review
 
 For the reporting-network sidecar, follow [Network analysis](NETWORK_ANALYSIS.md). Assess the movement subject and granularity of every eligible statement before calculating human-travel summaries. Review the complete endpoint candidate set, record unresolved identities, and group only repeated accounts with matching source-supported scope. Keep aggregate cohorts and their individual members separate. Reconcile saved acquisition and recovery receipts, preserving source hashes, historical failures and captures outside the selected export. Export source-assessment coverage separately from resolved identity coverage. Collection and surveillance adjustment require their own identified denominators and assumptions. Validate and replay the exact-bound sidecar before consumer handoff.
+
+## Forecast ensemble experiments
+
+Prepare the [Intelligence experiment](INTELLIGENCE_EXPERIMENT.md) from an exact validated export when analysis is requested. Retain reviewed weekly measurement segments, source provenance and historical availability. Compute the three component models on identical training prefixes and targets, then combine each predictive quantile with their equal-weight median. Require every component; reject mismatched origins, targets, training IDs or quantile levels. Score the combined predictions on matched held-out targets and retain the component outputs and the persistence model's monitoring count checks.
+
+Write a separate versioned private export with method metadata, source and code hashes, last-origin predictions, MAE, WIS, relative WIS and interval coverage. Verify component preservation and deterministic replay before consumer handoff. Describe this as retrospective evaluation in observation order. A display default does not establish superior forecasting performance. Weekly collection, editorial review and publication remain governed by their own receipts and approvals.
+
+For releases that include Analysis, prepare Intelligence contract `0.2.0` against the exact final site export and follow the [Analysis attachment handoff](PUBLICATION_HANDOFF.md#analysis-attachment). Verify the source export ID, site checksum and selector checksum, stage the matching files, and include their descriptor in the authorized release. A base release without a matching Intelligence attachment leaves Analysis unavailable; an older experiment cannot supply the missing attachment. Retain partial coverage, execution holds and the distinction between staging and public activation.
+
+For repeated consumer filtering, use `prepareView` with an immutable validated bundle. Validate exact selected-output equality against the sealed selector across full, partial, date, capture, source and knowledge-cutoff selections. Measure preparation separately from repeated selection time; retain the benchmark inputs, source hashes and measurements in the run artifacts.
+
+## Reports under investigation
+
+Include relevant unconfirmed reports as `signal` items. Preserve the publisher, publication and capture dates, exact evidence and attribution. Record source authenticity, reported diagnostic status, official responses and expert appraisals separately through the [report assessment contract](SITE_EXPORT.md#report-assessments). Anonymous allegations remain attributed claims. A negative test in contacts does not settle the patient's diagnosis.
+
+During preceding-batch review, inspect captured follow-ups and explicit source revisions for investigations in the selected evidence. During production, use the seven complete publication dates and configured source routes. UN Geneva edited briefings use an article title and content selector; CBS Health uses feed discovery and its article body selector. IRK.ru is a manual source route. Feed contents and access receipts define observed coverage, not archive completeness. Inspect article headings and publisher-marked related-story sections when onboarding HTML sources; configure explicit selectors and retain a parser fixture.
+
+For a targeted correction or missing-source review, save the authorization, baseline export and bounded source packet. Reuse validated extractions and unchanged assessments. Record absent clinical evidence, access failures and unresolved propositions in the review inbox. Complete numeric enrichment and geographic, chain and One Health dependency review for added findings. Build a separate candidate with exact browser, network and analytical attachments, validate it, and record consumer delivery separately from adoption. Preserve the sealed weekly receipts and any broader execution hold. Publication requires approval of the exact candidate.
+
+Daily watch review follows [Daily Trends](DAILY_TRENDS.md#watch-selection). Source onboarding and historical capture do not promote a report to the watch board. Reassess current evidence from all monitored sources, retain exclusion reasons and counterevidence, and carry review times and daily reassessment reminders into the release. Keep watch cards selected until a reviewed release replaces or retires them.

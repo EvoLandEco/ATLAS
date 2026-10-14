@@ -1,0 +1,825 @@
+{
+  "$defs": {
+    "DailyReview": {
+      "additionalProperties": false,
+      "properties": {
+        "document_id": {
+          "title": "Document Id",
+          "type": "string"
+        },
+        "findings": {
+          "items": {
+            "$ref": "#/$defs/FindingInput"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
+        "language_tag": {
+          "pattern": "^[a-z]{2,3}$",
+          "title": "Language Tag",
+          "type": "string"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "outcome": {
+          "enum": [
+            "relevant",
+            "no_relevant_content",
+            "needs_review"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "review_state": {
+          "const": "source_checked_draft",
+          "title": "Review State",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "source_text_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Text Sha256",
+          "type": "string"
+        },
+        "title_translation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Translation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "document_id",
+        "source_text_sha256",
+        "language_tag",
+        "title_translation",
+        "outcome",
+        "findings",
+        "reviewed_at",
+        "reviewed_by",
+        "review_state",
+        "limitations"
+      ],
+      "title": "DailyReview",
+      "type": "object"
+    },
+    "FindingInput": {
+      "additionalProperties": false,
+      "properties": {
+        "attribution": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/QuoteInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "suspected_disease",
+            "diagnostic_status",
+            "reported_count",
+            "geographic_extent",
+            "spatial_link",
+            "response_measure",
+            "potential_source",
+            "development"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "observation_period": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "places": {
+          "items": {
+            "$ref": "#/$defs/PlaceInput"
+          },
+          "title": "Places",
+          "type": "array"
+        },
+        "statement_kind": {
+          "enum": [
+            "source_statement",
+            "attributed_hypothesis",
+            "analyst_hypothesis"
+          ],
+          "title": "Statement Kind",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "reported",
+            "source_suspected",
+            "source_probable",
+            "source_confirmed",
+            "source_ruled_out",
+            "unconfirmed",
+            "disputed",
+            "unresolved"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "kind",
+        "text",
+        "status",
+        "statement_kind",
+        "attribution",
+        "observation_period",
+        "places",
+        "evidence"
+      ],
+      "title": "FindingInput",
+      "type": "object"
+    },
+    "PlaceInput": {
+      "additionalProperties": false,
+      "properties": {
+        "country_code": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Country Code"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "reporting_scope",
+            "occurrence",
+            "exposure",
+            "travel_origin",
+            "travel_destination",
+            "context"
+          ],
+          "title": "Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "country_code",
+        "role"
+      ],
+      "title": "PlaceInput",
+      "type": "object"
+    },
+    "PublicationBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Assertion Ids",
+          "type": "array"
+        },
+        "comparison_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Comparison Ids",
+          "type": "array"
+        },
+        "document_versions": {
+          "items": {
+            "$ref": "#/$defs/PublicationVersion"
+          },
+          "minItems": 2,
+          "title": "Document Versions",
+          "type": "array"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "reason": {
+          "minLength": 12,
+          "title": "Reason",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document_versions",
+        "assertion_ids",
+        "comparison_ids",
+        "evidence_ids",
+        "reason",
+        "reviewed_at",
+        "reviewed_by"
+      ],
+      "title": "PublicationBinding",
+      "type": "object"
+    },
+    "PublicationVersion": {
+      "additionalProperties": false,
+      "properties": {
+        "document_id": {
+          "title": "Document Id",
+          "type": "string"
+        },
+        "raw_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Raw Sha256",
+          "type": "string"
+        },
+        "source_text_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Text Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document_id",
+        "source_text_sha256",
+        "raw_sha256"
+      ],
+      "title": "PublicationVersion",
+      "type": "object"
+    },
+    "QuoteInput": {
+      "additionalProperties": false,
+      "properties": {
+        "language_tag": {
+          "pattern": "^[a-z]{2,3}$",
+          "title": "Language Tag",
+          "type": "string"
+        },
+        "quote": {
+          "minLength": 1,
+          "title": "Quote",
+          "type": "string"
+        },
+        "start": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Start"
+        },
+        "translation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Translation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "quote",
+        "language_tag"
+      ],
+      "title": "QuoteInput",
+      "type": "object"
+    },
+    "Reconciliation": {
+      "additionalProperties": false,
+      "properties": {
+        "disposition": {
+          "enum": [
+            "integrated",
+            "reviewed_not_exported",
+            "pending"
+          ],
+          "title": "Disposition",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 12,
+          "title": "Reason",
+          "type": "string"
+        },
+        "record_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Record Ids",
+          "type": "array"
+        },
+        "review_id": {
+          "title": "Review Id",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "weekly_export_id": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Weekly Export Id",
+          "type": "string"
+        },
+        "weekly_inbox_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Weekly Inbox Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "review_id",
+        "weekly_export_id",
+        "record_ids",
+        "disposition",
+        "reason",
+        "reviewed_at",
+        "reviewed_by",
+        "weekly_inbox_sha256"
+      ],
+      "title": "Reconciliation",
+      "type": "object"
+    },
+    "Status": {
+      "enum": [
+        "reported",
+        "not_reported",
+        "unknown",
+        "not_applicable",
+        "pending_verification",
+        "conflicting",
+        "not_extracted",
+        "not_comparable",
+        "access_restricted"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "TextValue": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "title": "TextValue",
+      "type": "object"
+    },
+    "Translation": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "minLength": 1,
+          "title": "Created By",
+          "type": "string"
+        },
+        "language_tag": {
+          "const": "en",
+          "default": "en",
+          "title": "Language Tag",
+          "type": "string"
+        },
+        "method_version": {
+          "minLength": 1,
+          "title": "Method Version",
+          "type": "string"
+        },
+        "origin": {
+          "enum": [
+            "atlas_generated",
+            "publisher_provided"
+          ],
+          "title": "Origin",
+          "type": "string"
+        },
+        "pairing_evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Pairing Evidence Ids",
+          "type": "array"
+        },
+        "publisher_text_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Publisher Text Id"
+        },
+        "review_note": {
+          "minLength": 1,
+          "title": "Review Note",
+          "type": "string"
+        },
+        "review_status": {
+          "enum": [
+            "unreviewed",
+            "source_checked",
+            "human_approved"
+          ],
+          "title": "Review Status",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reviewed At"
+        },
+        "reviewed_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reviewed By"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "origin",
+        "created_at",
+        "created_by",
+        "method_version",
+        "review_status",
+        "reviewed_at",
+        "reviewed_by",
+        "review_note"
+      ],
+      "title": "Translation",
+      "type": "object"
+    },
+    "WatchCriterion": {
+      "additionalProperties": false,
+      "properties": {
+        "finding_keys": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Finding Keys",
+          "type": "array"
+        },
+        "kind": {
+          "enum": [
+            "severe_impact",
+            "spread_change",
+            "unusual_event",
+            "response_gap",
+            "time_sensitive_action"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 240,
+          "minLength": 12,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "finding_keys",
+        "reason"
+      ],
+      "title": "WatchCriterion",
+      "type": "object"
+    },
+    "WatchFact": {
+      "additionalProperties": false,
+      "properties": {
+        "finding_keys": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Finding Keys",
+          "type": "array"
+        },
+        "label": {
+          "maxLength": 28,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 110,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "text",
+        "finding_keys"
+      ],
+      "title": "WatchFact",
+      "type": "object"
+    },
+    "WatchInput": {
+      "additionalProperties": false,
+      "properties": {
+        "counterevidence_finding_keys": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Counterevidence Finding Keys",
+          "type": "array"
+        },
+        "criteria": {
+          "items": {
+            "$ref": "#/$defs/WatchCriterion"
+          },
+          "title": "Criteria",
+          "type": "array"
+        },
+        "date_basis": {
+          "enum": [
+            "source_event_date",
+            "source_report_date",
+            "unknown"
+          ],
+          "title": "Date Basis",
+          "type": "string"
+        },
+        "decision_reason": {
+          "maxLength": 500,
+          "minLength": 12,
+          "title": "Decision Reason",
+          "type": "string"
+        },
+        "development_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Development Date"
+        },
+        "development_finding_keys": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Development Finding Keys",
+          "type": "array"
+        },
+        "diagnostic_label": {
+          "maxLength": 100,
+          "title": "Diagnostic Label",
+          "type": "string"
+        },
+        "finding_keys": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Finding Keys",
+          "type": "array"
+        },
+        "follow_up_finding_keys": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Follow Up Finding Keys",
+          "type": "array"
+        },
+        "follow_up_question": {
+          "minLength": 12,
+          "title": "Follow Up Question",
+          "type": "string"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "key_facts": {
+          "items": {
+            "$ref": "#/$defs/WatchFact"
+          },
+          "maxItems": 3,
+          "title": "Key Facts",
+          "type": "array"
+        },
+        "label": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "location_label": {
+          "maxLength": 80,
+          "title": "Location Label",
+          "type": "string"
+        },
+        "reason_for_attention": {
+          "maxLength": 260,
+          "minLength": 12,
+          "title": "Reason For Attention",
+          "type": "string"
+        },
+        "review_due_at": {
+          "title": "Review Due At",
+          "type": "string"
+        },
+        "review_state": {
+          "const": "source_checked_draft",
+          "title": "Review State",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "temporal_status": {
+          "enum": [
+            "current",
+            "routine",
+            "retrospective",
+            "unknown",
+            "resolved"
+          ],
+          "title": "Temporal Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "finding_keys",
+        "reason_for_attention",
+        "follow_up_question",
+        "temporal_status",
+        "development_date",
+        "date_basis",
+        "development_finding_keys",
+        "follow_up_finding_keys",
+        "counterevidence_finding_keys",
+        "criteria",
+        "decision_reason",
+        "location_label",
+        "diagnostic_label",
+        "key_facts",
+        "review_due_at",
+        "reviewed_at",
+        "reviewed_by",
+        "review_state"
+      ],
+      "title": "WatchInput",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "daily_version": {
+      "enum": [
+        "0.2.1",
+        "0.2.2"
+      ],
+      "title": "Daily Version",
+      "type": "string"
+    },
+    "publication_bindings": {
+      "items": {
+        "$ref": "#/$defs/PublicationBinding"
+      },
+      "title": "Publication Bindings",
+      "type": "array"
+    },
+    "reconciliations": {
+      "items": {
+        "$ref": "#/$defs/Reconciliation"
+      },
+      "title": "Reconciliations",
+      "type": "array"
+    },
+    "reviews": {
+      "items": {
+        "$ref": "#/$defs/DailyReview"
+      },
+      "title": "Reviews",
+      "type": "array"
+    },
+    "watch_assessments": {
+      "items": {
+        "$ref": "#/$defs/WatchInput"
+      },
+      "title": "Watch Assessments",
+      "type": "array"
+    }
+  },
+  "required": [
+    "daily_version",
+    "reviews",
+    "watch_assessments"
+  ],
+  "title": "DailyAnnotations",
+  "type": "object"
+}

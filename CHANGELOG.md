@@ -1,5 +1,131 @@
 # Changelog
 
+## 0.1.0a53
+
+- Reviewer inbox contract 1.0.0 carries historical questions, captured evidence, exact issue revisions, attributed decisions and application receipts. ATLAS exports private packets, imports decisions through its scientific review paths, and commits registry edits with their receipts in one transaction.
+- The Cloudflare backstage service provides authenticated evidence review, decision history, concurrent submission checks and private storage. Its interface shares ATLAS typography, colors and light and dark themes. D1 triggers enforce revision checks, decision order and immutable history. Completion identifies a validated output; publication keeps its separate approval.
+- The inbox origin is supplied through the deployment environment and retained in private configuration. Public documentation describes reviewer access without exposing the deployment address.
+
+## 0.1.0a52
+
+- Text display 0.1.1 selects a unique exact snapshot quotation within its explicit scientific claim references. Selected evidence IDs name that exact source span; repeated exact occurrences remain ambiguous. Text display 0.1.0 retains its sealed schema and verification rules. Scientific evidence, full text catalogues and selection rules retain their identities.
+
+## 0.1.0a51
+
+- Exact daily title and quotation reviews supply missing scientific presentation translations, including texts with an existing language review. Source hashes, original text and quotation offsets must match; completed translations retain their provenance and language conflicts require review.
+
+## 0.1.0a50
+
+- Daily publication bindings carry explicit whole-publication reviews of publisher URL aliases into report presentation. Exact capture hashes, publisher and publication date, complete assertion and evidence scope, and reviewed republication comparisons validate each binding. Publication identity is current-release display metadata; evidence selection and scientific review times remain unchanged. Daily contract 0.2.2 retains its schema and selector, and sealed bundles retain their annotation hashes and verification rules.
+
+## 0.1.0a49
+
+- Large local exports use explicit bounded snapshot, annotation and structured-input allowances. Browser tooling parses JSON in chunks, with source hashes and complete reconstruction checks. The scientific, metrics and browser contracts retain their schemas and identities.
+
+## 0.1.0a48
+
+- Metrics 0.5.0 records source-reported percentage-point differences with signed values and explicit ordered comparison context. Site 1.9.0 and browser transport 0.4.0 preserve that context in evidence and compact figure identities. Sealed metric 0.4, site 1.8 and browser 0.3 releases retain their validators and runtime identities.
+
+## 0.1.0a47
+
+- Each daily export schema describes one contract version. Contract 0.2.2 requires publication dates directly in its document schema; sealed 0.2.1 bundles use their own schema and verifier.
+
+## 0.1.0a46
+
+- Report selection requires a source publication date for daily, weekly and unbounded review windows. Missing dates receive private exclusion receipts; captures, observations, notification dates and URL paths do not supply publication dates.
+- Daily contract 0.2.2 excludes undated report and watch support while preserving review history and verification of immutable 0.2.1 bundles. Mixed watch support requires reassessment. Source supplements and their collections serve private evidence retention.
+
+## 0.1.0a45
+
+- Source supplement collection 0.1.0 binds distinct undated evidence files to one scientific export. Its document catalogue supports search and pagination; component identities, checksums, schemas and counts support loading evidence on demand. Collection verification checks complete catalogue projection, duplicate identities, source bindings and payload integrity.
+
+## 0.1.0a44
+
+- Scientific site exports use compact canonical JSON with complete values and source references. Manifest checksums bind the serialized bytes.
+
+## 0.1.0a43
+
+- Source adapter 0.3.6 captures Santé publique France article headings, introductions and body text. Sharing controls and related-content cards stay outside the captured article text.
+
+## 0.1.0a42
+
+- Source adapter 0.3.5 honors UTF-8 byte order marks in robots.txt. Robots disallow rules apply to direct requests and redirects.
+
+## 0.1.0a41
+
+- Watch method daily-watch-1.0.2 retains older developments with reviewed active follow-up. Elapsed days do not determine retirement; future dates remain ineligible.
+
+## 0.1.0a40
+
+- Source adapter 0.3.4 reads publisher video transcripts with exact page bindings, titles and upload dates. CBS article and video routes use their declared content formats; missing transcripts remain access gaps.
+
+## 0.1.0a39
+
+- Daily contract 0.2.1 keeps watch selections visible after their review due time. Daily review determines replacement or retirement; date, source and country filters retain their evidence rules.
+- Watch method daily-watch-1.0.1 records daily reassessment reminders without automatic card expiry.
+
+## 0.1.0a38 — 2026-10-07
+
+Daily source coverage preserves source-check times from acquisition records. Unknown check times remain null. Enabled sources excluded from an acquisition carry `not_checked`; saved captures retain their acquisition gaps. Candidate review covers every reviewed finding independently of publisher membership.
+
+## 0.1.0a37 — 2026-10-07
+
+Daily contract 0.2.0 records evidence-bound watch assessments for every reviewed finding. Method daily-watch-1.0.0 selects current developments with explicit significance and follow-up evidence, records exclusions, and orders editorial attention without a numerical risk score. Review deadlines govern live eligibility. Concise card facts retain exact finding references, source context and diagnostic uncertainty. Monitoring source membership carries no selection weight.
+
+## 0.1.0a36 — 2026-10-07
+
+Daily contract 0.1.0 carries source findings, exact quotations, source attribution, watch selections and review-version reconciliation. A separate acquisition archive retains pending reports and reuses captured objects with their original identities and times. Bounded draft extraction, deterministic verification and the daily selector support an independent website release. Weekly review pending clears only against matching completed Wednesday receipts.
+
+Source adapter 0.3.3 reads CDC MMWR issue headings and accepts explicit collection date bounds. Configured publisher archives cover Santé publique France, Robert Koch Institute and China CDC. Daily and historical profiles retain source access and coverage limits.
+
+## 0.1.0a35 — 2026-10-07
+
+Watch contract 0.1.0 carries explicitly reviewed report selections with reasons for attention, follow-up questions, exact evidence, diagnostic assessments and separate source and review dates. Its selector requires every supporting report to be eligible and respects the review cutoff. Selections carry no event identity or hazard rank.
+
+Source text display 0.1.0 retains complete reviewed text rows, every translation and explicit claim quotation bindings. Omitted unreviewed rows have a declared language state. Independent projection verification binds the full presentation export and scientific source.
+
+## Workflow tooling 1.0.0 — 2026-10-07
+
+Private checkpoint builders use exact input and code fingerprints, a writer lock and verified output hashes to reuse completed exports. Build inputs are copied by name. Failed builds retain diagnostics without repeated dispatch. The completion workflow includes a dependency review and measured cleanup receipt for unused intermediate artifacts.
+
+## 0.1.0a34 — 2026-10-07
+
+Source text contract 0.1.0 binds language reviews and English translations to exact publisher titles, report-entry titles and captured quotation identities. Reused evidence shares a text identity while preserving scientific references. Translation provenance distinguishes ATLAS drafts from reviewed publisher English. Coverage retains unreviewed language and pending translations. The presentation export binds the sealed scientific release and uses its selection rules.
+
+## 0.1.0a33 — 2026-10-07
+
+Site contract 1.8.0 and annotations 1.5.0 carry source authenticity, diagnostic status, authority responses and attributed expert appraisals as separate evidence assessments. Exact assertion references, source hashes, scope, review times and explicit supersessions govern selection. Browser transport 0.3.0 retains these assessments. Sealed site 1.7.0 bundles retain their schemas and selector.
+
+Source adapter 0.3.2 supports configured article titles and content exclusions. The source profile includes UN Geneva briefings, CBS Health feed discovery and a manual IRK.ru route. The digest accepts unconfirmed signals with source attribution and distinct diagnostic status.
+
+## 0.1.0a32 — 2026-10-07
+
+Structured export accepts an explicit per-file input allowance up to 256 MB for prepared local inputs. The default remains 64 MB. Source retrieval and model input limits are separate, and every export requires evidence and schema validation.
+
+Source supplement 0.1.0 carries reviewed findings from documents without a reported publication date. Each supplement binds a dated export identity and preserves capture times, source hashes, complete quotations and measurement references. Its contents remain outside dated selections and analytical inputs.
+
+Source adapter 0.3.1 retrieves WHO Disease Outbreak News revisions through the configured OData collection using the exact source URL name. Revision retrieval requires one matching article with source content; navigation pages cannot supply article revisions.
+
+## 0.1.0a31 — 2026-10-05
+
+Site contract 1.7.0 and metric contract 0.4.0 preserve strict numerical bounds with `more_than` and `less_than`. Panel intervals support mixed year, month and day precision without assigning exact dates to coarse source boundaries. Date selection uses the complete calendar extent of each endpoint. Contracts 1.5 and 1.6 retain their sealed schemas and selectors.
+
+Browser transport 0.2.0 carries measurement qualifiers in its summary tables. Producer verification compares every requested selection against the versioned scientific selector as well as the prepared selector.
+
+## 0.1.0a30 — 2026-10-02
+
+Site contract 1.6.0 with metric contract 0.3.0 represents source-reported percentage changes and administrative target achievement with distinct units. Signed changes retain their direction; target ratios can exceed 100. Ordinary percentages retain their 0–100 bound. Counts, denominator validation, exact evidence and reviewed-series permissions retain their definitions. Matched sampling annotations require a defined unit, frame, population and target during input validation. Prepared selectors reuse immutable indexes and canonical figure signatures while evaluating evidence eligibility for each selection.
+
+Browser transport 0.1.0 supplies source-bound summary tables, bounded detail partitions and exact reconstruction checks. It retains complete One Health display fields and geographic places, and uses the scientific selection rules with producer-assigned compact figure identities. Its verifier produces a content-bound browser handoff after comparing both source files and every record selection. Scientific archives remain separately addressable.
+
+## Intelligence experiment 0.2.0 — 2026-10-01
+
+The private analysis contract includes an equal-weight median ensemble with explicit component provenance, matched-target scores and historical last-origin predictions. Complete component membership and aligned training inputs are required. Component forecasts and persistence monitoring checks retain their definitions. Experiment exports require an empty destination directory.
+
+## 0.1.0a29 — 2026-09-29
+
+Source-described genomic comparisons can reference historical detected isolates while preserving their background scope. Detected-agent evidence, undirected genomic support and complete source dependencies remain required. Background observations cannot supply transmission or exposure relationships. Export fields and content identity rules retain their existing contracts.
+
 ## 0.1.0a28 — 2026-09-29
 
 Network analysis contract 0.2.0 separates source assessment from resolved repeat-report identity. Source-reviewed movement categories define human-travel eligibility, with product shipments, human remains and vessel-only itineraries excluded from that metric. Collection history retains recovery receipts without assigning missing inclusion probabilities.

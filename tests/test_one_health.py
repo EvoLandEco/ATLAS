@@ -116,3 +116,30 @@ def test_negative_environmental_observation_has_no_transmission(tmp_path):
     b = export_site(**paths, out=tmp_path/'valid')
     assert b['one_health_nodes'][1]['finding'] == 'agent_not_detected'
     assert b['one_health_relations'] == []
+
+
+def test_historical_genomic_comparator_preserves_scope_and_dependencies(tmp_path):
+    paths, ann = one_health_inputs(tmp_path)
+    ann['one_health_nodes'][1]['scope'] = 'background'
+    write_json(paths['annotations'], ann)
+    bundle = export_site(**paths, out=tmp_path/'historical')
+    validate_bundle(bundle)
+    assert bundle['one_health_nodes'][1]['scope'] == 'background'
+    assert len(bundle['one_health_relations'][0]['eligibility']['record_ids']) == 2
+    subprocess.run(['node', '--input-type=module', '-e', """
+import fs from 'node:fs';import assert from 'node:assert/strict';
+const {selectView}=await import(process.argv[1]);const b=JSON.parse(fs.readFileSync(process.argv[2]));
+const full=selectView(b,'2026-07-01','2026-08-02');
+assert.equal(full.one_health.nodes.filter(n=>n.scope==='background').length,1);
+assert.equal(full.one_health.relations.length,1);
+assert.equal(selectView(b,'2026-07-01','2026-07-31').one_health.relations.length,0);
+""", (tmp_path/'historical/view.mjs').as_uri(), str(tmp_path/'historical/atlas-site.json')], check=True)
+    ann['one_health_nodes'][1]['finding'] = 'context'
+    write_json(paths['annotations'], ann)
+    with pytest.raises(ValueError, match='detected isolate evidence'):
+        export_site(**paths, out=tmp_path/'undetected')
+    ann['one_health_nodes'][1]['finding'] = 'agent_detected'
+    ann['one_health_relations'][0]['kind'] = 'exposure'
+    write_json(paths['annotations'], ann)
+    with pytest.raises(ValueError, match='Background cannot supply an episode relation'):
+        export_site(**paths, out=tmp_path/'exposure')

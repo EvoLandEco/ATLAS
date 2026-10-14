@@ -7,6 +7,10 @@ python -m venv .venv
 if ($LASTEXITCODE -ne 0) { throw "Dependency installation failed" }
 & .\.venv\Scripts\python.exe -m pip install --no-deps --no-build-isolation .
 if ($LASTEXITCODE -ne 0) { throw "Package installation failed" }
+npm ci --ignore-scripts
+if ($LASTEXITCODE -ne 0) { throw "Browser tooling installation failed" }
+node --test tests/test_json_file.mjs
+if ($LASTEXITCODE -ne 0) { throw "Browser tooling tests failed" }
 & .\.venv\Scripts\python.exe -m pytest -q
 if ($LASTEXITCODE -ne 0) { throw "Tests failed" }
 & .\.venv\Scripts\python.exe -m atlas.cli doctor

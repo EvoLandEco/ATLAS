@@ -1,0 +1,7 @@
+[
+  {"name":"publisher_date","published_at":"2026-10-01","publication_precision":"day","capture":"2026-10-02T00:00:00Z","eligible":true},
+  {"name":"capture_only","published_at":null,"publication_precision":"unknown","capture":"2026-10-02T00:00:00Z","eligible":false},
+  {"name":"observation_date_only","published_at":null,"publication_precision":"unknown","capture":"2026-10-02T00:00:00Z","observation_date":"2026-10-01","eligible":false},
+  {"name":"notification_date_only","published_at":null,"publication_precision":"unknown","capture":"2026-10-02T00:00:00Z","notification_date":"2026-10-01","eligible":false},
+  {"name":"url_date_only","published_at":null,"publication_precision":"unknown","capture":"2026-10-02T00:00:00Z","url":"https://health.example/2026/10/01/report","eligible":false}
+]

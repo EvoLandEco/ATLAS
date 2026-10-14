@@ -1,0 +1,82 @@
+[
+  {
+    "name": "publisher announcement",
+    "temporal_status": "routine",
+    "criteria": [],
+    "expected": "not_selected"
+  },
+  {
+    "name": "newly published historical death",
+    "temporal_status": "retrospective",
+    "criteria": [
+      "severe_impact"
+    ],
+    "expected": "not_selected"
+  },
+  {
+    "name": "routine pathogen increase",
+    "temporal_status": "current",
+    "criteria": [],
+    "expected": "not_selected"
+  },
+  {
+    "name": "active unexplained fatal illness",
+    "temporal_status": "current",
+    "criteria": [
+      "severe_impact",
+      "unusual_event"
+    ],
+    "expected": "watch"
+  },
+  {
+    "name": "severe outbreak with documented expansion",
+    "temporal_status": "current",
+    "criteria": [
+      "severe_impact",
+      "spread_change"
+    ],
+    "expected": "heightened"
+  },
+  {
+    "name": "authority requests immediate action",
+    "temporal_status": "current",
+    "criteria": [
+      "time_sensitive_action"
+    ],
+    "expected": "urgent"
+  },
+  {
+    "name": "severe unresolved historical signal",
+    "temporal_status": "unknown",
+    "criteria": [
+      "severe_impact"
+    ],
+    "expected": "not_selected"
+  },
+  {
+    "name": "explicitly resolved episode",
+    "temporal_status": "resolved",
+    "criteria": [
+      "severe_impact"
+    ],
+    "expected": "not_selected"
+  },
+  {
+    "name": "older development with reviewed active follow-up",
+    "temporal_status": "current",
+    "criteria": [
+      "severe_impact"
+    ],
+    "development_date": "2026-09-20",
+    "expected": "watch"
+  },
+  {
+    "name": "future development",
+    "temporal_status": "current",
+    "criteria": [
+      "severe_impact"
+    ],
+    "development_date": "2026-10-04",
+    "expected": "not_selected"
+  }
+]

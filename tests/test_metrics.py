@@ -64,6 +64,31 @@ def test_invalid_evidence_and_denominators(tmp_path,change):
     with pytest.raises(ValueError):run(paths,tmp_path/'bad')
 
 
+@pytest.mark.parametrize('unit,value', [('percent_change', -18), ('percent_change', 450),
+                                     ('percent_of_target', 105.2)])
+def test_source_reported_change_and_target_ratios(tmp_path, unit, value):
+    paths=inputs(tmp_path);batch=paths[3];m=batch['measures'][0]
+    batch['contract_version']='0.3.0'
+    quote=f'The source reports {value} for this synthetic {unit} observation.'
+    paths[4]['records'][0]['claims'][0].update(text=quote,quotes=[quote])
+    (paths[2]/(m['source_reference']['document_id']+'.txt')).write_text(quote+'\n'+'\n'.join(paths[4]['records'][0]['claims'][i]['quotes'][0] for i in [1,2]))
+    m.update(unit=unit,value=value,ratio_basis='source_reported',label=unit)
+    m['evidence']['quote']=quote
+    batch['records_sha256']=digest(paths[4]['records'])
+    write_json(paths[0],paths[4]);write_json(paths[1],batch)
+    result=run(paths,tmp_path/'ratios')
+    assert result['contract_version']=='0.3.0'
+    assert result['measures'][0]['value']==value
+    assert result['reviewed_series']==[]
+    jsonschema.Draft202012Validator(read_json(tmp_path/'ratios/metrics.schema.json')).validate(result)
+    for updates in [dict(ratio_basis='not_applicable'),dict(denominator=-1,denominator_status='reported'),
+                    dict(value=-101 if unit=='percent_change' else -1),dict(value=float('inf'))]:
+        bad=copy.deepcopy(batch);bad['measures'][0].update(updates)
+        with pytest.raises(ValueError):MetricAnnotations.model_validate(bad)
+    batch['contract_version']='0.2.0'
+    with pytest.raises(ValueError):MetricAnnotations.model_validate(batch)
+
+
 def test_conflicts_and_revisions_remain_explicit(tmp_path):
     paths=inputs(tmp_path);batch=paths[3];a=batch['measures'][0];a['conflict_set']='same-date'
     b=copy.deepcopy(a);b.update(annotation_key='eleven',value=11)
@@ -182,5 +207,17 @@ def test_explicit_annotation_budget_preserves_export(tmp_path):
     assert actual['annotations_sha256']==digest(paths[1].read_bytes())
     assert {k:v for k,v in actual.items() if k!='annotations_sha256'}=={k:v for k,v in expected.items() if k!='annotations_sha256'}
     assert run(paths,tmp_path/'exact',max_annotation_bytes=paths[1].stat().st_size)==actual
-    for limit in [0,64_000_001,True,1.5]:
+    for limit in [0,512_000_001,True,1.5]:
         with pytest.raises(ValueError,match='annotation budget'):run(paths,tmp_path/'invalid',max_annotation_bytes=limit)
+
+
+def test_explicit_snapshot_budget_preserves_measurements(tmp_path):
+    paths=inputs(tmp_path)
+    expected=run(paths,tmp_path/'small')
+    with paths[0].open('a') as stream:stream.write(' ' * 32_000_000)
+    with pytest.raises(ValueError,match='file budget'):run(paths,tmp_path/'default')
+    actual=run(paths,tmp_path/'larger',max_snapshot_bytes=128_000_000,max_annotation_bytes=512_000_000)
+    assert actual['measures']==expected['measures']
+    assert run(paths,tmp_path/'exact',max_snapshot_bytes=paths[0].stat().st_size)==actual
+    for limit in [0,128_000_001,True,1.5]:
+        with pytest.raises(ValueError,match='snapshot budget'):run(paths,tmp_path/'invalid',max_snapshot_bytes=limit)

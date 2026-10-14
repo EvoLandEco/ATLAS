@@ -1,0 +1,54 @@
+[
+  {
+    "id": "salmonella-sprouts-2026",
+    "label": "Salmonella in sprouted seeds",
+    "record_id": "doc_e4bf77c3fbfc3f6a95e06976:0",
+    "assessment_date": "2026-06-25",
+    "authority": "EFSA and ECDC",
+    "assessments": [
+      {"population": "People in EU/EEA countries who frequently consume sprouted seeds", "rating": "low to moderate", "basis": "source_reported", "assertion_ids": ["assertion_df9a0828ee2ff381ba8e94ac"]}
+    ],
+    "dimensions": [
+      {"id": "hazard", "label": "Hazard and exposure", "summary": "The investigation links Salmonella Bovismorbificans ST377 to sprouted seeds, with process-water and human genomic evidence.", "assertion_ids": ["assertion_fb20b477c0b5d857d1b7fd65", "assertion_26cc47a7223b9bafedd605b4"]},
+      {"id": "impact", "label": "Reported impact", "summary": "The source reports 109 confirmed cases and 18 hospitalisations at its stated cutoff.", "assertion_ids": ["assertion_f3628be9edcb563f017893e6"]},
+      {"id": "spread", "label": "Commodity distribution", "summary": "Traceback describes international distribution of implicated alfalfa consignments and a possible seed-contamination origin.", "assertion_ids": ["assertion_75653a7284b5740153b210a9"]},
+      {"id": "response", "label": "Response and remaining exposure", "summary": "Withdrawals, recalls and other controls were reported. The assessment describes decreasing notifications with further infections still possible.", "assertion_ids": ["assertion_b7584775bbbaf50786d5f955", "assertion_df9a0828ee2ff381ba8e94ac"]}
+    ],
+    "unknowns": ["The number of exposed consumers and their absolute infection probability are unavailable.", "A possible upstream contamination origin is not an accepted causal attribution.", "The assessment describes its June scope; the selected source does not establish current risk in September."]
+  },
+  {
+    "id": "h5-dutch-dairy-2026",
+    "label": "A(H5N1) dairy-farm investigation",
+    "record_id": "doc_caea7004ef140debb2c40f1d:2",
+    "assessment_date": null,
+    "authority": "ECDC",
+    "assessments": [
+      {"population": "General population in Europe, for circulating clade 2.3.4.4b viruses", "rating": "low", "basis": "source_reported", "assertion_ids": ["assertion_e29c1d83a759fecef2cac7d4"]},
+      {"population": "People exposed to infected animals, including cattle, or contaminated environments", "rating": "low to moderate", "basis": "source_reported", "assertion_ids": ["assertion_e29c1d83a759fecef2cac7d4"]}
+    ],
+    "dimensions": [
+      {"id": "hazard", "label": "Animal finding", "summary": "One cow had antibodies indicating previous exposure. Testing of the sampled cattle found no active virus at the reported investigation stage.", "assertion_ids": ["assertion_571f837d069c2432a170ac8f", "assertion_d3a1ed6db971bb4c03cb8de9"]},
+      {"id": "exposure", "label": "Human and food exposure", "summary": "Milk from the affected cow was excluded from the food chain; exposed people were offered testing, with results pending in the report.", "assertion_ids": ["assertion_e2309e42031a047723efc5bf"]},
+      {"id": "context", "label": "Genomic context", "summary": "The cat isolate had a source-described genomic relationship to bird strains. Missing cattle-virus characteristics constrain investigation of the route.", "assertion_ids": ["assertion_81523339fa5f582b2a258a8d", "assertion_db70b955131b9b4a7d960f67"]},
+      {"id": "response", "label": "Public-health response", "summary": "ECDC describes enhanced surveillance, testing and protective measures as recommendations.", "assertion_ids": ["assertion_50b14c75869c2fe5da73112b"]}
+    ],
+    "unknowns": ["The source supplies no exact cutoff for the population risk assessment.", "Pending human tests and cattle serology cannot be treated as negative results.", "The evidence does not establish a cattle-to-human transmission event or its probability."]
+  },
+  {
+    "id": "infant-formula-cereulide-2026",
+    "label": "Cereulide in infant formula",
+    "record_id": "doc_caea7004ef140debb2c40f1d:1",
+    "assessment_date": null,
+    "authority": "ECDC",
+    "assessments": [
+      {"population": "Infants less than one year in the EU/EEA in this incident", "rating": "moderate", "basis": "source_reported", "assertion_ids": ["assertion_a3417c6ded6218fef50ee000"]}
+    ],
+    "dimensions": [
+      {"id": "hazard", "label": "Foodborne toxin", "summary": "The source describes cereulide contamination and identification of an implicated formula ingredient.", "assertion_ids": ["assertion_cfc24e241c361b9aa3baa882"]},
+      {"id": "likelihood", "label": "Source-assessed exposure likelihood", "summary": "ECDC assessed exposure likelihood as moderate to high for formula-fed infants, with younger infants more susceptible to complications.", "assertion_ids": ["assertion_a3417c6ded6218fef50ee000"]},
+      {"id": "impact", "label": "Source-assessed impact", "summary": "ECDC assessed potential impact as low to moderate depending on age. Reported symptomatic infants included a toxin-positive infant with a favourable outcome; no severe cases were reported in the section.", "assertion_ids": ["assertion_a3417c6ded6218fef50ee000", "assertion_79b4d92dd0bab3ef027b460c"]},
+      {"id": "response", "label": "Recall and exposure change", "summary": "The source states that ongoing withdrawals and recalls were decreasing exposure likelihood. It supplies no measured intervention effect size.", "assertion_ids": ["assertion_bad6cb171de8d8d057a4cbf7", "assertion_7603211caf690d65204ea754"]}
+    ],
+    "unknowns": ["The exposed population denominator and absolute illness probability are unavailable.", "Publication dates do not establish onset, sampling or exposure dates.", "The source assessment is specific to this incident and population; it is not a numerical risk score."]
+  }
+]

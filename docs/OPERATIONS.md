@@ -29,6 +29,8 @@ The supplied GitHub workflow supports `none` and `openai`; it does not provision
 
 ## Scheduled jobs in Codex
 
+The [daily Trends job](DAILY_TRENDS.md) runs at 06:00 Europe/Amsterdam with a separate archive and independent website release. Its concise findings remain pending full weekly reconciliation. The three Wednesday jobs retain their dependency receipts and seven-date production window.
+
 The local schedule consists of three weekly tasks in the project chat: preceding-batch review at 07:00, production at 08:37 and the review inbox at 12:00 on Wednesday, Europe/Amsterdam. Their scopes and completion rules are in [Workflow](WORKFLOW.md#three-weekly-agent-jobs). Codex stores schedules outside the repository. Manage or pause them in the app's Scheduled view; editing a time in this document does not reschedule a task.
 
 Use the existing checkout and `.runtime-state`, including validated results from earlier batches. Keep the computer awake, the app running and the project available. Local tasks use the machine's permissions and signed-in account. See [scheduled tasks](https://learn.chatgpt.com/docs/automations?surface=app). The package installer does not create app automations.
@@ -105,8 +107,24 @@ Scheduled runs can be delayed or skipped by their hosting platform. Monitor Acti
 
 For a state restore, clone to a fresh directory, run ledger verification, verify the latest report bundle, and reproduce it from sealed JSON. For a code update, create a pull request, run tests, review schema diffs, compare a frozen replay, run a small collection trial, then deploy. Keep event keys stable. Versioned state migrations and large-scale object storage are roadmap items; back up state before experimental-version upgrades.
 
+### Checkpoint reuse and cleanup
+
+The private `build_checkpoint.py` and `build_site_candidate.py` builders use `scripts/checkpoint_build.py`, checkpoint format `1.0.0`. A build key covers the exact input files, source text, preparation code, export code, schedule and command parameters. One build lock prevents overlapping allocations. A matching completed build is reused only after its saved output hashes match. A failed build retains its diagnostics and cannot dispatch again with the same key. Changed inputs produce a separate candidate.
+
+Copy the named build inputs and required handoff records only. Keep other review receipts at their recorded locations. Reuse verified metric outputs when both the metric annotations and snapshot match. Metric files linked between sealed candidates are immutable: create a separate file before any amendment. Do not compact or edit a shared file in place.
+
+After a run and its dependent work finish, review intermediate checkpoints for cleanup. Check current writers and open previews, execution holds, weekly receipts and their history, publication authorizations, delivery and adoption receipts, consumer staging, scheduled work, and investigation references. Follow references between checkpoints as well as references from other projects. Keep the full dependency set for every retained candidate.
+
+Preserve captured evidence, source reviews, original model receipts, the append-only ledger, sealed reports, approved releases, validated deliverables and unfinished work. A failed candidate is not disposable if it holds the only copy of a correction or investigation input. Do not use age, directory names or validation failure alone as a deletion rule.
+
+Prepare a private cleanup manifest with exact paths, file hashes, dependency findings and the reason each item can be removed. Recheck active writers and manifest hashes immediately before deletion. Remove only the listed unused intermediates; retain the manifest and diagnostics. Verify retained references afterward and measure allocated storage with each hard-linked inode counted once. Publication delivery and consumer adoption are separate completion conditions. Do not stop active work to reclaim storage.
+
+Cloud-only files stay in place when their contents cannot be checked without retrieval. In that case, retain checkpoint paths. Resident, byte-identical immutable generated outputs can share a hard link after both files match their own manifests, their permissions match and no writer uses them. Keep the path and hash inventory, verify every replacement, and count reclaimed storage only when the redundant inode has no remaining links. Mutable preparation inputs and original evidence are excluded.
+
 ### Large annotation files
 
-`atlas metrics --max-annotation-bytes N` sets the annotation file allowance for one local export. The default is 16,000,000 bytes; the maximum is 64,000,000 bytes. Record the chosen allowance and input size in the run receipt. Use compact JSON first and verify that it reconstructs the complete annotation object. This allowance does not affect source retrieval, model calls or the export contract.
+`atlas metrics --max-annotation-bytes N` sets the annotation file allowance for one local export. The default is 16,000,000 bytes; the maximum is 512,000,000 bytes. `--max-snapshot-bytes N` sets the snapshot allowance, with a default of 32,000,000 and maximum of 128,000,000 bytes. Record the chosen allowance and input size in the run receipt. Use compact JSON first and verify that it reconstructs the complete annotation object. This allowance does not affect source retrieval, model calls or the export contract.
 
-`atlas site-export --max-input-bytes N` sets the per-file allowance for prepared local inputs. The default is 64,000,000 bytes; the maximum is 128,000,000 bytes. Record the chosen limit and actual input sizes in the run receipt. Use compact JSON with exact object reconstruction before increasing the allowance. Source retrieval, model input and model call budgets have separate limits.
+`atlas site-export --max-input-bytes N` sets the per-file allowance for prepared local inputs. The default is 64,000,000 bytes; the maximum is 2,000,000,000 bytes. Record the chosen limit and actual input sizes in the run receipt. Use compact JSON with exact object reconstruction before increasing the allowance. Source retrieval, model input and model call budgets have separate limits.
+
+Browser export uses `node scripts/export_browser_transport.mjs --max-input-bytes N` for its combined scientific bundle and snapshot allowance. The default is 400,000,000 bytes and maximum is 2,000,000,000 bytes. Its file parser consumes chunks while retaining the complete object for validation; memory still grows with the dataset. Record the actual input sizes, selected allowance and peak memory before publication. The verifier checks exact reconstruction and every record against the source selector.

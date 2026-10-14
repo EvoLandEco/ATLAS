@@ -1,0 +1,1043 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "0.2.0"
+    },
+    "experiment_id": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "source_export_id": {
+      "type": "string"
+    },
+    "input_identity": {
+      "type": "object",
+      "properties": {
+        "site_sha256": {
+          "type": "string"
+        },
+        "selector_sha256": {
+          "type": "string"
+        },
+        "producer_sha256": {
+          "type": "string"
+        },
+        "profile_sha256": {
+          "type": "string"
+        },
+        "method_version": {
+          "const": "0.2.0"
+        },
+        "schema_sha256": {
+          "type": "string"
+        },
+        "selection_adapter_sha256": {
+          "type": "string"
+        },
+        "network_method_sha256": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "site_sha256",
+        "selector_sha256",
+        "producer_sha256",
+        "profile_sha256",
+        "method_version",
+        "schema_sha256",
+        "selection_adapter_sha256",
+        "network_method_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "time_basis": {
+      "const": "retrospective_observation_order"
+    },
+    "status": {
+      "const": "research_experiment"
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "publication_from": {
+          "type": "string"
+        },
+        "publication_until": {
+          "type": "string"
+        },
+        "capture_until": {
+          "type": "string"
+        },
+        "documents": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "forecast_series": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "risk_profiles": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "publication_from",
+        "publication_until",
+        "capture_until",
+        "documents",
+        "records",
+        "forecast_series",
+        "risk_profiles"
+      ],
+      "additionalProperties": false
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "methods": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "combination": {
+            "const": "equal_weight_quantile_median"
+          },
+          "require_all_components": {
+            "const": true
+          },
+          "components": {
+            "const": [
+              {
+                "model_id": "random_walk",
+                "weight": 0.3333333333333333
+              },
+              {
+                "model_id": "recent_changes",
+                "weight": 0.3333333333333333
+              },
+              {
+                "model_id": "gamma_poisson",
+                "weight": 0.3333333333333333
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "description",
+          "url"
+        ],
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "id": {
+                  "const": "ensemble_median"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "combination",
+                "require_all_components",
+                "components"
+              ]
+            },
+            "else": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "combination"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "require_all_components"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "components"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "publication": {
+            "type": "string"
+          },
+          "capture": {
+            "type": "string"
+          },
+          "text_sha256": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "url",
+          "publication",
+          "capture",
+          "text_sha256"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "series_audit": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "series_id": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "included",
+              "excluded"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "series_id",
+          "status",
+          "reason"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "monitoring": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/signal"
+      }
+    },
+    "risk_profiles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/profile"
+      }
+    },
+    "forecast_series": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/series"
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "generated_at",
+    "source_export_id",
+    "input_identity",
+    "time_basis",
+    "status",
+    "scope",
+    "limitations",
+    "methods",
+    "sources",
+    "series_audit",
+    "monitoring",
+    "risk_profiles",
+    "forecast_series"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ATLAS Intelligence experiment 0.2.0",
+  "$defs": {
+    "interval": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "enum": [
+            0.5,
+            0.8,
+            0.95
+          ]
+        },
+        "lower": {
+          "type": "number"
+        },
+        "upper": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "level",
+        "lower",
+        "upper"
+      ],
+      "additionalProperties": false
+    },
+    "backtest": {
+      "type": "object",
+      "properties": {
+        "model_id": {
+          "enum": [
+            "random_walk",
+            "recent_changes",
+            "gamma_poisson",
+            "ensemble_median"
+          ]
+        },
+        "origin": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "horizon_weeks": {
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "training_measure_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "central": {
+          "type": "number"
+        },
+        "intervals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/interval"
+          }
+        },
+        "id": {
+          "type": "string"
+        },
+        "observed": {
+          "type": "number"
+        },
+        "target_measure_id": {
+          "type": "string"
+        },
+        "available_in_atlas_at_origin": {
+          "type": "boolean"
+        },
+        "mae": {
+          "type": "number"
+        },
+        "wis": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "model_id",
+        "origin",
+        "target",
+        "horizon_weeks",
+        "training_measure_ids",
+        "central",
+        "intervals",
+        "id",
+        "observed",
+        "target_measure_id",
+        "available_in_atlas_at_origin",
+        "mae",
+        "wis"
+      ],
+      "additionalProperties": false
+    },
+    "series": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "outcome": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "operation": {
+          "const": "reported_interval_counts"
+        },
+        "reviewed_at": {
+          "type": "string"
+        },
+        "status": {
+          "const": "retrospective_experiment"
+        },
+        "observations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string"
+              },
+              "value": {
+                "type": "number"
+              },
+              "measure_id": {
+                "type": "string"
+              },
+              "record_id": {
+                "type": "string"
+              },
+              "source_id": {
+                "type": "string"
+              },
+              "publication": {
+                "type": "string"
+              },
+              "capture": {
+                "type": "string"
+              },
+              "segment": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "date",
+              "value",
+              "measure_id",
+              "record_id",
+              "source_id",
+              "publication",
+              "capture",
+              "segment"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "segments": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "excluded": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "measure_id": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "measure_id",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "backtests": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/backtest"
+          }
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "model_id": {
+                "type": "string"
+              },
+              "horizon_weeks": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "n": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "mae": {
+                "type": "number"
+              },
+              "wis": {
+                "type": "number"
+              },
+              "relative_wis": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "baseline_id": {
+                "type": "string"
+              },
+              "coverage": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "level": {
+                      "type": "number"
+                    },
+                    "value": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "level",
+                    "value"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "model_id",
+              "horizon_weeks",
+              "n",
+              "mae",
+              "wis",
+              "relative_wis",
+              "baseline_id",
+              "coverage"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "forecasts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "model_id": {
+                "enum": [
+                  "random_walk",
+                  "recent_changes",
+                  "gamma_poisson",
+                  "ensemble_median"
+                ]
+              },
+              "origin": {
+                "type": "string"
+              },
+              "target": {
+                "type": "string"
+              },
+              "horizon_weeks": {
+                "enum": [
+                  1,
+                  2
+                ]
+              },
+              "training_measure_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "central": {
+                "type": "number"
+              },
+              "intervals": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/interval"
+                }
+              }
+            },
+            "required": [
+              "model_id",
+              "origin",
+              "target",
+              "horizon_weeks",
+              "training_measure_ids",
+              "central",
+              "intervals"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "monitoring_checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string"
+              },
+              "origin": {
+                "type": "string"
+              },
+              "measure_id": {
+                "type": "string"
+              },
+              "record_id": {
+                "type": "string"
+              },
+              "source_id": {
+                "type": "string"
+              },
+              "observed": {
+                "type": "number"
+              },
+              "expected": {
+                "type": "number"
+              },
+              "threshold": {
+                "type": "number"
+              },
+              "above_threshold": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "date",
+              "origin",
+              "measure_id",
+              "record_id",
+              "source_id",
+              "observed",
+              "expected",
+              "threshold",
+              "above_threshold"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "outcome",
+        "unit",
+        "location",
+        "operation",
+        "reviewed_at",
+        "status",
+        "observations",
+        "segments",
+        "excluded",
+        "backtests",
+        "metrics",
+        "forecasts",
+        "limitations",
+        "source_ids",
+        "monitoring_checks"
+      ],
+      "additionalProperties": false
+    },
+    "signal": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "count_exceedance",
+            "network_first_appearance"
+          ]
+        },
+        "label": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        },
+        "series_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "observed": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expected": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "threshold": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "type": "string"
+        },
+        "method_id": {
+          "type": "string"
+        },
+        "record_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "relationship_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "interpretation": {
+          "type": "string"
+        },
+        "eligibility": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "const": "retrospective_only"
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "status",
+            "reason"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "label",
+        "date",
+        "series_id",
+        "observed",
+        "expected",
+        "threshold",
+        "unit",
+        "method_id",
+        "record_ids",
+        "source_ids",
+        "relationship_ids",
+        "interpretation",
+        "eligibility"
+      ],
+      "additionalProperties": false
+    },
+    "profile": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "record_id": {
+          "type": "string"
+        },
+        "assessment_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authority": {
+          "type": "string"
+        },
+        "assessments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "population": {
+                "type": "string"
+              },
+              "rating": {
+                "type": "string"
+              },
+              "basis": {
+                "const": "source_reported"
+              },
+              "assertion_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "population",
+              "rating",
+              "basis",
+              "assertion_ids"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "summary": {
+                "type": "string"
+              },
+              "assertion_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "summary",
+              "assertion_ids"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "unknowns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "assertion_id": {
+                "type": "string"
+              },
+              "text": {
+                "type": "string"
+              },
+              "quotes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "quote": {
+                      "type": "string"
+                    },
+                    "page": {
+                      "anyOf": [
+                        {
+                          "type": [
+                            "integer",
+                            "string"
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "quote_sha256": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "quote",
+                    "page",
+                    "quote_sha256"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "assertion_id",
+              "text",
+              "quotes"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "source_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "publication": {
+          "type": "string"
+        },
+        "capture": {
+          "type": "string"
+        },
+        "probability": {
+          "type": "null"
+        },
+        "method_id": {
+          "const": "risk_evidence"
+        },
+        "review_status": {
+          "const": "source_checked_experiment"
+        },
+        "one_health": {
+          "type": "object",
+          "properties": {
+            "nodes": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "relations": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          },
+          "required": [
+            "nodes",
+            "relations"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "record_id",
+        "assessment_date",
+        "authority",
+        "assessments",
+        "dimensions",
+        "unknowns",
+        "evidence",
+        "source_ids",
+        "publication",
+        "capture",
+        "probability",
+        "method_id",
+        "review_status",
+        "one_health"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

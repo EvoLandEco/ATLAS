@@ -1,0 +1,129 @@
+{
+  "$defs": {
+    "Receipt": {
+      "additionalProperties": false,
+      "properties": {
+        "archive_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "title": "Archive Id",
+          "type": "string"
+        },
+        "decision_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "title": "Decision Id",
+          "type": "string"
+        },
+        "decision_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Decision Sha256",
+          "type": "string"
+        },
+        "detail": {
+          "maxLength": 2000,
+          "minLength": 3,
+          "title": "Detail",
+          "type": "string"
+        },
+        "export_id": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Export Id"
+        },
+        "inbox_version": {
+          "const": "1.0.0",
+          "title": "Inbox Version",
+          "type": "string"
+        },
+        "issue_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "title": "Issue Id",
+          "type": "string"
+        },
+        "ledger_record_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+            "type": "string"
+          },
+          "maxItems": 200,
+          "title": "Ledger Record Ids",
+          "type": "array"
+        },
+        "recorded_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$",
+          "title": "Recorded At",
+          "type": "string"
+        },
+        "revision": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Revision",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "applied",
+            "recorded",
+            "deferred",
+            "stale",
+            "invalid",
+            "completed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "validation": {
+          "enum": [
+            "pending",
+            "passed",
+            "not_required"
+          ],
+          "title": "Validation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "inbox_version",
+        "archive_id",
+        "decision_id",
+        "decision_sha256",
+        "issue_id",
+        "revision",
+        "status",
+        "recorded_at",
+        "validation",
+        "detail"
+      ],
+      "title": "Receipt",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "inbox_version": {
+      "const": "1.0.0",
+      "title": "Inbox Version",
+      "type": "string"
+    },
+    "receipts": {
+      "items": {
+        "$ref": "#/$defs/Receipt"
+      },
+      "maxItems": 200,
+      "title": "Receipts",
+      "type": "array"
+    }
+  },
+  "required": [
+    "inbox_version",
+    "receipts"
+  ],
+  "title": "Receipts",
+  "type": "object"
+}

@@ -1,0 +1,753 @@
+{
+  "$defs": {
+    "CardMeasure": {
+      "additionalProperties": false,
+      "properties": {
+        "acquisition": {
+          "default": "unknown",
+          "enum": [
+            "imported",
+            "local",
+            "mixed",
+            "unknown"
+          ],
+          "title": "Acquisition",
+          "type": "string"
+        },
+        "annotation_key": {
+          "minLength": 1,
+          "title": "Annotation Key",
+          "type": "string"
+        },
+        "as_of": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "case_class": {
+          "enum": [
+            "confirmed",
+            "probable",
+            "suspected",
+            "confirmed_and_probable",
+            "all_reported",
+            "unknown"
+          ],
+          "title": "Case Class",
+          "type": "string"
+        },
+        "case_definition": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "conflict_set": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Conflict Set"
+        },
+        "context_references": {
+          "items": {
+            "$ref": "#/$defs/ClaimRef"
+          },
+          "title": "Context References",
+          "type": "array"
+        },
+        "count_kind": {
+          "enum": [
+            "cumulative",
+            "interval",
+            "point",
+            "unknown"
+          ],
+          "title": "Count Kind",
+          "type": "string"
+        },
+        "cumulative_baseline": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "date_basis": {
+          "enum": [
+            "onset",
+            "notification",
+            "specimen",
+            "death",
+            "report",
+            "unknown"
+          ],
+          "title": "Date Basis",
+          "type": "string"
+        },
+        "denominator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Denominator"
+        },
+        "denominator_population": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "denominator_status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "disease": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        },
+        "geography": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "host": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "metric": {
+          "enum": [
+            "cases",
+            "deaths",
+            "hospitalizations",
+            "affected_holdings",
+            "affected_animals",
+            "samples_tested",
+            "positive_samples",
+            "test_positivity",
+            "other"
+          ],
+          "title": "Metric",
+          "type": "string"
+        },
+        "numeric_evidence_review": {
+          "anyOf": [
+            {
+              "minLength": 20,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Numeric Evidence Review"
+        },
+        "origin_authority": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "pathogen": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "period_end": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "period_label": {
+          "minLength": 1,
+          "title": "Period Label",
+          "type": "string"
+        },
+        "period_start": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "population": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "priority": {
+          "default": 2,
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Priority",
+          "type": "integer"
+        },
+        "proposal_candidates": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Proposal Candidates",
+          "type": "array"
+        },
+        "qualifier": {
+          "default": "unknown",
+          "enum": [
+            "exact",
+            "approximately",
+            "at_least",
+            "at_most",
+            "more_than",
+            "less_than",
+            "unknown"
+          ],
+          "title": "Qualifier",
+          "type": "string"
+        },
+        "ratio_basis": {
+          "default": "not_applicable",
+          "enum": [
+            "source_reported",
+            "not_applicable"
+          ],
+          "title": "Ratio Basis",
+          "type": "string"
+        },
+        "revision_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Revision Reason"
+        },
+        "semantic_note": {
+          "minLength": 12,
+          "title": "Semantic Note",
+          "type": "string"
+        },
+        "source_reference": {
+          "$ref": "#/$defs/ClaimRef"
+        },
+        "stratum": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "supersedes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Supersedes",
+          "type": "array"
+        },
+        "transmission_role": {
+          "default": "unknown",
+          "enum": [
+            "index",
+            "secondary",
+            "import_linked",
+            "unknown"
+          ],
+          "title": "Transmission Role",
+          "type": "string"
+        },
+        "unit": {
+          "enum": [
+            "people",
+            "holdings",
+            "animals",
+            "samples",
+            "percent",
+            "proportion",
+            "other",
+            "unknown",
+            "percent_change",
+            "percent_of_target"
+          ],
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "value_status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        }
+      },
+      "required": [
+        "metric",
+        "unit",
+        "count_kind",
+        "case_class",
+        "date_basis",
+        "evidence",
+        "annotation_key",
+        "label",
+        "disease",
+        "pathogen",
+        "host",
+        "geography",
+        "period_label",
+        "source_reference",
+        "semantic_note"
+      ],
+      "title": "CardMeasure",
+      "type": "object"
+    },
+    "ClaimRef": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_index": {
+          "minimum": 0,
+          "title": "Claim Index",
+          "type": "integer"
+        },
+        "document_id": {
+          "pattern": "^doc_[a-f0-9]{24}$",
+          "title": "Document Id",
+          "type": "string"
+        },
+        "quote_indexes": {
+          "items": {
+            "type": "integer"
+          },
+          "minItems": 1,
+          "title": "Quote Indexes",
+          "type": "array"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "document_id",
+        "claim_index",
+        "quote_indexes"
+      ],
+      "title": "ClaimRef",
+      "type": "object"
+    },
+    "DateValue": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Complete date in YYYY-MM-DD form. Use null when the day is not reported.",
+          "title": "Value"
+        }
+      },
+      "title": "DateValue",
+      "type": "object"
+    },
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "field": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Field",
+          "type": "string"
+        },
+        "locator": {
+          "default": "text",
+          "maxLength": 120,
+          "title": "Locator",
+          "type": "string"
+        },
+        "quote": {
+          "maxLength": 400,
+          "minLength": 3,
+          "title": "Quote",
+          "type": "string"
+        }
+      },
+      "required": [
+        "field",
+        "quote"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "EvidenceSpan": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_index": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Claim Index"
+        },
+        "document_id": {
+          "title": "Document Id",
+          "type": "string"
+        },
+        "end": {
+          "exclusiveMinimum": 0,
+          "title": "End",
+          "type": "integer"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "offset_basis": {
+          "const": "unicode_code_points_half_open",
+          "default": "unicode_code_points_half_open",
+          "title": "Offset Basis",
+          "type": "string"
+        },
+        "page": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Page"
+        },
+        "quote": {
+          "title": "Quote",
+          "type": "string"
+        },
+        "quote_index": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Quote Index"
+        },
+        "quote_sha256": {
+          "title": "Quote Sha256",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "section": {
+          "title": "Section",
+          "type": "string"
+        },
+        "source_text_sha256": {
+          "title": "Source Text Sha256",
+          "type": "string"
+        },
+        "start": {
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "document_id",
+        "record_id",
+        "claim_index",
+        "quote_index",
+        "section",
+        "quote",
+        "source_text_sha256",
+        "start",
+        "end",
+        "page",
+        "quote_sha256"
+      ],
+      "title": "EvidenceSpan",
+      "type": "object"
+    },
+    "Status": {
+      "enum": [
+        "reported",
+        "not_reported",
+        "unknown",
+        "not_applicable",
+        "pending_verification",
+        "conflicting",
+        "not_extracted",
+        "not_comparable",
+        "access_restricted"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "SupplementClaim": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_index": {
+          "minimum": 0,
+          "title": "Claim Index",
+          "type": "integer"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "claim_index",
+        "text",
+        "evidence_ids"
+      ],
+      "title": "SupplementClaim",
+      "type": "object"
+    },
+    "SupplementDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "capture": {
+          "title": "Capture",
+          "type": "string"
+        },
+        "content_url": {
+          "title": "Content Url",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^doc_[a-f0-9]{24}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "publication": {
+          "title": "Publication",
+          "type": "null"
+        },
+        "publication_status": {
+          "const": "not_reported",
+          "title": "Publication Status",
+          "type": "string"
+        },
+        "publisher": {
+          "minLength": 1,
+          "title": "Publisher",
+          "type": "string"
+        },
+        "raw_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Raw Sha256",
+          "type": "string"
+        },
+        "text_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Text Sha256",
+          "type": "string"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "publisher",
+        "title",
+        "url",
+        "content_url",
+        "publication",
+        "publication_status",
+        "capture",
+        "raw_sha256",
+        "text_sha256"
+      ],
+      "title": "SupplementDocument",
+      "type": "object"
+    },
+    "SupplementRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "claims": {
+          "items": {
+            "$ref": "#/$defs/SupplementClaim"
+          },
+          "minItems": 1,
+          "title": "Claims",
+          "type": "array"
+        },
+        "disclosures": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Disclosures",
+          "type": "array"
+        },
+        "document_id": {
+          "title": "Document Id",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "measures": {
+          "items": {
+            "$ref": "#/$defs/CardMeasure"
+          },
+          "title": "Measures",
+          "type": "array"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "document_id",
+        "title",
+        "claims",
+        "measures",
+        "disclosures",
+        "reviewed_at",
+        "reviewed_by"
+      ],
+      "title": "SupplementRecord",
+      "type": "object"
+    },
+    "TextValue": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "title": "TextValue",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "documents": {
+      "items": {
+        "$ref": "#/$defs/SupplementDocument"
+      },
+      "minItems": 1,
+      "title": "Documents",
+      "type": "array"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/EvidenceSpan"
+      },
+      "minItems": 1,
+      "title": "Evidence",
+      "type": "array"
+    },
+    "generated_at": {
+      "title": "Generated At",
+      "type": "string"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Limitations",
+      "type": "array"
+    },
+    "records": {
+      "items": {
+        "$ref": "#/$defs/SupplementRecord"
+      },
+      "minItems": 1,
+      "title": "Records",
+      "type": "array"
+    },
+    "review_status": {
+      "const": "source_checked_draft",
+      "title": "Review Status",
+      "type": "string"
+    },
+    "selection_policy": {
+      "const": "outside_dated_selection",
+      "title": "Selection Policy",
+      "type": "string"
+    },
+    "source_export_id": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Source Export Id",
+      "type": "string"
+    },
+    "supplement_version": {
+      "const": "0.1.0",
+      "title": "Supplement Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "supplement_version",
+    "source_export_id",
+    "generated_at",
+    "review_status",
+    "selection_policy",
+    "documents",
+    "records",
+    "evidence",
+    "limitations"
+  ],
+  "title": "SourceSupplement",
+  "type": "object"
+}

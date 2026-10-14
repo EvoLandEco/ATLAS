@@ -109,7 +109,7 @@ def extract_pending(store: Store, config: dict, provider: str = "none", model: s
     window=publication_window(config,as_of)
     completed={r["payload"]["extraction_key"] for r in store.records("extraction")}
     summary={"provider":provider,"calls":0,"cache_hits":0,"completed_chunks":0,"queued_chunks":0,
-             "failed_chunks":0,"candidate_count":0,"input_characters":0}
+             "failed_chunks":0,"candidate_count":0,"input_characters":0,"excluded_documents":[]}
     # A reviewed local extraction can cover a whole document.
     editorial_docs={r["payload"]["document_id"] for r in store.records("extraction")
                     if r["payload"]["provenance"].get("provider")=="editorial"}
@@ -126,6 +126,8 @@ def extract_pending(store: Store, config: dict, provider: str = "none", model: s
     try:
         for row in store.records("document"):
             doc=row["payload"]
+            if not doc.get('published_at'):
+                summary['excluded_documents'].append(dict(document_id=row['id'],reason='missing_publication_date'))
             if not in_publication_window(doc,window):continue
             if row["id"] in editorial_docs: continue
             text=(store.home/doc["text_object"]).read_text(encoding="utf-8")

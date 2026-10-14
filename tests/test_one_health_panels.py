@@ -26,7 +26,7 @@ def panel_inputs(tmp_path):
 
 def test_panel_roundtrip_and_selection(tmp_path):
     paths,ann=panel_inputs(tmp_path);b=export_site(**paths,out=tmp_path/'out');again=export_site(**paths,out=tmp_path/'again')
-    assert b['contract_version']=='1.5.0'
+    assert b['contract_version']=='1.9.0'
     for field in ['one_health_timings','one_health_sampling_assessments','one_health_contexts']:assert b[field]==again[field]
     assert b['one_health_timings'][0]['time']['start']['value']=='2026-07'
     assert b['one_health_sampling_assessments'][0]['display']=='counts_only'
@@ -139,3 +139,50 @@ assert.equal(view.one_health.timings.length,0);assert.equal(view.one_health.unda
 assert.equal(view.one_health.undated_timings[0].time.start.value,'2026-07');assert.equal(view.one_health.undated_timings[0].time.kind,'unknown');
 """
     subprocess.run(['node','--input-type=module','-e',script,(tmp_path/'out/view.mjs').as_uri(),str(tmp_path/'out/atlas-site.json')],check=True)
+
+
+def test_prepared_selector_matches_saved_rules(tmp_path):
+    from pathlib import Path
+    paths,_=panel_inputs(tmp_path);out=tmp_path/'site';export_site(**paths,out=out)
+    legacy=tmp_path/'legacy.mjs'
+    legacy.write_bytes((Path(__file__).parents[1]/'src/atlas/assets/site_view_v1_5.js').read_bytes())
+    script=r'''
+import fs from 'node:fs';import assert from 'node:assert/strict';
+const {selectView,prepareView}=await import(process.argv[1]);
+const {selectView:legacy}=await import(process.argv[3]);
+const data=JSON.parse(fs.readFileSync(process.argv[2]));
+const previous={...data,contract_version:'1.5.0'};
+const prepared=prepareView(data);
+const cases=[['2020-01-01','2030-12-31'],['2026-07-01','2026-07-01'],
+ ['2020-01-01','2030-12-31','capture'],
+ ['2020-01-01','2030-12-31','publication','2026-01-01T00:00:00Z'],
+ ['2020-01-01','2030-12-31','publication',null,[]],
+ ['2020-01-01','2030-12-31','publication',null,[data.records[0].id]],
+ ['2020-01-01','2030-12-31','publication',null,null,{domains:['human']}]];
+const legacyFields=({report_assessments,superseded_report_assessment_ids,...view})=>{
+ assert.deepEqual(report_assessments,[]);assert.deepEqual(superseded_report_assessment_ids,[]);return view;
+};
+for(const args of cases){
+ assert.deepEqual(legacyFields(prepared(...args)),legacy(previous,...args));
+ assert.deepEqual(legacyFields(selectView(data,...args)),legacy(previous,...args));
+}
+assert.throws(()=>prepared('2030-01-01','2020-01-01'));
+assert.throws(()=>prepared('2020-01-01','2030-12-31','publication',null,['missing']));
+'''
+    subprocess.run(['node','--input-type=module','-e',script,(out/'view.mjs').as_uri(),str(out/'atlas-site.json'),legacy.as_uri()],check=True)
+
+
+def test_matched_sampling_input_requires_defined_scope(tmp_path):
+    from atlas.site_export import OneHealthSamplingInput
+    _, annotations = panel_inputs(tmp_path)
+    row = annotations['one_health_sampling_assessments'][0]
+    row.update(pair_status='matched', positive_measure_key='positive', tested_measure_key='tested')
+    fields = ['unit', 'frame', 'population', 'target']
+    for field in fields:
+        row[field] = dict(value=field, status='reported')
+    OneHealthSamplingInput.model_validate(row)
+    for field in fields:
+        missing = copy.deepcopy(row)
+        missing[field] = dict(value=None, status='not_reported')
+        with pytest.raises(ValueError, match='defined unit, frame, population and target'):
+            OneHealthSamplingInput.model_validate(missing)

@@ -14,7 +14,7 @@ def legacy_bundle(tmp_path):
     # Synthetic contract 1.2 fixture, with the released schema and selector.
     data.pop('diseases'); data.pop('disease_reviews')
     for name in ('one_health_reviews','one_health_nodes','one_health_relations','one_health_timings','one_health_sampling_assessments','one_health_contexts'): data.pop(name)
-    data.update(contract_version='1.2.0', software_version='0.1.0a21')
+    data.pop('report_assessments');data.update(contract_version='1.2.0', software_version='0.1.0a21')
     write_json(out / 'atlas-site.json', data)
     fixture = Path(__file__).parent / 'fixtures/site-1.2.0'
     for name in ('atlas-site.schema.json', 'annotations.schema.json'):
@@ -62,7 +62,7 @@ def test_contract_13_handoff_keeps_sealed_content(tmp_path):
     paths,_=chain_inputs(tmp_path);out=tmp_path/'site'
     data=export_site(**paths,out=out)
     for name in ('one_health_reviews','one_health_nodes','one_health_relations','one_health_timings','one_health_sampling_assessments','one_health_contexts'):data.pop(name)
-    data.update(contract_version='1.3.0',software_version='0.1.0a22');write_json(out/'atlas-site.json',data)
+    data.pop('report_assessments');data.update(contract_version='1.3.0',software_version='0.1.0a22');write_json(out/'atlas-site.json',data)
     fixture=Path(__file__).parent/'fixtures/site-1.3.0'
     for name in ('atlas-site.schema.json','annotations.schema.json'):(out/name).write_bytes((fixture/name).read_bytes())
     (out/'view.mjs').write_bytes((Path(__file__).parents[1]/'src/atlas/assets/site_view_v1_3.js').read_bytes())
@@ -76,7 +76,7 @@ def test_contract_14_handoff_keeps_sealed_content(tmp_path):
     from test_one_health import one_health_inputs
     paths,_=one_health_inputs(tmp_path);out=tmp_path/'site';data=export_site(**paths,out=out)
     for name in ('one_health_timings','one_health_sampling_assessments','one_health_contexts'):data.pop(name)
-    data.update(contract_version='1.4.0',software_version='0.1.0a25');write_json(out/'atlas-site.json',data)
+    data.pop('report_assessments');data.update(contract_version='1.4.0',software_version='0.1.0a25');write_json(out/'atlas-site.json',data)
     fixture=Path(__file__).parent/'fixtures/site-1.4.0'
     for name in ('atlas-site.schema.json','annotations.schema.json'):(out/name).write_bytes((fixture/name).read_bytes())
     (out/'view.mjs').write_bytes((Path(__file__).parents[1]/'src/atlas/assets/site_view_v1_4.js').read_bytes())
@@ -84,3 +84,49 @@ def test_contract_14_handoff_keeps_sealed_content(tmp_path):
     assert verify_site(out)['contract_version']=='1.4.0'
     assert inspect_export(out,paths['snapshot'])['integrity']['status']=='valid'
     assert before=={p.name:p.read_bytes() for p in out.iterdir()}
+
+
+def test_contract_15_handoff_keeps_sealed_content(tmp_path):
+    from test_one_health import one_health_inputs
+    paths,_=one_health_inputs(tmp_path);out=tmp_path/'site';data=export_site(**paths,out=out)
+    data.pop('report_assessments');data.update(contract_version='1.5.0',software_version='0.1.0a29');write_json(out/'atlas-site.json',data)
+    fixture=Path(__file__).parent/'fixtures/site-1.5.0'
+    for name in ('atlas-site.schema.json','annotations.schema.json'):(out/name).write_bytes((fixture/name).read_bytes())
+    (out/'view.mjs').write_bytes((Path(__file__).parents[1]/'src/atlas/assets/site_view_v1_5.js').read_bytes())
+    reseal(out,'1.5.0');before={p.name:p.read_bytes() for p in out.iterdir()}
+    assert verify_site(out)['contract_version']=='1.5.0'
+    assert inspect_export(out,paths['snapshot'])['integrity']['status']=='valid'
+    assert before=={p.name:p.read_bytes() for p in out.iterdir()}
+
+
+@pytest.mark.parametrize('version,software', [('1.6.0','0.1.0a30'),('1.7.0','0.1.0a32')])
+def test_contract_16_and_17_handoff_keeps_sealed_content(tmp_path,version,software):
+    from test_one_health import one_health_inputs
+    paths,_=one_health_inputs(tmp_path);out=tmp_path/'site';data=export_site(**paths,out=out)
+    data.pop('report_assessments');data.update(contract_version=version,software_version=software);write_json(out/'atlas-site.json',data)
+    fixture=Path(__file__).parent/('fixtures/site-'+version)
+    for name in ('atlas-site.schema.json','annotations.schema.json'):(out/name).write_bytes((fixture/name).read_bytes())
+    selector='site_view_v'+version[:3].replace('.','_')+'.js'
+    (out/'view.mjs').write_bytes((Path(__file__).parents[1]/'src/atlas/assets'/selector).read_bytes())
+    reseal(out,version);before={p.name:p.read_bytes() for p in out.iterdir()}
+    assert verify_site(out)['contract_version']==version
+    assert inspect_export(out,paths['snapshot'])['integrity']['status']=='valid'
+    assert before=={p.name:p.read_bytes() for p in out.iterdir()}
+
+
+def test_contract_18_handoff_keeps_sealed_content(tmp_path):
+    from test_one_health import one_health_inputs
+    paths, _ = one_health_inputs(tmp_path)
+    out = tmp_path / 'site'
+    data = export_site(**paths, out=out)
+    data.update(contract_version='1.8.0', software_version='0.1.0a47')
+    write_json(out / 'atlas-site.json', data)
+    fixture = Path(__file__).parent / 'fixtures/site-1.8.0'
+    for name in ('atlas-site.schema.json', 'annotations.schema.json'):
+        (out / name).write_bytes((fixture / name).read_bytes())
+    (out / 'view.mjs').write_bytes((Path(__file__).parents[1] / 'src/atlas/assets/site_view_v1_8.js').read_bytes())
+    reseal(out, '1.8.0')
+    before = {p.name: p.read_bytes() for p in out.iterdir()}
+    assert verify_site(out)['contract_version'] == '1.8.0'
+    assert inspect_export(out, paths['snapshot'])['integrity']['status'] == 'valid'
+    assert before == {p.name: p.read_bytes() for p in out.iterdir()}

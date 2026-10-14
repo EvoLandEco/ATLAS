@@ -58,6 +58,9 @@ def seal(store: Store, config: dict, *, as_of: str | None=None, report_date: str
 def export_review(store: Store, config: dict | None = None, *, as_of: str | None = None) -> dict:
     window=publication_window(config,as_of) if config else None
     documents={r['id'] for r in store.records('document') if in_publication_window(r['payload'],window)}
+    write_json(store.home/'review'/'publication-exclusions.json',dict(policy='dated-reports-1.0.0',
+        excluded_documents=[dict(document_id=r['id'],reason='missing_publication_date')
+                            for r in store.records('document') if not r['payload'].get('published_at')]))
     queue=review_queue(store,document_ids=documents)
     path=store.home/'review'/'queue.json';write_json(path,queue)
     # Source text is private; local pointers let the reviewing editor inspect full context.

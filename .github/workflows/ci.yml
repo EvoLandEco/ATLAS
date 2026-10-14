@@ -20,11 +20,14 @@ jobs:
       - run: |
           python -m pip install -r requirements-dev.lock
           python -m pip install --no-deps --no-build-isolation -e .
+          npm ci --ignore-scripts
+          node --test tests/test_json_file.mjs
           python -m pytest -q
           node tests/test_map_links.cjs
           node tests/test_site_view.cjs
           atlas schemas --out generated-schemas
-          diff -r schemas generated-schemas
+          node --input-type=module -e 'import {transportSchema} from "./scripts/export_browser_transport.mjs"; import {writeFileSync} from "node:fs"; writeFileSync("generated-schemas/browser-transport.schema.json", JSON.stringify(transportSchema(), null, 2) + "\n")'
+          diff -r --exclude=browser-manifest.schema.json schemas generated-schemas
           atlas demo --out demo-output
           atlas replay demo-output/reports/2026-09-23/report.json --out replay-output
           cmp demo-output/reports/2026-09-23/dataset.zip replay-output/dataset.zip

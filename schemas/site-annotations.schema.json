@@ -787,6 +787,7 @@
             "day",
             "month",
             "year",
+            "mixed",
             "unknown"
           ],
           "title": "Precision",
@@ -1696,6 +1697,124 @@
       "title": "PlaceInput",
       "type": "object"
     },
+    "ReportAssessmentInput": {
+      "additionalProperties": false,
+      "properties": {
+        "assertions": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Assertions",
+          "type": "array"
+        },
+        "authority": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "source_authenticity",
+            "diagnostic_status",
+            "authority_response",
+            "expert_appraisal"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 12,
+          "title": "Reason",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "review_state": {
+          "const": "source_checked_draft",
+          "default": "source_checked_draft",
+          "title": "Review State",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "scope": {
+          "minLength": 12,
+          "title": "Scope",
+          "type": "string"
+        },
+        "source_text_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Text Sha256",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "authenticated",
+            "unresolved",
+            "unconfirmed",
+            "source_suspected",
+            "source_probable",
+            "source_confirmed",
+            "source_ruled_out",
+            "disputed",
+            "attributed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "supersedes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Supersedes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "record_id",
+        "kind",
+        "status",
+        "authority",
+        "label",
+        "scope",
+        "reason",
+        "source_text_sha256",
+        "reviewed_at",
+        "reviewed_by",
+        "key",
+        "assertions",
+        "evidence"
+      ],
+      "title": "ReportAssessmentInput",
+      "type": "object"
+    },
     "Status": {
       "enum": [
         "reported",
@@ -1771,7 +1890,8 @@
         "1.1.0",
         "1.2.0",
         "1.3.0",
-        "1.4.0"
+        "1.4.0",
+        "1.5.0"
       ],
       "title": "Contract Version",
       "type": "string"
@@ -1870,6 +1990,13 @@
     "records_sha256": {
       "title": "Records Sha256",
       "type": "string"
+    },
+    "report_assessments": {
+      "items": {
+        "$ref": "#/$defs/ReportAssessmentInput"
+      },
+      "title": "Report Assessments",
+      "type": "array"
     },
     "reviewed_at": {
       "title": "Reviewed At",

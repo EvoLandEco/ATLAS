@@ -88,11 +88,16 @@ class Observation(StrictModel):
             n = getattr(self,field)
             if (n is not None) != (status == Status.REPORTED):
                 raise ValueError(f"{field} and {field}_status disagree")
-            if n is not None and (not math.isfinite(n) or n < 0):
+            lower = -100 if field == 'value' and self.unit in {'percent_change', 'percentage_points'} else 0
+            if n is not None and (not math.isfinite(n) or n < lower):
+                if lower == -100:
+                    raise ValueError('A percentage change must be finite and at least -100')
                 raise ValueError(f"{field} must be finite and nonnegative")
         if self.value is not None:
             if self.unit in {"people","holdings","animals","samples"} and self.value != int(self.value):
                 raise ValueError("Counts use integers")
+            if self.unit == "percentage_points" and self.value > 100:
+                raise ValueError("A percentage-point difference is in [-100,100]")
             if self.unit == "percent" and self.value > 100:
                 raise ValueError("A percent is in [0,100]")
             if self.unit == "proportion" and self.value > 1:

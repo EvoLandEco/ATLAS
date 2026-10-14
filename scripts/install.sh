@@ -6,6 +6,8 @@ PYTHON="${PYTHON:-python3}"
 "$PYTHON" -m venv .venv
 .venv/bin/python -m pip install -r requirements-dev.lock
 .venv/bin/python -m pip install --no-deps --no-build-isolation .
+npm ci --ignore-scripts
 .venv/bin/python -m pytest -q
+node --test tests/test_json_file.mjs
 .venv/bin/python -m atlas.cli doctor
 printf '\nActivate with: source .venv/bin/activate\n'

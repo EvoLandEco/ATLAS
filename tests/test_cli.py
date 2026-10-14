@@ -25,7 +25,7 @@ def test_cli_editorial_installation_path(tmp_path, monkeypatch):
     state=tmp_path/'state'
     def command(*args):return execute(parser().parse_args(['--state',str(state),*args]))
     assert command('init')['ledger']['records']==0
-    assert command('doctor')['source_count']==12
+    assert command('doctor')['source_count']==19
     doc=read_json(Path('examples/import/document.json'));m=sample_mention(12)
     doc['published_at']='2026-09-18'
     path=tmp_path/'document.json';write_json(path,doc)
@@ -45,3 +45,9 @@ def test_cli_editorial_installation_path(tmp_path, monkeypatch):
     assert command('verify')['integrity']=='ok'
     schemas=tmp_path/'schemas';command('schemas','--out',str(schemas))
     assert (schemas/'report.schema.json').exists()
+
+
+def test_metrics_input_budget_arguments():
+    args=parser().parse_args(['metrics','--snapshot','snapshot.json','--annotations','annotations.json','--source-dir','sources','--out','out','--since','2026-07-01','--until','2026-10-11','--max-snapshot-bytes','128000000','--max-annotation-bytes','512000000'])
+    assert args.max_snapshot_bytes==128_000_000
+    assert args.max_annotation_bytes==512_000_000

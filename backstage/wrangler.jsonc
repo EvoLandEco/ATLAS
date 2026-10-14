@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "atlas-reviewer-inbox",
+  "main": "src/worker.mjs",
+  "compatibility_date": "2026-10-14",
+  "workers_dev": true,
+  "preview_urls": false,
+  "routes": [],
+  "assets": {"directory": "public", "binding": "ASSETS", "run_worker_first": true},
+  "d1_databases": [{"binding": "DB", "database_name": "atlas-reviewer-inbox", "database_id": "00000000-0000-0000-0000-000000000000", "migrations_dir": "migrations"}],
+  "r2_buckets": [{"binding": "EVIDENCE", "bucket_name": "atlas-review-evidence"}],
+  "vars": {
+    "INBOX_ORIGIN": "",
+    "INBOX_PATH": "/atlas/review/",
+    "ATLAS_ARCHIVE_ID": "atlas",
+    "REVIEWER_EMAILS": "tianjian.qin@wur.nl",
+    "ACCESS_ISSUER": "",
+    "ACCESS_AUD": "",
+    "SYNC_SERVICE_TOKEN_ID": ""
+  }
+}

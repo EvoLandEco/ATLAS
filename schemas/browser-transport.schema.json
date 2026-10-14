@@ -1,0 +1,4161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ATLAS browser core 0.4.0",
+  "type": "object",
+  "properties": {
+    "transport_version": {
+      "const": "0.4.0"
+    },
+    "source_export_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "contract_version": {
+          "enum": [
+            "1.5.0",
+            "1.6.0",
+            "1.7.0",
+            "1.8.0",
+            "1.9.0"
+          ]
+        },
+        "snapshot": {
+          "type": "object"
+        },
+        "reviewed_chains": {
+          "type": "array"
+        },
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "contract_version": {
+              "enum": [
+                "0.2.0",
+                "0.3.0",
+                "0.4.0",
+                "0.5.0"
+              ]
+            },
+            "coverage": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "contract_version",
+            "coverage"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "contract_version",
+        "snapshot",
+        "reviewed_chains",
+        "metrics"
+      ],
+      "additionalProperties": false
+    },
+    "strings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "eligibility_record_sets": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "tables": {
+      "type": "object",
+      "properties": {
+        "report_assessments": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "id",
+                "record_id",
+                "document_id",
+                "kind",
+                "status",
+                "authority",
+                "label",
+                "scope",
+                "reason",
+                "source_text_sha256",
+                "reviewed_at",
+                "reviewed_by",
+                "review_state",
+                "assertion_ids",
+                "evidence_ids",
+                "eligibility",
+                "supersedes"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "string",
+                "string",
+                "string",
+                "string",
+                "json",
+                "string",
+                "string",
+                "string",
+                "string",
+                "string",
+                "string",
+                "string",
+                "strings",
+                "strings",
+                "eligibility",
+                "strings"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 17,
+                "maxItems": 17,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "records": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "id",
+                "document_id",
+                "topic_id",
+                "channel_id",
+                "capture",
+                "publication",
+                "location_membership_ids"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "string",
+                "string",
+                "string",
+                "string",
+                "string",
+                "strings"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 7,
+                "maxItems": 7,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "topics": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "id",
+                "label",
+                "place_ids"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "string",
+                "strings"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "location_memberships": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "id",
+                "record_id",
+                "area_code",
+                "role",
+                "eligibility"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "string",
+                "string",
+                "string",
+                "eligibility"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 5,
+                "maxItems": 5,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "relationships": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "id",
+                "from_place_id",
+                "to_place_id",
+                "eligibility"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "string",
+                "string",
+                "eligibility"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "disease_reviews": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "record_id",
+                "disease_ids",
+                "kind",
+                "eligibility"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "strings",
+                "string",
+                "eligibility"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "assertions": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "id",
+                "record_id",
+                "measure_id",
+                "eligibility"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "string",
+                "string",
+                "eligibility"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "comparisons": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "id",
+                "kind",
+                "status",
+                "participant_ids",
+                "lineage",
+                "eligibility"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "string",
+                "string",
+                "strings",
+                "json",
+                "eligibility"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 6,
+                "maxItems": 6,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "metrics.panels": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "kind",
+                "id",
+                "measure_ids"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "string",
+                "strings"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "metrics.series": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "context_id",
+                "measure_ids"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "strings"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "metrics.measures": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "measure_id",
+                "context_id",
+                "label",
+                "metric",
+                "value",
+                "value_status",
+                "unit",
+                "qualifier",
+                "observation_date",
+                "priority",
+                "source_id",
+                "track_id",
+                "superseded",
+                "conflict_set",
+                "geography",
+                "disease",
+                "count_kind",
+                "period_label",
+                "source_date_warning",
+                "publication",
+                "source_record_id",
+                "evidence_record_ids",
+                "compact_figure_id"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "string",
+                "string",
+                "string",
+                "json",
+                "string",
+                "string",
+                "string",
+                "string",
+                "json",
+                "string",
+                "string",
+                "json",
+                "string",
+                "json",
+                "json",
+                "string",
+                "string",
+                "json",
+                "string",
+                "string",
+                "strings",
+                "json"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 23,
+                "maxItems": 23,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {}
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "places": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "appearance",
+                "area_codes",
+                "geographic_review",
+                "id",
+                "label",
+                "latitude",
+                "location_membership_ids",
+                "longitude",
+                "precision",
+                "record_ids",
+                "relationship_ids",
+                "topic_ids"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "strings",
+                "string",
+                "string",
+                "string",
+                "json",
+                "strings",
+                "json",
+                "string",
+                "strings",
+                "strings",
+                "strings"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 12,
+                "maxItems": 12,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "display_groups": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "id",
+                "latitude",
+                "longitude",
+                "meaning",
+                "place_ids"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "json",
+                "json",
+                "string",
+                "strings"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 5,
+                "maxItems": 5,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "channels": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "acquisition_source",
+                "id",
+                "name",
+                "organization_id",
+                "snapshot_source"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "string",
+                "string",
+                "string",
+                "string"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 5,
+                "maxItems": 5,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "organizations": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "id",
+                "name"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "string"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "documents": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "authority_review",
+                "capture",
+                "channel_id",
+                "content_url",
+                "id",
+                "location_membership_ids",
+                "publication",
+                "publication_basis",
+                "publication_precision",
+                "raw_sha256",
+                "record_ids",
+                "text_sha256",
+                "title",
+                "url"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "string",
+                "string",
+                "string",
+                "string",
+                "strings",
+                "string",
+                "string",
+                "string",
+                "string",
+                "strings",
+                "string",
+                "string",
+                "string"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 14,
+                "maxItems": 14,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "areas": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "code",
+                "code_system",
+                "label",
+                "meaning"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "string",
+                "string",
+                "string"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "diseases": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "id",
+                "label"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "string"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "source_coverage": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "channel_id",
+                "document_ids",
+                "id",
+                "meaning",
+                "record_ids",
+                "topic_id"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "strings",
+                "string",
+                "string",
+                "strings",
+                "string"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 6,
+                "maxItems": 6,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "one_health_reviews": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "eligibility",
+                "evidence_ids",
+                "id",
+                "outcome",
+                "pending_items",
+                "reason",
+                "record_id",
+                "review_state",
+                "reviewed_at",
+                "reviewed_by",
+                "reviewed_sections",
+                "scope"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "eligibility",
+                "strings",
+                "string",
+                "string",
+                "strings",
+                "string",
+                "string",
+                "string",
+                "string",
+                "string",
+                "strings",
+                "string"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 12,
+                "maxItems": 12,
+                "prefixItems": [
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "one_health_nodes": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "agent",
+                "agent_kind",
+                "assertion_ids",
+                "date_basis",
+                "date_note",
+                "document_ids",
+                "domain",
+                "eligibility",
+                "entity_kind",
+                "evidence_ids",
+                "finding",
+                "id",
+                "key",
+                "label",
+                "location_note",
+                "material",
+                "measure_ids",
+                "observation_date",
+                "period_end",
+                "period_label",
+                "period_start",
+                "place_ids",
+                "record_id",
+                "record_ids",
+                "roles",
+                "sampling",
+                "scope",
+                "taxon",
+                "topic_ids",
+                "uncertainty"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "json",
+                "string",
+                "strings",
+                "string",
+                "string",
+                "strings",
+                "string",
+                "eligibility",
+                "string",
+                "strings",
+                "string",
+                "string",
+                "string",
+                "string",
+                "string",
+                "json",
+                "strings",
+                "json",
+                "json",
+                "json",
+                "json",
+                "strings",
+                "string",
+                "strings",
+                "strings",
+                "json",
+                "string",
+                "json",
+                "strings",
+                "string"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 30,
+                "maxItems": 30,
+                "prefixItems": [
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {},
+                  {},
+                  {},
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "one_health_relations": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "assertion_ids",
+                "basis",
+                "date_basis",
+                "date_note",
+                "directed",
+                "direction_basis",
+                "document_ids",
+                "eligibility",
+                "evidence_ids",
+                "evidence_types",
+                "from_node_id",
+                "id",
+                "key",
+                "kind",
+                "label",
+                "observation_date",
+                "period_end",
+                "period_label",
+                "period_start",
+                "reason",
+                "record_ids",
+                "review_state",
+                "reviewed_at",
+                "reviewed_by",
+                "scope",
+                "source_assertion_id",
+                "source_certainty",
+                "to_node_id",
+                "uncertainty"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "strings",
+                "string",
+                "string",
+                "string",
+                "json",
+                "string",
+                "strings",
+                "eligibility",
+                "strings",
+                "strings",
+                "string",
+                "string",
+                "string",
+                "string",
+                "string",
+                "json",
+                "json",
+                "json",
+                "json",
+                "string",
+                "strings",
+                "string",
+                "string",
+                "string",
+                "string",
+                "string",
+                "json",
+                "string",
+                "string"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 29,
+                "maxItems": 29,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {},
+                  {},
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "one_health_timings": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "assertion_ids",
+                "document_ids",
+                "eligibility",
+                "evidence_ids",
+                "id",
+                "key",
+                "node_id",
+                "reason",
+                "record_id",
+                "record_ids",
+                "review_state",
+                "reviewed_at",
+                "reviewed_by",
+                "source_assertion_id",
+                "time"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "strings",
+                "strings",
+                "eligibility",
+                "strings",
+                "string",
+                "string",
+                "string",
+                "string",
+                "string",
+                "strings",
+                "string",
+                "string",
+                "string",
+                "string",
+                "json"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 15,
+                "maxItems": 15,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {}
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "one_health_sampling_assessments": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "assertion_ids",
+                "clustering",
+                "display",
+                "display_reason",
+                "document_ids",
+                "eligibility",
+                "evidence_ids",
+                "frame",
+                "id",
+                "key",
+                "method",
+                "node_id",
+                "pair_status",
+                "pooling",
+                "population",
+                "positive_measure_id",
+                "proportion",
+                "reason",
+                "record_id",
+                "record_ids",
+                "repeated_sampling",
+                "review_state",
+                "reviewed_at",
+                "reviewed_by",
+                "source_assertion_id",
+                "target",
+                "tested_measure_id",
+                "time",
+                "unit"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "strings",
+                "json",
+                "string",
+                "string",
+                "strings",
+                "eligibility",
+                "strings",
+                "json",
+                "string",
+                "string",
+                "json",
+                "string",
+                "string",
+                "json",
+                "json",
+                "string",
+                "json",
+                "string",
+                "string",
+                "strings",
+                "json",
+                "string",
+                "string",
+                "string",
+                "string",
+                "json",
+                "string",
+                "json",
+                "json"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 29,
+                "maxItems": 29,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {}
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "one_health_contexts": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "assertion_ids",
+                "document_ids",
+                "eligibility",
+                "evidence_ids",
+                "id",
+                "key",
+                "kind",
+                "label",
+                "linkage_note",
+                "measure_ids",
+                "method",
+                "node_ids",
+                "place_ids",
+                "reason",
+                "record_id",
+                "record_ids",
+                "review_state",
+                "reviewed_at",
+                "reviewed_by",
+                "source_assertion_id",
+                "time",
+                "variable"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "strings",
+                "strings",
+                "eligibility",
+                "strings",
+                "string",
+                "string",
+                "string",
+                "string",
+                "string",
+                "strings",
+                "json",
+                "strings",
+                "strings",
+                "string",
+                "string",
+                "strings",
+                "string",
+                "string",
+                "string",
+                "string",
+                "json",
+                "json"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 22,
+                "maxItems": 22,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {}
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        },
+        "metrics.reviewed_series": {
+          "type": "object",
+          "properties": {
+            "columns": {
+              "const": [
+                "comparability_status",
+                "connections",
+                "label",
+                "limitations",
+                "members",
+                "operation",
+                "reason",
+                "review_status",
+                "reviewed_at",
+                "reviewed_by",
+                "scope",
+                "series_id",
+                "evidence_ids"
+              ]
+            },
+            "encoding": {
+              "const": [
+                "string",
+                "json",
+                "string",
+                "strings",
+                "json",
+                "string",
+                "string",
+                "string",
+                "string",
+                "string",
+                "string",
+                "string",
+                "strings"
+              ]
+            },
+            "rows": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 13,
+                "maxItems": 13,
+                "prefixItems": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  },
+                  {},
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    ]
+                  },
+                  {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "items": false
+              }
+            }
+          },
+          "required": [
+            "columns",
+            "encoding",
+            "rows"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "report_assessments",
+        "records",
+        "topics",
+        "location_memberships",
+        "relationships",
+        "disease_reviews",
+        "assertions",
+        "comparisons",
+        "metrics.panels",
+        "metrics.series",
+        "metrics.measures",
+        "places",
+        "display_groups",
+        "channels",
+        "organizations",
+        "documents",
+        "areas",
+        "diseases",
+        "source_coverage",
+        "one_health_reviews",
+        "one_health_nodes",
+        "one_health_relations",
+        "one_health_timings",
+        "one_health_sampling_assessments",
+        "one_health_contexts",
+        "metrics.reviewed_series"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "transport_version",
+    "source_export_id",
+    "metadata",
+    "strings",
+    "eligibility_record_sets",
+    "tables"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,135 @@
+{
+  "$defs": {
+    "WatchReview": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Assertion Ids",
+          "type": "array"
+        },
+        "diagnostic_assessment_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Diagnostic Assessment Id"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "follow_up_question": {
+          "minLength": 12,
+          "title": "Follow Up Question",
+          "type": "string"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "reason_for_attention": {
+          "minLength": 12,
+          "title": "Reason For Attention",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "review_state": {
+          "const": "source_checked_draft",
+          "default": "source_checked_draft",
+          "title": "Review State",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "source_text_hashes": {
+          "additionalProperties": {
+            "pattern": "^[a-f0-9]{64}$",
+            "type": "string"
+          },
+          "title": "Source Text Hashes",
+          "type": "object"
+        }
+      },
+      "required": [
+        "key",
+        "record_id",
+        "label",
+        "reason_for_attention",
+        "follow_up_question",
+        "assertion_ids",
+        "evidence_ids",
+        "diagnostic_assessment_id",
+        "source_text_hashes",
+        "reviewed_at",
+        "reviewed_by"
+      ],
+      "title": "WatchReview",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Limitations",
+      "type": "array"
+    },
+    "review_scope": {
+      "minLength": 12,
+      "title": "Review Scope",
+      "type": "string"
+    },
+    "reviews": {
+      "items": {
+        "$ref": "#/$defs/WatchReview"
+      },
+      "title": "Reviews",
+      "type": "array"
+    },
+    "watch_version": {
+      "const": "0.1.0",
+      "title": "Watch Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "watch_version",
+    "review_scope",
+    "limitations",
+    "reviews"
+  ],
+  "title": "WatchAnnotations",
+  "type": "object"
+}

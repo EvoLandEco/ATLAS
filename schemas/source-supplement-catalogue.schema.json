@@ -1,0 +1,148 @@
+{
+  "$defs": {
+    "CatalogueDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "capture": {
+          "title": "Capture",
+          "type": "string"
+        },
+        "component_id": {
+          "pattern": "^supplement_[a-f0-9]{24}$",
+          "title": "Component Id",
+          "type": "string"
+        },
+        "content_url": {
+          "title": "Content Url",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^doc_[a-f0-9]{24}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "publication": {
+          "title": "Publication",
+          "type": "null"
+        },
+        "publication_status": {
+          "const": "not_reported",
+          "title": "Publication Status",
+          "type": "string"
+        },
+        "publisher": {
+          "minLength": 1,
+          "title": "Publisher",
+          "type": "string"
+        },
+        "raw_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Raw Sha256",
+          "type": "string"
+        },
+        "records": {
+          "items": {
+            "$ref": "#/$defs/CatalogueRecord"
+          },
+          "title": "Records",
+          "type": "array"
+        },
+        "text_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Text Sha256",
+          "type": "string"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "publisher",
+        "title",
+        "url",
+        "content_url",
+        "publication",
+        "publication_status",
+        "capture",
+        "raw_sha256",
+        "text_sha256",
+        "component_id",
+        "records"
+      ],
+      "title": "CatalogueDocument",
+      "type": "object"
+    },
+    "CatalogueRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "claims": {
+          "minimum": 0,
+          "title": "Claims",
+          "type": "integer"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "measures": {
+          "minimum": 0,
+          "title": "Measures",
+          "type": "integer"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "claims",
+        "measures"
+      ],
+      "title": "CatalogueRecord",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "catalogue_version": {
+      "const": "0.1.0",
+      "title": "Catalogue Version",
+      "type": "string"
+    },
+    "documents": {
+      "items": {
+        "$ref": "#/$defs/CatalogueDocument"
+      },
+      "minItems": 1,
+      "title": "Documents",
+      "type": "array"
+    },
+    "selection_policy": {
+      "const": "outside_dated_selection",
+      "title": "Selection Policy",
+      "type": "string"
+    },
+    "source_export_id": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Source Export Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "catalogue_version",
+    "source_export_id",
+    "selection_policy",
+    "documents"
+  ],
+  "title": "SupplementCatalogue",
+  "type": "object"
+}

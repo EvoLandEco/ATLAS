@@ -1,0 +1,46 @@
+{
+  "document_urls": [
+    "https://health.example/report",
+    "https://health.example/index.php/report",
+    "https://health.example/report"
+  ],
+  "binding": {
+    "document_versions": [
+      {
+        "document_id": "base-one",
+        "source_text_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "raw_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      },
+      {
+        "document_id": "doc_one",
+        "source_text_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "raw_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      {
+        "document_id": "base-three",
+        "source_text_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "raw_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      }
+    ],
+    "assertion_ids": [
+      "a1",
+      "a2",
+      "a3",
+      "m1",
+      "m2",
+      "m3"
+    ],
+    "comparison_ids": [
+      "c12",
+      "c23"
+    ],
+    "reason": "Captured publisher metadata and the complete article scope identify one publication; the reviewed statements and measurements retain their separate source versions.",
+    "reviewed_at": "2026-10-04T00:00:00Z",
+    "reviewed_by": "Publication identity reviewer",
+    "evidence_ids": [
+      "e1",
+      "e2",
+      "e3"
+    ]
+  }
+}

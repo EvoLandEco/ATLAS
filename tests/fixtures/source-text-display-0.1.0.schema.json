@@ -1,0 +1,451 @@
+{
+  "$defs": {
+    "BoundTranslation": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "minLength": 1,
+          "title": "Created By",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "language_tag": {
+          "const": "en",
+          "default": "en",
+          "title": "Language Tag",
+          "type": "string"
+        },
+        "method_version": {
+          "minLength": 1,
+          "title": "Method Version",
+          "type": "string"
+        },
+        "origin": {
+          "enum": [
+            "atlas_generated",
+            "publisher_provided"
+          ],
+          "title": "Origin",
+          "type": "string"
+        },
+        "original_text_id": {
+          "title": "Original Text Id",
+          "type": "string"
+        },
+        "pairing_evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Pairing Evidence Ids",
+          "type": "array"
+        },
+        "publisher_text_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Publisher Text Id"
+        },
+        "review_note": {
+          "minLength": 1,
+          "title": "Review Note",
+          "type": "string"
+        },
+        "review_status": {
+          "enum": [
+            "unreviewed",
+            "source_checked",
+            "human_approved"
+          ],
+          "title": "Review Status",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reviewed At"
+        },
+        "reviewed_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reviewed By"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "origin",
+        "created_at",
+        "created_by",
+        "method_version",
+        "review_status",
+        "reviewed_at",
+        "reviewed_by",
+        "review_note",
+        "id",
+        "original_text_id"
+      ],
+      "title": "BoundTranslation",
+      "type": "object"
+    },
+    "ClaimTextBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_index": {
+          "minimum": 0,
+          "title": "Claim Index",
+          "type": "integer"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "quote_index": {
+          "minimum": 0,
+          "title": "Quote Index",
+          "type": "integer"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "bound",
+            "ambiguous_source_spans"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "text_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Text Id"
+        }
+      },
+      "required": [
+        "record_id",
+        "claim_index",
+        "quote_index",
+        "text_id",
+        "evidence_ids",
+        "status"
+      ],
+      "title": "ClaimTextBinding",
+      "type": "object"
+    },
+    "PresentedText": {
+      "additionalProperties": false,
+      "properties": {
+        "document_id": {
+          "title": "Document Id",
+          "type": "string"
+        },
+        "end": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "End"
+        },
+        "english_translation_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "English Translation Id"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "document_title",
+            "record_title",
+            "evidence"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "language_basis": {
+          "enum": [
+            "text_review",
+            "publisher_metadata",
+            "unresolved",
+            "not_reviewed"
+          ],
+          "title": "Language Basis",
+          "type": "string"
+        },
+        "language_note": {
+          "title": "Language Note",
+          "type": "string"
+        },
+        "language_status": {
+          "enum": [
+            "reviewed",
+            "unresolved",
+            "not_reviewed"
+          ],
+          "title": "Language Status",
+          "type": "string"
+        },
+        "language_tag": {
+          "title": "Language Tag",
+          "type": "string"
+        },
+        "original_text_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Original Text Sha256",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reviewed At"
+        },
+        "reviewed_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reviewed By"
+        },
+        "source_text_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Text Sha256",
+          "type": "string"
+        },
+        "start": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Start"
+        },
+        "target_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Target Ids",
+          "type": "array"
+        },
+        "translation_status": {
+          "enum": [
+            "available",
+            "pending",
+            "not_required",
+            "language_unresolved"
+          ],
+          "title": "Translation Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "target_ids",
+        "document_id",
+        "source_text_sha256",
+        "original_text_sha256",
+        "start",
+        "end",
+        "language_tag",
+        "language_status",
+        "language_basis",
+        "language_note",
+        "reviewed_at",
+        "reviewed_by",
+        "translation_status",
+        "english_translation_id"
+      ],
+      "title": "PresentedText",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "catalogue_scope": {
+      "const": "site_document_titles_record_titles_and_evidence",
+      "title": "Catalogue Scope",
+      "type": "string"
+    },
+    "claim_bindings": {
+      "items": {
+        "$ref": "#/$defs/ClaimTextBinding"
+      },
+      "title": "Claim Bindings",
+      "type": "array"
+    },
+    "display_version": {
+      "const": "0.1.0",
+      "title": "Display Version",
+      "type": "string"
+    },
+    "full_coverage": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "title": "Full Coverage",
+      "type": "object"
+    },
+    "omission_rule": {
+      "const": "only_language_status_not_reviewed",
+      "title": "Omission Rule",
+      "type": "string"
+    },
+    "omitted_text_count": {
+      "minimum": 0,
+      "title": "Omitted Text Count",
+      "type": "integer"
+    },
+    "selection_policy": {
+      "const": "attach_to_selected_original_only",
+      "title": "Selection Policy",
+      "type": "string"
+    },
+    "source_export_id": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Source Export Id",
+      "type": "string"
+    },
+    "source_text_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Source Text Sha256",
+      "type": "string"
+    },
+    "source_text_version": {
+      "const": "0.1.0",
+      "title": "Source Text Version",
+      "type": "string"
+    },
+    "texts": {
+      "items": {
+        "$ref": "#/$defs/PresentedText"
+      },
+      "title": "Texts",
+      "type": "array"
+    },
+    "translations": {
+      "items": {
+        "$ref": "#/$defs/BoundTranslation"
+      },
+      "title": "Translations",
+      "type": "array"
+    },
+    "unlisted_language_status": {
+      "const": "not_reviewed",
+      "title": "Unlisted Language Status",
+      "type": "string"
+    },
+    "unlisted_language_tag": {
+      "const": "und",
+      "title": "Unlisted Language Tag",
+      "type": "string"
+    },
+    "unlisted_reason": {
+      "const": "Language has not been reviewed for this exact text.",
+      "title": "Unlisted Reason",
+      "type": "string"
+    },
+    "unlisted_translation_status": {
+      "const": "language_unresolved",
+      "title": "Unlisted Translation Status",
+      "type": "string"
+    },
+    "unmapped_scopes": {
+      "items": {
+        "enum": [
+          "embedded_series_method_evidence",
+          "undated_supplement"
+        ],
+        "type": "string"
+      },
+      "title": "Unmapped Scopes",
+      "type": "array"
+    }
+  },
+  "required": [
+    "display_version",
+    "source_text_version",
+    "source_export_id",
+    "source_text_sha256",
+    "selection_policy",
+    "catalogue_scope",
+    "omission_rule",
+    "omitted_text_count",
+    "unlisted_language_tag",
+    "unlisted_language_status",
+    "unlisted_translation_status",
+    "unlisted_reason",
+    "unmapped_scopes",
+    "texts",
+    "translations",
+    "claim_bindings",
+    "full_coverage"
+  ],
+  "title": "TextDisplay",
+  "type": "object"
+}

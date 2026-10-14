@@ -1,0 +1,289 @@
+{
+  "$defs": {
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "maximum": 16000000,
+          "minimum": 1,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "captured_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "document_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "title": "Document Id",
+          "type": "string"
+        },
+        "published_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "title": "Published At",
+          "type": "string"
+        },
+        "quotes": {
+          "items": {
+            "maxLength": 12000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 100,
+          "title": "Quotes",
+          "type": "array"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "maxLength": 4000,
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document_id",
+        "source_id",
+        "title",
+        "url",
+        "published_at",
+        "captured_at",
+        "sha256",
+        "bytes"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "SupplementalIssue": {
+      "additionalProperties": false,
+      "properties": {
+        "affected_ids": {
+          "items": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+            "type": "string"
+          },
+          "maxItems": 200,
+          "minItems": 1,
+          "title": "Affected Ids",
+          "type": "array"
+        },
+        "changed_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$",
+          "title": "Changed At",
+          "type": "string"
+        },
+        "context": {
+          "additionalProperties": true,
+          "title": "Context",
+          "type": "object"
+        },
+        "dependencies": {
+          "additionalProperties": {
+            "pattern": "^[a-f0-9]{64}$",
+            "type": "string"
+          },
+          "maxProperties": 200,
+          "minProperties": 1,
+          "title": "Dependencies",
+          "type": "object"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/Evidence"
+          },
+          "maxItems": 40,
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "first_seen": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$",
+          "title": "First Seen",
+          "type": "string"
+        },
+        "impact": {
+          "maxLength": 4000,
+          "minLength": 3,
+          "title": "Impact",
+          "type": "string"
+        },
+        "issue_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "title": "Issue Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "geography",
+            "longitudinal",
+            "chain",
+            "one_health",
+            "extraction",
+            "source",
+            "research"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "priority": {
+          "default": "normal",
+          "enum": [
+            "high",
+            "normal",
+            "low"
+          ],
+          "title": "Priority",
+          "type": "string"
+        },
+        "question": {
+          "maxLength": 4000,
+          "minLength": 3,
+          "title": "Question",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "issue_id",
+        "kind",
+        "title",
+        "question",
+        "impact",
+        "first_seen",
+        "changed_at",
+        "affected_ids",
+        "dependencies",
+        "evidence"
+      ],
+      "title": "SupplementalIssue",
+      "type": "object"
+    },
+    "SupplementalSource": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "maximum": 16000000,
+          "minimum": 1,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "captured_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "document_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "title": "Document Id",
+          "type": "string"
+        },
+        "published_at": {
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+          "title": "Published At",
+          "type": "string"
+        },
+        "quotes": {
+          "items": {
+            "maxLength": 12000,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 100,
+          "title": "Quotes",
+          "type": "array"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 16000000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "maxLength": 4000,
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document_id",
+        "source_id",
+        "title",
+        "url",
+        "published_at",
+        "captured_at",
+        "sha256",
+        "bytes",
+        "text"
+      ],
+      "title": "SupplementalSource",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "inbox_version": {
+      "const": "1.0.0",
+      "title": "Inbox Version",
+      "type": "string"
+    },
+    "issues": {
+      "items": {
+        "$ref": "#/$defs/SupplementalIssue"
+      },
+      "maxItems": 200,
+      "title": "Issues",
+      "type": "array"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/SupplementalSource"
+      },
+      "maxItems": 200,
+      "title": "Sources",
+      "type": "array"
+    }
+  },
+  "required": [
+    "inbox_version",
+    "sources",
+    "issues"
+  ],
+  "title": "SupplementalPacket",
+  "type": "object"
+}

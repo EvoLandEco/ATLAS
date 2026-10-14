@@ -1,0 +1,664 @@
+{
+  "CardMeasure": {
+    "$defs": {
+      "ClaimRef": {
+        "additionalProperties": false,
+        "properties": {
+          "claim_index": {
+            "minimum": 0,
+            "title": "Claim Index",
+            "type": "integer"
+          },
+          "document_id": {
+            "pattern": "^doc_[a-f0-9]{24}$",
+            "title": "Document Id",
+            "type": "string"
+          },
+          "quote_indexes": {
+            "items": {
+              "type": "integer"
+            },
+            "minItems": 1,
+            "title": "Quote Indexes",
+            "type": "array"
+          },
+          "record_id": {
+            "title": "Record Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "record_id",
+          "document_id",
+          "claim_index",
+          "quote_indexes"
+        ],
+        "title": "ClaimRef",
+        "type": "object"
+      },
+      "DateValue": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "$ref": "#/$defs/Status",
+            "default": "not_reported"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Complete date in YYYY-MM-DD form. Use null when the day is not reported.",
+            "title": "Value"
+          }
+        },
+        "title": "DateValue",
+        "type": "object"
+      },
+      "Evidence": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Field",
+            "type": "string"
+          },
+          "locator": {
+            "default": "text",
+            "maxLength": 120,
+            "title": "Locator",
+            "type": "string"
+          },
+          "quote": {
+            "maxLength": 400,
+            "minLength": 3,
+            "title": "Quote",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "quote"
+        ],
+        "title": "Evidence",
+        "type": "object"
+      },
+      "Status": {
+        "enum": [
+          "reported",
+          "not_reported",
+          "unknown",
+          "not_applicable",
+          "pending_verification",
+          "conflicting",
+          "not_extracted",
+          "not_comparable",
+          "access_restricted"
+        ],
+        "title": "Status",
+        "type": "string"
+      },
+      "TextValue": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "$ref": "#/$defs/Status",
+            "default": "not_reported"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Value"
+          }
+        },
+        "title": "TextValue",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "acquisition": {
+        "default": "unknown",
+        "enum": [
+          "imported",
+          "local",
+          "mixed",
+          "unknown"
+        ],
+        "title": "Acquisition",
+        "type": "string"
+      },
+      "annotation_key": {
+        "minLength": 1,
+        "title": "Annotation Key",
+        "type": "string"
+      },
+      "as_of": {
+        "$ref": "#/$defs/DateValue"
+      },
+      "case_class": {
+        "enum": [
+          "confirmed",
+          "probable",
+          "suspected",
+          "confirmed_and_probable",
+          "all_reported",
+          "unknown"
+        ],
+        "title": "Case Class",
+        "type": "string"
+      },
+      "case_definition": {
+        "$ref": "#/$defs/TextValue"
+      },
+      "conflict_set": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Conflict Set"
+      },
+      "context_references": {
+        "items": {
+          "$ref": "#/$defs/ClaimRef"
+        },
+        "title": "Context References",
+        "type": "array"
+      },
+      "count_kind": {
+        "enum": [
+          "cumulative",
+          "interval",
+          "point",
+          "unknown"
+        ],
+        "title": "Count Kind",
+        "type": "string"
+      },
+      "cumulative_baseline": {
+        "$ref": "#/$defs/TextValue"
+      },
+      "date_basis": {
+        "enum": [
+          "onset",
+          "notification",
+          "specimen",
+          "death",
+          "report",
+          "unknown"
+        ],
+        "title": "Date Basis",
+        "type": "string"
+      },
+      "denominator": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Denominator"
+      },
+      "denominator_population": {
+        "$ref": "#/$defs/TextValue"
+      },
+      "denominator_status": {
+        "$ref": "#/$defs/Status",
+        "default": "not_reported"
+      },
+      "disease": {
+        "$ref": "#/$defs/TextValue"
+      },
+      "evidence": {
+        "$ref": "#/$defs/Evidence"
+      },
+      "geography": {
+        "$ref": "#/$defs/TextValue"
+      },
+      "host": {
+        "$ref": "#/$defs/TextValue"
+      },
+      "label": {
+        "minLength": 1,
+        "title": "Label",
+        "type": "string"
+      },
+      "metric": {
+        "enum": [
+          "cases",
+          "deaths",
+          "hospitalizations",
+          "affected_holdings",
+          "affected_animals",
+          "samples_tested",
+          "positive_samples",
+          "test_positivity",
+          "other"
+        ],
+        "title": "Metric",
+        "type": "string"
+      },
+      "numeric_evidence_review": {
+        "anyOf": [
+          {
+            "minLength": 20,
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Numeric Evidence Review"
+      },
+      "origin_authority": {
+        "$ref": "#/$defs/TextValue"
+      },
+      "pathogen": {
+        "$ref": "#/$defs/TextValue"
+      },
+      "period_end": {
+        "$ref": "#/$defs/DateValue"
+      },
+      "period_label": {
+        "minLength": 1,
+        "title": "Period Label",
+        "type": "string"
+      },
+      "period_start": {
+        "$ref": "#/$defs/DateValue"
+      },
+      "population": {
+        "$ref": "#/$defs/TextValue"
+      },
+      "priority": {
+        "default": 2,
+        "maximum": 3,
+        "minimum": 1,
+        "title": "Priority",
+        "type": "integer"
+      },
+      "proposal_candidates": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Proposal Candidates",
+        "type": "array"
+      },
+      "qualifier": {
+        "default": "unknown",
+        "enum": [
+          "exact",
+          "approximately",
+          "at_least",
+          "at_most",
+          "more_than",
+          "less_than",
+          "unknown"
+        ],
+        "title": "Qualifier",
+        "type": "string"
+      },
+      "ratio_basis": {
+        "default": "not_applicable",
+        "enum": [
+          "source_reported",
+          "not_applicable"
+        ],
+        "title": "Ratio Basis",
+        "type": "string"
+      },
+      "revision_reason": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Revision Reason"
+      },
+      "semantic_note": {
+        "minLength": 12,
+        "title": "Semantic Note",
+        "type": "string"
+      },
+      "source_reference": {
+        "$ref": "#/$defs/ClaimRef"
+      },
+      "stratum": {
+        "$ref": "#/$defs/TextValue"
+      },
+      "supersedes": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Supersedes",
+        "type": "array"
+      },
+      "transmission_role": {
+        "default": "unknown",
+        "enum": [
+          "index",
+          "secondary",
+          "import_linked",
+          "unknown"
+        ],
+        "title": "Transmission Role",
+        "type": "string"
+      },
+      "unit": {
+        "enum": [
+          "people",
+          "holdings",
+          "animals",
+          "samples",
+          "percent",
+          "proportion",
+          "other",
+          "unknown",
+          "percent_change",
+          "percent_of_target"
+        ],
+        "title": "Unit",
+        "type": "string"
+      },
+      "value": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Value"
+      },
+      "value_status": {
+        "$ref": "#/$defs/Status",
+        "default": "not_reported"
+      }
+    },
+    "required": [
+      "metric",
+      "unit",
+      "count_kind",
+      "case_class",
+      "date_basis",
+      "evidence",
+      "annotation_key",
+      "label",
+      "disease",
+      "pathogen",
+      "host",
+      "geography",
+      "period_label",
+      "source_reference",
+      "semantic_note"
+    ],
+    "title": "CardMeasure",
+    "type": "object"
+  },
+  "Observation": {
+    "$defs": {
+      "DateValue": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "$ref": "#/$defs/Status",
+            "default": "not_reported"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Complete date in YYYY-MM-DD form. Use null when the day is not reported.",
+            "title": "Value"
+          }
+        },
+        "title": "DateValue",
+        "type": "object"
+      },
+      "Evidence": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Field",
+            "type": "string"
+          },
+          "locator": {
+            "default": "text",
+            "maxLength": 120,
+            "title": "Locator",
+            "type": "string"
+          },
+          "quote": {
+            "maxLength": 400,
+            "minLength": 3,
+            "title": "Quote",
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "quote"
+        ],
+        "title": "Evidence",
+        "type": "object"
+      },
+      "Status": {
+        "enum": [
+          "reported",
+          "not_reported",
+          "unknown",
+          "not_applicable",
+          "pending_verification",
+          "conflicting",
+          "not_extracted",
+          "not_comparable",
+          "access_restricted"
+        ],
+        "title": "Status",
+        "type": "string"
+      },
+      "TextValue": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "$ref": "#/$defs/Status",
+            "default": "not_reported"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Value"
+          }
+        },
+        "title": "TextValue",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "properties": {
+      "case_class": {
+        "enum": [
+          "confirmed",
+          "probable",
+          "suspected",
+          "confirmed_and_probable",
+          "all_reported",
+          "unknown"
+        ],
+        "title": "Case Class",
+        "type": "string"
+      },
+      "case_definition": {
+        "$ref": "#/$defs/TextValue"
+      },
+      "count_kind": {
+        "enum": [
+          "cumulative",
+          "interval",
+          "point",
+          "unknown"
+        ],
+        "title": "Count Kind",
+        "type": "string"
+      },
+      "date_basis": {
+        "enum": [
+          "onset",
+          "notification",
+          "specimen",
+          "death",
+          "report",
+          "unknown"
+        ],
+        "title": "Date Basis",
+        "type": "string"
+      },
+      "denominator": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Denominator"
+      },
+      "denominator_status": {
+        "$ref": "#/$defs/Status",
+        "default": "not_reported"
+      },
+      "evidence": {
+        "$ref": "#/$defs/Evidence"
+      },
+      "metric": {
+        "enum": [
+          "cases",
+          "deaths",
+          "hospitalizations",
+          "affected_holdings",
+          "affected_animals",
+          "samples_tested",
+          "positive_samples",
+          "test_positivity",
+          "other"
+        ],
+        "title": "Metric",
+        "type": "string"
+      },
+      "origin_authority": {
+        "$ref": "#/$defs/TextValue"
+      },
+      "period_end": {
+        "$ref": "#/$defs/DateValue"
+      },
+      "period_start": {
+        "$ref": "#/$defs/DateValue"
+      },
+      "population": {
+        "$ref": "#/$defs/TextValue"
+      },
+      "qualifier": {
+        "default": "unknown",
+        "enum": [
+          "exact",
+          "approximately",
+          "at_least",
+          "at_most",
+          "unknown"
+        ],
+        "title": "Qualifier",
+        "type": "string"
+      },
+      "stratum": {
+        "$ref": "#/$defs/TextValue"
+      },
+      "unit": {
+        "enum": [
+          "people",
+          "holdings",
+          "animals",
+          "samples",
+          "percent",
+          "proportion",
+          "other",
+          "unknown"
+        ],
+        "title": "Unit",
+        "type": "string"
+      },
+      "value": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Value"
+      },
+      "value_status": {
+        "$ref": "#/$defs/Status",
+        "default": "not_reported"
+      }
+    },
+    "required": [
+      "metric",
+      "unit",
+      "count_kind",
+      "case_class",
+      "date_basis",
+      "evidence"
+    ],
+    "title": "Observation",
+    "type": "object"
+  }
+}

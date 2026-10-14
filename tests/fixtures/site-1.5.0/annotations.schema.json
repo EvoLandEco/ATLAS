@@ -1,0 +1,1907 @@
+{
+  "$defs": {
+    "Area": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "code_system": {
+          "const": "ISO_3166_1_alpha_2",
+          "default": "ISO_3166_1_alpha_2",
+          "title": "Code System",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "meaning": {
+          "const": "reporting_location_identifier",
+          "default": "reporting_location_identifier",
+          "title": "Meaning",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "label"
+      ],
+      "title": "Area",
+      "type": "object"
+    },
+    "AssertionInput": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_index": {
+          "minimum": 0,
+          "title": "Claim Index",
+          "type": "integer"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "statement",
+            "date"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "observation_date": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/TextValue"
+        }
+      },
+      "required": [
+        "key",
+        "record_id",
+        "claim_index",
+        "kind",
+        "text",
+        "evidence"
+      ],
+      "title": "AssertionInput",
+      "type": "object"
+    },
+    "ChainEdgeInput": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "minLength": 12,
+          "title": "Basis",
+          "type": "string"
+        },
+        "certainty": {
+          "enum": [
+            "established_by_source",
+            "reported",
+            "uncertain"
+          ],
+          "title": "Certainty",
+          "type": "string"
+        },
+        "directed": {
+          "title": "Directed",
+          "type": "boolean"
+        },
+        "direction_basis": {
+          "enum": [
+            "source_reported",
+            "reviewed_publication_order",
+            "not_reported"
+          ],
+          "title": "Direction Basis",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "from_node": {
+          "title": "From Node",
+          "type": "string"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "established_transmission",
+            "contact_exposure",
+            "travel_itinerary",
+            "reporting_sequence"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "to_node": {
+          "title": "To Node",
+          "type": "string"
+        },
+        "uncertainty": {
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "kind",
+        "directed",
+        "direction_basis",
+        "certainty",
+        "basis",
+        "uncertainty",
+        "from_node",
+        "to_node",
+        "evidence"
+      ],
+      "title": "ChainEdgeInput",
+      "type": "object"
+    },
+    "ChainInput": {
+      "additionalProperties": false,
+      "properties": {
+        "edges": {
+          "items": {
+            "$ref": "#/$defs/ChainEdgeInput"
+          },
+          "minItems": 1,
+          "title": "Edges",
+          "type": "array"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "established_transmission",
+            "contact_exposure",
+            "travel_itinerary",
+            "reporting_sequence"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "membership_review": {
+          "minLength": 12,
+          "title": "Membership Review",
+          "type": "string"
+        },
+        "nodes": {
+          "items": {
+            "$ref": "#/$defs/ChainNodeInput"
+          },
+          "minItems": 2,
+          "title": "Nodes",
+          "type": "array"
+        },
+        "review_state": {
+          "const": "source_checked_draft",
+          "default": "source_checked_draft",
+          "title": "Review State",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "scope": {
+          "minLength": 12,
+          "title": "Scope",
+          "type": "string"
+        },
+        "uncertainty": {
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "kind",
+        "label",
+        "scope",
+        "membership_review",
+        "uncertainty",
+        "reviewed_at",
+        "reviewed_by",
+        "nodes",
+        "edges"
+      ],
+      "title": "ChainInput",
+      "type": "object"
+    },
+    "ChainNodeInput": {
+      "additionalProperties": false,
+      "properties": {
+        "date_basis": {
+          "enum": [
+            "onset",
+            "travel",
+            "observation",
+            "unknown"
+          ],
+          "title": "Date Basis",
+          "type": "string"
+        },
+        "date_note": {
+          "minLength": 1,
+          "title": "Date Note",
+          "type": "string"
+        },
+        "entity_kind": {
+          "enum": [
+            "person",
+            "case",
+            "case_group",
+            "contact_group",
+            "travel_stop",
+            "report"
+          ],
+          "title": "Entity Kind",
+          "type": "string"
+        },
+        "event_date": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "location_note": {
+          "minLength": 1,
+          "title": "Location Note",
+          "type": "string"
+        },
+        "membership_basis": {
+          "minLength": 12,
+          "title": "Membership Basis",
+          "type": "string"
+        },
+        "place_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Place Id"
+        },
+        "uncertainty": {
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "entity_kind",
+        "place_id",
+        "location_note",
+        "date_basis",
+        "date_note",
+        "membership_basis",
+        "uncertainty",
+        "evidence"
+      ],
+      "title": "ChainNodeInput",
+      "type": "object"
+    },
+    "Channel": {
+      "additionalProperties": false,
+      "properties": {
+        "acquisition_source": {
+          "title": "Acquisition Source",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "organization_id": {
+          "title": "Organization Id",
+          "type": "string"
+        },
+        "snapshot_source": {
+          "title": "Snapshot Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "organization_id",
+        "snapshot_source",
+        "acquisition_source"
+      ],
+      "title": "Channel",
+      "type": "object"
+    },
+    "ComparisonInput": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "independence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Independence"
+        },
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "title": "Kind",
+          "type": "string"
+        },
+        "lineage": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Lineage",
+          "type": "array"
+        },
+        "participant_labels": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 2,
+          "title": "Participant Labels",
+          "type": "array"
+        },
+        "participants": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 2,
+          "title": "Participants",
+          "type": "array"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "scope_review": {
+          "title": "Scope Review",
+          "type": "string"
+        },
+        "status": {
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "kind",
+        "status",
+        "participants",
+        "participant_labels",
+        "reason",
+        "scope_review",
+        "evidence"
+      ],
+      "title": "ComparisonInput",
+      "type": "object"
+    },
+    "DateValue": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Complete date in YYYY-MM-DD form. Use null when the day is not reported.",
+          "title": "Value"
+        }
+      },
+      "title": "DateValue",
+      "type": "object"
+    },
+    "Disease": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^disease:[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label"
+      ],
+      "title": "Disease",
+      "type": "object"
+    },
+    "DiseaseReviewInput": {
+      "additionalProperties": false,
+      "properties": {
+        "disease_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Disease Ids",
+          "type": "array"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "kind": {
+          "enum": [
+            "single_disease",
+            "multiple_diseases",
+            "not_disease_specific",
+            "unresolved"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "review_status": {
+          "const": "source_checked_draft",
+          "default": "source_checked_draft",
+          "title": "Review Status",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "kind",
+        "disease_ids",
+        "reason",
+        "reviewed_at",
+        "reviewed_by",
+        "evidence"
+      ],
+      "title": "DiseaseReviewInput",
+      "type": "object"
+    },
+    "EndpointInput": {
+      "additionalProperties": false,
+      "properties": {
+        "from_place_id": {
+          "title": "From Place Id",
+          "type": "string"
+        },
+        "relationship_id": {
+          "title": "Relationship Id",
+          "type": "string"
+        },
+        "to_place_id": {
+          "title": "To Place Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "relationship_id",
+        "from_place_id",
+        "to_place_id"
+      ],
+      "title": "EndpointInput",
+      "type": "object"
+    },
+    "EvidenceInput": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_index": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Claim Index"
+        },
+        "occurrence": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Occurrence",
+          "type": "integer"
+        },
+        "quote": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quote"
+        },
+        "quote_index": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quote Index"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "section": {
+          "minLength": 1,
+          "title": "Section",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "section"
+      ],
+      "title": "EvidenceInput",
+      "type": "object"
+    },
+    "LocationInput": {
+      "additionalProperties": false,
+      "properties": {
+        "area_code": {
+          "title": "Area Code",
+          "type": "string"
+        },
+        "claim_index": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Claim Index"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "occurrence",
+            "travel_origin",
+            "travel_destination",
+            "exposure",
+            "context",
+            "reporting_scope"
+          ],
+          "title": "Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "area_code",
+        "role",
+        "evidence",
+        "reason"
+      ],
+      "title": "LocationInput",
+      "type": "object"
+    },
+    "ObservationTime": {
+      "additionalProperties": false,
+      "properties": {
+        "certainty": {
+          "enum": [
+            "exact",
+            "approximately",
+            "uncertain",
+            "unknown"
+          ],
+          "title": "Certainty",
+          "type": "string"
+        },
+        "end": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "extent": {
+          "default": "unknown",
+          "enum": [
+            "point",
+            "closed_interval",
+            "open_interval",
+            "unknown"
+          ],
+          "title": "Extent",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "onset",
+            "diagnosis",
+            "detection",
+            "sample_collection",
+            "test_result",
+            "notification",
+            "shipment",
+            "exposure",
+            "intervention",
+            "reporting_cutoff",
+            "unknown"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "precision": {
+          "enum": [
+            "day",
+            "month",
+            "year",
+            "unknown"
+          ],
+          "title": "Precision",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "start": {
+          "$ref": "#/$defs/TextValue"
+        }
+      },
+      "required": [
+        "kind",
+        "start",
+        "end",
+        "precision",
+        "certainty",
+        "label",
+        "reason"
+      ],
+      "title": "ObservationTime",
+      "type": "object"
+    },
+    "OneHealthContextInput": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "measured_covariate",
+            "reported_condition",
+            "source_hypothesis",
+            "reported_intervention",
+            "evaluated_effect"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "linkage_note": {
+          "minLength": 1,
+          "title": "Linkage Note",
+          "type": "string"
+        },
+        "measure_keys": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Measure Keys",
+          "type": "array"
+        },
+        "method": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "node_refs": {
+          "items": {
+            "$ref": "#/$defs/OneHealthNodeRef"
+          },
+          "title": "Node Refs",
+          "type": "array"
+        },
+        "place_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Place Ids",
+          "type": "array"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "review_state": {
+          "const": "source_checked_draft",
+          "default": "source_checked_draft",
+          "title": "Review State",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "source_assertion_key": {
+          "title": "Source Assertion Key",
+          "type": "string"
+        },
+        "time": {
+          "$ref": "#/$defs/ObservationTime"
+        },
+        "variable": {
+          "$ref": "#/$defs/TextValue"
+        }
+      },
+      "required": [
+        "key",
+        "record_id",
+        "reason",
+        "reviewed_at",
+        "reviewed_by",
+        "time",
+        "label",
+        "kind",
+        "variable",
+        "method",
+        "place_ids",
+        "linkage_note",
+        "source_assertion_key",
+        "node_refs",
+        "measure_keys",
+        "evidence"
+      ],
+      "title": "OneHealthContextInput",
+      "type": "object"
+    },
+    "OneHealthNodeInput": {
+      "additionalProperties": false,
+      "properties": {
+        "agent": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "agent_kind": {
+          "enum": [
+            "pathogen",
+            "toxin",
+            "other",
+            "unknown"
+          ],
+          "title": "Agent Kind",
+          "type": "string"
+        },
+        "date_basis": {
+          "enum": [
+            "onset",
+            "diagnosis",
+            "sample_collection",
+            "test_result",
+            "notification",
+            "shipment",
+            "reporting_cutoff",
+            "unknown"
+          ],
+          "title": "Date Basis",
+          "type": "string"
+        },
+        "date_note": {
+          "minLength": 1,
+          "title": "Date Note",
+          "type": "string"
+        },
+        "domain": {
+          "enum": [
+            "human",
+            "animal",
+            "environment",
+            "food",
+            "unknown"
+          ],
+          "title": "Domain",
+          "type": "string"
+        },
+        "entity_kind": {
+          "enum": [
+            "person",
+            "population",
+            "animal_group",
+            "sample",
+            "food_product",
+            "commodity_lot",
+            "environmental_setting"
+          ],
+          "title": "Entity Kind",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "finding": {
+          "enum": [
+            "infection_reported",
+            "illness_reported",
+            "agent_detected",
+            "agent_not_detected",
+            "exposure_reported",
+            "movement_reported",
+            "context",
+            "unresolved"
+          ],
+          "title": "Finding",
+          "type": "string"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "location_note": {
+          "minLength": 1,
+          "title": "Location Note",
+          "type": "string"
+        },
+        "material": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "measure_keys": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Measure Keys",
+          "type": "array"
+        },
+        "observation_date": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "period_end": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "period_label": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "period_start": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "place_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Place Ids",
+          "type": "array"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "roles": {
+          "items": {
+            "enum": [
+              "host",
+              "reservoir",
+              "vector",
+              "exposed_population",
+              "exposure_source",
+              "food_vehicle",
+              "commodity",
+              "sampled_matrix",
+              "ecological_context"
+            ],
+            "type": "string"
+          },
+          "title": "Roles",
+          "type": "array"
+        },
+        "sampling": {
+          "$ref": "#/$defs/OneHealthSampling"
+        },
+        "scope": {
+          "enum": [
+            "episode",
+            "surveillance",
+            "background"
+          ],
+          "title": "Scope",
+          "type": "string"
+        },
+        "taxon": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "uncertainty": {
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        }
+      },
+      "required": [
+        "observation_date",
+        "period_start",
+        "period_end",
+        "date_basis",
+        "period_label",
+        "date_note",
+        "key",
+        "record_id",
+        "label",
+        "domain",
+        "entity_kind",
+        "roles",
+        "scope",
+        "taxon",
+        "material",
+        "agent",
+        "agent_kind",
+        "finding",
+        "sampling",
+        "place_ids",
+        "location_note",
+        "uncertainty",
+        "measure_keys",
+        "evidence"
+      ],
+      "title": "OneHealthNodeInput",
+      "type": "object"
+    },
+    "OneHealthNodeRef": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "key"
+      ],
+      "title": "OneHealthNodeRef",
+      "type": "object"
+    },
+    "OneHealthRelationInput": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "enum": [
+            "source_reported",
+            "source_hypothesis"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "date_basis": {
+          "enum": [
+            "onset",
+            "diagnosis",
+            "sample_collection",
+            "test_result",
+            "notification",
+            "shipment",
+            "reporting_cutoff",
+            "unknown"
+          ],
+          "title": "Date Basis",
+          "type": "string"
+        },
+        "date_note": {
+          "minLength": 1,
+          "title": "Date Note",
+          "type": "string"
+        },
+        "directed": {
+          "title": "Directed",
+          "type": "boolean"
+        },
+        "direction_basis": {
+          "enum": [
+            "source_reported",
+            "not_reported"
+          ],
+          "title": "Direction Basis",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "evidence_types": {
+          "items": {
+            "enum": [
+              "epidemiological_investigation",
+              "human_testing",
+              "animal_testing",
+              "environmental_testing",
+              "food_testing",
+              "genomic_analysis",
+              "traceback",
+              "experimental_study",
+              "ecological_analysis",
+              "source_assessment"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Types",
+          "type": "array"
+        },
+        "from_node": {
+          "$ref": "#/$defs/OneHealthNodeRef"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "cross_species_transmission",
+            "exposure",
+            "commodity_movement",
+            "genomic_association",
+            "vector_involvement",
+            "environmental_association"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "observation_date": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "period_end": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "period_label": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "period_start": {
+          "$ref": "#/$defs/DateValue"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "review_state": {
+          "const": "source_checked_draft",
+          "default": "source_checked_draft",
+          "title": "Review State",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "scope": {
+          "minLength": 1,
+          "title": "Scope",
+          "type": "string"
+        },
+        "source_assertion_key": {
+          "title": "Source Assertion Key",
+          "type": "string"
+        },
+        "source_certainty": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "to_node": {
+          "$ref": "#/$defs/OneHealthNodeRef"
+        },
+        "uncertainty": {
+          "minLength": 1,
+          "title": "Uncertainty",
+          "type": "string"
+        }
+      },
+      "required": [
+        "observation_date",
+        "period_start",
+        "period_end",
+        "date_basis",
+        "period_label",
+        "date_note",
+        "key",
+        "label",
+        "kind",
+        "basis",
+        "evidence_types",
+        "directed",
+        "direction_basis",
+        "source_certainty",
+        "scope",
+        "reason",
+        "uncertainty",
+        "reviewed_at",
+        "reviewed_by",
+        "from_node",
+        "to_node",
+        "source_assertion_key",
+        "evidence"
+      ],
+      "title": "OneHealthRelationInput",
+      "type": "object"
+    },
+    "OneHealthReviewInput": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "outcome": {
+          "enum": [
+            "reviewed",
+            "no_relevant_observation",
+            "partial",
+            "unresolved"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "pending_items": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Pending Items",
+          "type": "array"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "review_state": {
+          "const": "source_checked_draft",
+          "default": "source_checked_draft",
+          "title": "Review State",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "reviewed_sections": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Reviewed Sections",
+          "type": "array"
+        },
+        "scope": {
+          "minLength": 1,
+          "title": "Scope",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_id",
+        "outcome",
+        "scope",
+        "reviewed_sections",
+        "reason",
+        "pending_items",
+        "reviewed_at",
+        "reviewed_by",
+        "evidence"
+      ],
+      "title": "OneHealthReviewInput",
+      "type": "object"
+    },
+    "OneHealthSampling": {
+      "additionalProperties": false,
+      "properties": {
+        "collection_method": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "frame": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "sample_unit": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "test_method": {
+          "$ref": "#/$defs/TextValue"
+        }
+      },
+      "required": [
+        "sample_unit",
+        "frame",
+        "collection_method",
+        "test_method"
+      ],
+      "title": "OneHealthSampling",
+      "type": "object"
+    },
+    "OneHealthSamplingInput": {
+      "additionalProperties": false,
+      "properties": {
+        "clustering": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "frame": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "method": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "node": {
+          "$ref": "#/$defs/OneHealthNodeRef"
+        },
+        "pair_status": {
+          "enum": [
+            "matched",
+            "unresolved",
+            "not_applicable"
+          ],
+          "title": "Pair Status",
+          "type": "string"
+        },
+        "pooling": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "population": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "positive_measure_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Positive Measure Key"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "repeated_sampling": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "review_state": {
+          "const": "source_checked_draft",
+          "default": "source_checked_draft",
+          "title": "Review State",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "source_assertion_key": {
+          "title": "Source Assertion Key",
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "tested_measure_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Tested Measure Key"
+        },
+        "time": {
+          "$ref": "#/$defs/ObservationTime"
+        },
+        "unit": {
+          "$ref": "#/$defs/TextValue"
+        }
+      },
+      "required": [
+        "key",
+        "record_id",
+        "reason",
+        "reviewed_at",
+        "reviewed_by",
+        "time",
+        "pair_status",
+        "unit",
+        "frame",
+        "population",
+        "target",
+        "method",
+        "pooling",
+        "clustering",
+        "repeated_sampling",
+        "source_assertion_key",
+        "node",
+        "positive_measure_key",
+        "tested_measure_key",
+        "evidence"
+      ],
+      "title": "OneHealthSamplingInput",
+      "type": "object"
+    },
+    "OneHealthTimingInput": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceInput"
+          },
+          "minItems": 1,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "node": {
+          "$ref": "#/$defs/OneHealthNodeRef"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "review_state": {
+          "const": "source_checked_draft",
+          "default": "source_checked_draft",
+          "title": "Review State",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "source_assertion_key": {
+          "title": "Source Assertion Key",
+          "type": "string"
+        },
+        "time": {
+          "$ref": "#/$defs/ObservationTime"
+        }
+      },
+      "required": [
+        "key",
+        "record_id",
+        "reason",
+        "reviewed_at",
+        "reviewed_by",
+        "time",
+        "source_assertion_key",
+        "node",
+        "evidence"
+      ],
+      "title": "OneHealthTimingInput",
+      "type": "object"
+    },
+    "Organization": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "title": "Organization",
+      "type": "object"
+    },
+    "PlaceInput": {
+      "additionalProperties": false,
+      "properties": {
+        "area_codes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Area Codes",
+          "type": "array"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "latitude": {
+          "maximum": 90,
+          "minimum": -90,
+          "title": "Latitude",
+          "type": "number"
+        },
+        "longitude": {
+          "maximum": 180,
+          "minimum": -180,
+          "title": "Longitude",
+          "type": "number"
+        },
+        "precision": {
+          "title": "Precision",
+          "type": "string"
+        },
+        "topic_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Topic Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "longitude",
+        "latitude",
+        "precision",
+        "area_codes",
+        "topic_ids"
+      ],
+      "title": "PlaceInput",
+      "type": "object"
+    },
+    "Status": {
+      "enum": [
+        "reported",
+        "not_reported",
+        "unknown",
+        "not_applicable",
+        "pending_verification",
+        "conflicting",
+        "not_extracted",
+        "not_comparable",
+        "access_restricted"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "TextValue": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "title": "TextValue",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "areas": {
+      "items": {
+        "$ref": "#/$defs/Area"
+      },
+      "title": "Areas",
+      "type": "array"
+    },
+    "assertions": {
+      "items": {
+        "$ref": "#/$defs/AssertionInput"
+      },
+      "title": "Assertions",
+      "type": "array"
+    },
+    "channels": {
+      "items": {
+        "$ref": "#/$defs/Channel"
+      },
+      "title": "Channels",
+      "type": "array"
+    },
+    "comparisons": {
+      "items": {
+        "$ref": "#/$defs/ComparisonInput"
+      },
+      "title": "Comparisons",
+      "type": "array"
+    },
+    "contract_version": {
+      "enum": [
+        "1.0.0",
+        "1.1.0",
+        "1.2.0",
+        "1.3.0",
+        "1.4.0"
+      ],
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "disease_reviews": {
+      "items": {
+        "$ref": "#/$defs/DiseaseReviewInput"
+      },
+      "title": "Disease Reviews",
+      "type": "array"
+    },
+    "diseases": {
+      "items": {
+        "$ref": "#/$defs/Disease"
+      },
+      "title": "Diseases",
+      "type": "array"
+    },
+    "endpoints": {
+      "items": {
+        "$ref": "#/$defs/EndpointInput"
+      },
+      "title": "Endpoints",
+      "type": "array"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "locations": {
+      "items": {
+        "$ref": "#/$defs/LocationInput"
+      },
+      "title": "Locations",
+      "type": "array"
+    },
+    "one_health_contexts": {
+      "items": {
+        "$ref": "#/$defs/OneHealthContextInput"
+      },
+      "title": "One Health Contexts",
+      "type": "array"
+    },
+    "one_health_nodes": {
+      "items": {
+        "$ref": "#/$defs/OneHealthNodeInput"
+      },
+      "title": "One Health Nodes",
+      "type": "array"
+    },
+    "one_health_relations": {
+      "items": {
+        "$ref": "#/$defs/OneHealthRelationInput"
+      },
+      "title": "One Health Relations",
+      "type": "array"
+    },
+    "one_health_reviews": {
+      "items": {
+        "$ref": "#/$defs/OneHealthReviewInput"
+      },
+      "title": "One Health Reviews",
+      "type": "array"
+    },
+    "one_health_sampling_assessments": {
+      "items": {
+        "$ref": "#/$defs/OneHealthSamplingInput"
+      },
+      "title": "One Health Sampling Assessments",
+      "type": "array"
+    },
+    "one_health_timings": {
+      "items": {
+        "$ref": "#/$defs/OneHealthTimingInput"
+      },
+      "title": "One Health Timings",
+      "type": "array"
+    },
+    "organizations": {
+      "items": {
+        "$ref": "#/$defs/Organization"
+      },
+      "title": "Organizations",
+      "type": "array"
+    },
+    "places": {
+      "items": {
+        "$ref": "#/$defs/PlaceInput"
+      },
+      "title": "Places",
+      "type": "array"
+    },
+    "records_sha256": {
+      "title": "Records Sha256",
+      "type": "string"
+    },
+    "reviewed_at": {
+      "title": "Reviewed At",
+      "type": "string"
+    },
+    "reviewed_by": {
+      "title": "Reviewed By",
+      "type": "string"
+    },
+    "reviewed_chains": {
+      "items": {
+        "$ref": "#/$defs/ChainInput"
+      },
+      "title": "Reviewed Chains",
+      "type": "array"
+    }
+  },
+  "required": [
+    "contract_version",
+    "records_sha256",
+    "reviewed_at",
+    "reviewed_by",
+    "organizations",
+    "channels",
+    "areas",
+    "places",
+    "endpoints",
+    "locations",
+    "assertions",
+    "comparisons",
+    "limitations"
+  ],
+  "title": "SiteAnnotations",
+  "type": "object"
+}

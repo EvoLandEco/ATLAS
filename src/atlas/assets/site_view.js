@@ -9,15 +9,47 @@ const figureFields = ['label', 'metric', 'value', 'value_status', 'unit', 'count
 const ordered = value => Array.isArray(value) ? value.map(ordered) : value && typeof value === 'object'
   ? Object.fromEntries(Object.keys(value).sort().map(key => [key, ordered(value[key])])) : value;
 
-export function selectView(data, from, until, basis = 'publication', knowledgeCutoff = null, recordSelection = null, oneHealthOptions = null) {
-  if (!['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0'].includes(data.contract_version)) throw new Error('Unsupported ATLAS site contract');
+export function compactFigureIdentity(m) {
+  const fields = m.unit === 'percentage_points' ? [...figureFields, 'percentage_point_comparison'] : figureFields;
+  const groupable = m.value_status === 'reported' && Number.isFinite(m.value) && m.observation_date !== null &&
+    m.observation_date_status === 'reported' && !m.conflict_set && fields.every(field => Object.hasOwn(m, field));
+  return groupable ? JSON.stringify(fields.map(field => ordered(m[field]))) : null;
+}
+
+const figureKey = m => compactFigureIdentity(m) ?? `measure:${m.measure_id}`;
+
+// The caller retains one immutable, validated bundle for the prepared selector's lifetime.
+export function prepareView(data) { return prepare(data, false); }
+
+// Summary rows have a separate contract; absent detail fields are never manufactured.
+export function prepareSummaryView(data) { return prepare(data, true); }
+
+function prepare(data, summary) {
+  const index = {
+    summary,
+    knownRecords: new Set(data.records.map(r => r.id)),
+    measures: new Map(data.metrics.measures.map(m => [m.measure_id, m])),
+    figureKeys: new Map(data.metrics.measures.map(m => [m.measure_id, summary ? (m.compact_figure_id === null ? `measure:${m.measure_id}` : m.compact_figure_id) : figureKey(m)])),
+    diseases: new Map((data.diseases ?? []).map(d => [d.id, d.label])),
+    diseaseReviews: new Map((data.disease_reviews ?? []).map(r => [r.record_id, r])),
+    ohReviews: new Map((data.one_health_reviews ?? []).map(r => [r.record_id, r])),
+  };
+  return (...args) => select(data, index, ...args);
+}
+
+export function selectView(data, ...args) {
+  return select(data, null, ...args);
+}
+
+function select(data, index, from, until, basis = 'publication', knowledgeCutoff = null, recordSelection = null, oneHealthOptions = null) {
+  if (!['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0', '1.6.0', '1.7.0', '1.8.0', '1.9.0'].includes(data.contract_version)) throw new Error('Unsupported ATLAS site contract');
   const day = value => /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
   if (!day(from) || !day(until) || from > until || !['publication', 'capture'].includes(basis)) throw new Error('Invalid reporting window');
   const cutoff = knowledgeCutoff === null ? null : Date.parse(knowledgeCutoff);
   if (cutoff !== null && (Number.isNaN(cutoff) || !/(Z|[+-]\d{2}:\d{2})$/.test(knowledgeCutoff))) throw new Error('Cutoff needs an explicit timezone');
   const cutoffDay = cutoff === null ? null : new Date(cutoff).toISOString().slice(0, 10);
   const selection = recordSelection === null ? null : new Set(recordSelection);
-  const knownRecords = new Set(data.records.map(r => r.id));
+  const knownRecords = index?.knownRecords ?? new Set(data.records.map(r => r.id));
   if (selection && [...selection].some(id => !knownRecords.has(id))) throw new Error('Unknown selected record');
   const records = data.records.filter(r => from <= r[basis].slice(0, 10) && r[basis].slice(0, 10) <= until &&
     (selection === null || selection.has(r.id)) &&
@@ -26,18 +58,16 @@ export function selectView(data, from, until, basis = 'publication', knowledgeCu
   const recordOrder = new Map(records.map((r, i) => [r.id, i]));
   const supported = rule => rule.record_ids.every(id => recordIds.has(id));
   const assertions = data.assertions.filter(a => supported(a.eligibility));
+  const assessments = (data.report_assessments ?? []).filter(a => supported(a.eligibility) &&
+    (cutoff === null || Date.parse(a.reviewed_at) <= cutoff));
+  const supersededAssessments = new Set(assessments.flatMap(a => a.supersedes));
   const comparisons = data.comparisons.filter(c => supported(c.eligibility));
   const superseded = new Set(comparisons.flatMap(c => c.lineage.map(e => e.from_assertion_id)));
   const measureIds = new Set(assertions.filter(a => a.measure_id && !superseded.has(a.id)).map(a => a.measure_id));
-  const measures = new Map(data.metrics.measures.map(m => [m.measure_id, m]));
+  const measures = index?.measures ?? new Map(data.metrics.measures.map(m => [m.measure_id, m]));
   const separateAssertions = new Set(comparisons.filter(c => ['contradiction', 'different_scope', 'unresolved_association'].includes(c.kind)).flatMap(c => c.participant_ids));
   const separateMeasures = new Set(assertions.filter(a => separateAssertions.has(a.id)).map(a => a.measure_id));
-  const figureKeys = new Map(data.metrics.measures.map(m => {
-    const groupable = m.value_status === 'reported' && Number.isFinite(m.value) && m.observation_date !== null &&
-      m.observation_date_status === 'reported' && !m.conflict_set && !separateMeasures.has(m.measure_id) &&
-      figureFields.every(field => Object.hasOwn(m, field));
-    return [m.measure_id, groupable ? JSON.stringify(figureFields.map(field => ordered(m[field]))) : `measure:${m.measure_id}`];
-  }));
+  const figureKeys = index?.figureKeys ?? new Map(data.metrics.measures.map(m => [m.measure_id, figureKey(m)]));
   const panels = data.metrics.panels.map(p => {
     const ids = p.measure_ids.filter(id => measureIds.has(id));
     const groups = new Map();
@@ -54,7 +84,7 @@ export function selectView(data, from, until, basis = 'publication', knowledgeCu
     // Display repetition is grouped after evidence filtering and before the card limit.
     const figures = new Map();
     for (const card of cards) for (const id of card.measure_ids) {
-      const m = measures.get(id), key = figureKeys.get(id);
+      const m = measures.get(id), key = separateMeasures.has(id) ? `measure:${id}` : figureKeys.get(id);
       if (!figures.has(key)) figures.set(key, {label: m.label, metric: m.metric, value: m.value, value_status: m.value_status,
         unit: m.unit, observation_date: m.observation_date, priority: card.priority, measure_ids: [], context_ids: [], source_ids: [],
         basis: 'matching_recorded_scope_and_value', comparability_status: 'not_established'});
@@ -84,9 +114,11 @@ export function selectView(data, from, until, basis = 'publication', knowledgeCu
       supported(e.eligibility) && !disputedMeasures.has(e.from_measure_id) && !disputedMeasures.has(e.to_measure_id) &&
       ![...(incompatible.get(e.from_measure_id) ?? [])].some(id => incompatible.get(e.to_measure_id)?.has(id)));
     const evidenceIds = new Set([...members, ...connections].flatMap(m => m.evidence_ids));
-    return {...series, members, connections, evidence: series.evidence.filter(e => evidenceIds.has(e.id))};
+    return index?.summary
+      ? {...series, members, connections, evidence_ids: series.evidence_ids.filter(id => evidenceIds.has(id))}
+      : {...series, members, connections, evidence: series.evidence.filter(e => evidenceIds.has(e.id))};
   }).filter(s => s.members.length);
-  const measuredRecords = new Set(data.metrics.measures.filter(m => measureIds.has(m.measure_id)).map(m => m.source_reference?.record_id));
+  const measuredRecords = new Set(data.metrics.measures.filter(m => measureIds.has(m.measure_id)).map(m => index?.summary ? m.source_record_id : m.source_reference?.record_id));
   const relationships = data.relationships.filter(r => supported(r.eligibility));
   const relationIds = new Set(relationships.map(r => r.id));
   const locationIds = new Set(data.location_memberships.filter(m => recordIds.has(m.record_id) && supported(m.eligibility)).map(m => m.id));
@@ -100,8 +132,8 @@ export function selectView(data, from, until, basis = 'publication', knowledgeCu
       drawable_edge_ids: edges.filter(e => byId.get(e.from_node_id).place_id !== null &&
         byId.get(e.to_node_id).place_id !== null).map(e => e.id)};
   }).filter(chain => chain.nodes.length);
-  const diseases = new Map((data.diseases ?? []).map(d => [d.id, d.label]));
-  const diseaseReviews = new Map((data.disease_reviews ?? []).map(r => [r.record_id, r]));
+  const diseases = index?.diseases ?? new Map((data.diseases ?? []).map(d => [d.id, d.label]));
+  const diseaseReviews = index?.diseaseReviews ?? new Map((data.disease_reviews ?? []).map(r => [r.record_id, r]));
   const slices = new Map(), overlapping = new Map();
   const unknownReasons = {not_reviewed: [], unresolved: [], support_outside_selection: []};
   let reviewedCount = 0;
@@ -159,7 +191,7 @@ export function selectView(data, from, until, basis = 'publication', knowledgeCu
   const ohRelations = (data.one_health_relations ?? []).filter(r => ohNodeIds.has(r.from_node_id) && ohNodeIds.has(r.to_node_id) &&
     supported(r.eligibility) && !superseded.has(r.source_assertion_id)).map(r => ({...r,
       contested: contested.has(r.source_assertion_id), comparison_ids: contested.get(r.source_assertion_id) ?? []}));
-  const ohReviews = new Map((data.one_health_reviews ?? []).map(r => [r.record_id,r]));
+  const ohReviews = index?.ohReviews ?? new Map((data.one_health_reviews ?? []).map(r => [r.record_id,r]));
   const ohCoverage = {selected_records: records.length, reviewed: 0, partial: 0, unresolved: 0, no_relevant_observation: 0,
     not_reviewed: 0, support_outside_selection: 0, pending_record_ids: [], observations_by_domain: {}, records_by_domain: {}, relationships_by_kind: {}, relationships_by_basis: {}};
   for (const r of records) {
@@ -182,13 +214,17 @@ export function selectView(data, from, until, basis = 'publication', knowledgeCu
     const start = t.start.value, end = t.end.value;
     if (!start || ['unknown','reporting_cutoff'].includes(t.kind) || ['unknown','open_interval'].includes(t.extent)) return null;
     const last = end ?? start;
-    if (t.precision === 'day') return [start, last];
-    if (t.precision === 'year') return [start + '-01-01', last + '-12-31'];
-    if (t.precision === 'month') {
-      const [year, month] = last.split('-').map(Number);
-      const days = new Date(Date.UTC(year, month, 0)).getUTCDate();
-      return [start + '-01', last + '-' + String(days).padStart(2, '0')];
-    }
+    const bound = (value, upper) => {
+      if (value.length === 10) return value;
+      if (value.length === 4) return value + (upper ? '-12-31' : '-01-01');
+      if (value.length === 7) {
+        const [year, month] = value.split('-').map(Number);
+        const day = upper ? new Date(Date.UTC(year, month, 0)).getUTCDate() : 1;
+        return value + '-' + String(day).padStart(2, '0');
+      }
+      return null;
+    };
+    if (['day','month','year','mixed'].includes(t.precision)) return [bound(start,false),bound(last,true)];
     return null;
   };
   const panelMeasures = r => r.measure_ids ?? [r.positive_measure_id, r.tested_measure_id].filter(Boolean);
@@ -229,6 +265,8 @@ export function selectView(data, from, until, basis = 'publication', knowledgeCu
     disease_composition: diseaseComposition,
     compact_grouping_version: COMPACT_GROUPING_VERSION,
     record_ids: records.map(r => r.id), document_ids: [...new Set(records.map(r => r.document_id))],
+    ...(['1.8.0','1.9.0'].includes(data.contract_version) ? {report_assessments: assessments.filter(a => !supersededAssessments.has(a.id)),
+      superseded_report_assessment_ids: [...supersededAssessments]} : {}),
     assertion_ids: assertions.map(a => a.id), comparison_ids: comparisons.map(c => c.id),
     superseded_assertion_ids: [...superseded], relationship_ids: [...relationIds], place_ids: placeIds,
     location_membership_ids: [...locationIds],

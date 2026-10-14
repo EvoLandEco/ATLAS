@@ -1,0 +1,131 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "enum": [
+        "accept",
+        "reject",
+        "defer",
+        "instruct"
+      ],
+      "title": "Action",
+      "type": "string"
+    },
+    "allow_disease_reclassification": {
+      "default": false,
+      "title": "Allow Disease Reclassification",
+      "type": "boolean"
+    },
+    "archive_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "title": "Archive Id",
+      "type": "string"
+    },
+    "decision_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "event_key": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Event Key"
+    },
+    "inbox_version": {
+      "const": "1.0.0",
+      "title": "Inbox Version",
+      "type": "string"
+    },
+    "issue_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+      "title": "Issue Id",
+      "type": "string"
+    },
+    "numeric_evidence_reviews": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "maxProperties": 30,
+      "title": "Numeric Evidence Reviews",
+      "type": "object"
+    },
+    "previous_decision_id": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Previous Decision Id"
+    },
+    "public_rationale": {
+      "default": "Editorial review",
+      "maxLength": 300,
+      "minLength": 3,
+      "title": "Public Rationale",
+      "type": "string"
+    },
+    "rationale": {
+      "maxLength": 800,
+      "minLength": 3,
+      "title": "Rationale",
+      "type": "string"
+    },
+    "reviewer": {
+      "maxLength": 100,
+      "minLength": 3,
+      "title": "Reviewer",
+      "type": "string"
+    },
+    "revision": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Revision",
+      "type": "string"
+    },
+    "snapshot_id": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Snapshot Id",
+      "type": "string"
+    },
+    "submitted_at": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:\\d{2})$",
+      "title": "Submitted At",
+      "type": "string"
+    },
+    "supersedes_candidate_ids": {
+      "items": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$",
+        "type": "string"
+      },
+      "maxItems": 100,
+      "title": "Supersedes Candidate Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "inbox_version",
+    "archive_id",
+    "decision_id",
+    "snapshot_id",
+    "issue_id",
+    "revision",
+    "reviewer",
+    "submitted_at",
+    "action",
+    "rationale"
+  ],
+  "title": "Decision",
+  "type": "object"
+}

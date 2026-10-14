@@ -8,14 +8,15 @@ from datetime import date
 from decimal import Decimal
 from pathlib import Path
 from typing import Literal
-from pydantic import Field, model_validator
+from pydantic import Field, model_validator, create_model
 from . import __version__
 from .models import StrictModel, Observation, TextValue, DateValue
 from .longitudinal import SeriesReview, ReviewedSeries, prepare_series, validate_series
 from .semantics import norm
 from .util import digest, uid, read_json, write_json, stamp
 
-METRICS_VERSION = '0.2.0'
+METRICS_VERSION = '0.5.0'
+EXTENDED_RATIO_UNITS = {'percent_change', 'percent_of_target'}
 
 
 class ClaimRef(StrictModel):
@@ -32,6 +33,9 @@ class ClaimRef(StrictModel):
 
 
 class CardMeasure(Observation):
+    qualifier: Literal["exact", "approximately", "at_least", "at_most", "more_than", "less_than", "unknown"] = "unknown"
+    unit: Literal['people','holdings','animals','samples','percent','proportion','other','unknown',
+                  'percent_change','percent_of_target']
     annotation_key: str = Field(min_length=1)
     label: str = Field(min_length=1)
     disease: TextValue
@@ -57,8 +61,10 @@ class CardMeasure(Observation):
 
     @model_validator(mode='after')
     def measure_contract(self):
-        if self.unit in {'percent','proportion'} and self.ratio_basis != 'source_reported':
+        if self.unit in {'percent','proportion'} | EXTENDED_RATIO_UNITS and self.ratio_basis != 'source_reported':
             raise ValueError('Ratios must be explicitly reported by the source')
+        if self.unit in EXTENDED_RATIO_UNITS and self.denominator is not None and self.denominator <= 0:
+            raise ValueError('A change baseline or target denominator must be positive')
         if self.denominator is not None and self.denominator_population.value is None:
             raise ValueError('A denominator needs its population definition')
         if bool(self.supersedes) != bool(self.revision_reason):
@@ -68,16 +74,52 @@ class CardMeasure(Observation):
         return self
 
 
+class PercentagePointComparison(StrictModel):
+    baseline: str = Field(min_length=1)
+    comparison: str = Field(min_length=1)
+    operation: Literal['comparison_minus_baseline'] = 'comparison_minus_baseline'
+
+    @model_validator(mode='after')
+    def ordered_context(self):
+        if not self.baseline.strip() or not self.comparison.strip() or self.baseline == self.comparison:
+            raise ValueError('A percentage-point difference needs distinct named comparison and baseline contexts')
+        return self
+
+
+class PercentagePointMeasure(CardMeasure):
+    unit: Literal['percentage_points']
+    value: float | None = Field(default=None, ge=-100, le=100, allow_inf_nan=False)
+    percentage_point_comparison: PercentagePointComparison
+
+    @model_validator(mode='after')
+    def source_difference(self):
+        if self.ratio_basis != 'source_reported':
+            raise ValueError('Percentage-point differences must be explicitly reported by the source')
+        if self.denominator is not None:
+            raise ValueError('A percentage-point difference has comparison contexts, not a ratio denominator')
+        return self
+
+
 class MetricAnnotations(StrictModel):
-    contract_version: Literal['0.1.0','0.2.0']
+    contract_version: Literal['0.1.0','0.2.0','0.3.0','0.4.0','0.5.0']
     series_reviews: list[SeriesReview] = Field(default_factory=list)
     records_sha256: str
     review_status: Literal['source_checked_draft']
     reviewed_by: str
     reviewed_at: str
     scope: str
-    measures: list[CardMeasure]
+    measures: list[CardMeasure | PercentagePointMeasure]
     pending_candidate_count: int = Field(ge=0)
+
+    @model_validator(mode='after')
+    def ratio_version(self):
+        if self.contract_version not in {'0.4.0','0.5.0'} and any(m.qualifier in {'more_than','less_than'} for m in self.measures):
+            raise ValueError('Strict bounds require metric contract 0.4.0')
+        if self.contract_version not in {'0.3.0','0.4.0','0.5.0'} and any(m.unit in EXTENDED_RATIO_UNITS for m in self.measures):
+            raise ValueError('Change and target ratios require metric contract 0.3.0')
+        if self.contract_version != '0.5.0' and any(m.unit == 'percentage_points' for m in self.measures):
+            raise ValueError('Percentage-point differences require metric contract 0.5.0')
+        return self
 
 
 def refs(measure):
@@ -88,15 +130,34 @@ def ref_pair(ref):
     return ref.record_id, ref.claim_index
 
 
+def validate_numeric_evidence(m: CardMeasure, joined: str):
+    # Numeric anchoring is a check after source review, not a semantic decision.
+    scales={'thousand':1000,'million':1000000,'billion':1000000000}
+    scaled={Decimal(re.sub(r'[,\s]','',number))*scales[scale] for number,scale in
+            re.findall(r'(?<![\w.,+\-])([+\-]?(?:\d{1,3}(?:(?:,|\s)\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?))\s+(thousand|million|billion)\b',norm(joined))}
+    for value in [m.value,m.denominator]:
+        if value is not None:
+            token=format(value,'.15g')
+            integer, dot, fraction=token.partition('.')
+            grouped=r'(?:,|\s+)'.join(f'{int(integer):,}'.split(','))
+            number=r'(?:'+re.escape(integer)+'|'+grouped+')'+(r'\.'+fraction+r'0*' if dot else r'(?:\.0+)?')
+            words={0:['zero','no','none'],1:['one','single'],2:['two'],3:['three'],4:['four'],5:['five'],6:['six'],7:['seven'],8:['eight'],9:['nine'],10:['ten'],11:['eleven']}
+            anchored=re.search(r'(?<![\d.,])'+number+r'(?!\d|[.,]\d)',joined)
+            if not anchored and Decimal(token) not in scaled and not m.numeric_evidence_review and not any(re.search(r'\b'+w+r'\b',joined.lower()) for w in words.get(value,[])):
+                raise ValueError('Numeric anchor missing: '+m.annotation_key)
+
+
 def export_metrics(snapshot: Path, annotations: Path, source_dir: Path, out: Path,
                    since: str, until: str, basis: str = 'publication', knowledge_cutoff: str | None = None,
-                   *, max_annotation_bytes: int = 16_000_000):
+                   *, max_annotation_bytes: int = 16_000_000, max_snapshot_bytes: int = 32_000_000):
     date.fromisoformat(since); date.fromisoformat(until)
     if since > until or basis not in {'publication','capture'}:
         raise ValueError('Use an inclusive ordered reporting window and a supported date basis')
-    if type(max_annotation_bytes) is not int or not 0 < max_annotation_bytes <= 64_000_000:
-        raise ValueError('Metric annotation budget must be an integer from 1 to 64,000,000 bytes')
-    if snapshot.stat().st_size > 32_000_000 or annotations.stat().st_size > max_annotation_bytes:
+    if type(max_annotation_bytes) is not int or not 0 < max_annotation_bytes <= 512_000_000:
+        raise ValueError('Metric annotation budget must be an integer from 1 to 512,000,000 bytes')
+    if type(max_snapshot_bytes) is not int or not 0 < max_snapshot_bytes <= 128_000_000:
+        raise ValueError('Metric snapshot budget must be an integer from 1 to 128,000,000 bytes')
+    if snapshot.stat().st_size > max_snapshot_bytes or annotations.stat().st_size > max_annotation_bytes:
         raise ValueError('Metric input exceeds the file budget')
     data=read_json(snapshot); batch=MetricAnnotations.model_validate(read_json(annotations))
     if digest(data['records']) != batch.records_sha256:
@@ -142,20 +203,7 @@ def export_metrics(snapshot: Path, annotations: Path, source_dir: Path, out: Pat
         evidence=[resolve(ref) for ref in refs(m)]
         joined=' '.join(q for e in evidence for q in e['quotes'])
         if norm(m.evidence.quote) not in norm(joined):raise ValueError('Measurement evidence is outside its referenced quotations')
-        # Numeric anchoring is a check after source review, not a semantic decision.
-        scales={'thousand':1000,'million':1000000,'billion':1000000000}
-        scaled={Decimal(re.sub(r'[,\s]','',number))*scales[scale] for number,scale in
-                re.findall(r'(?<![\w.,+\-])([+\-]?(?:\d{1,3}(?:(?:,|\s)\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?))\s+(thousand|million|billion)\b',norm(joined))}
-        for value in [m.value,m.denominator]:
-            if value is not None:
-                token=format(value,'.15g')
-                integer, dot, fraction=token.partition('.')
-                grouped=r'(?:,|\s+)'.join(f'{int(integer):,}'.split(','))
-                number=r'(?:'+re.escape(integer)+'|'+grouped+')'+(r'\.'+fraction+r'0*' if dot else r'(?:\.0+)?')
-                words={0:['zero','no','none'],1:['one','single'],2:['two'],3:['three'],4:['four'],5:['five'],6:['six'],7:['seven'],8:['eight'],9:['nine'],10:['ten'],11:['eleven']}
-                anchored=re.search(r'(?<![\d.,])'+number+r'(?!\d|[.,]\d)',joined)
-                if not anchored and Decimal(token) not in scaled and not m.numeric_evidence_review and not any(re.search(r'\b'+w+r'\b',joined.lower()) for w in words.get(value,[])):
-                    raise ValueError('Numeric anchor missing: '+m.annotation_key)
+        validate_numeric_evidence(m, joined)
         for previous in m.supersedes:
             if previous not in keys or previous==m.annotation_key:raise ValueError('Revision target must exist and differ')
             if keys[previous].supersedes and m.annotation_key in keys[previous].supersedes:raise ValueError('Cyclic revision')
@@ -188,6 +236,8 @@ def export_metrics(snapshot: Path, annotations: Path, source_dir: Path, out: Pat
                 'population','stratum','acquisition','transmission_role','date_basis','origin_authority',
                 'qualifier','denominator_population','ratio_basis','source_id','cumulative_baseline']
         value={k:m[k] for k in fields}
+        if m['unit'] == 'percentage_points':
+            value['percentage_point_comparison'] = m['percentage_point_comparison']
         if m['count_kind']=='interval':
             a,b=m['period_start']['value'],m['period_end']['value']
             value['interval_days']=(date.fromisoformat(b)-date.fromisoformat(a)).days+1 if a and b else None
@@ -250,7 +300,8 @@ def export_metrics(snapshot: Path, annotations: Path, source_dir: Path, out: Pat
     conflict_sets=defaultdict(list)
     for m in measures:
         if m['conflict_set']:conflict_sets[m['conflict_set']].append(m['measure_id'])
-    result={'contract_version':METRICS_VERSION,'software_version':__version__,'release_status':'research_preview',
+    version = batch.contract_version if batch.contract_version in {'0.3.0','0.4.0','0.5.0'} else '0.2.0'
+    result={'contract_version':version,'software_version':__version__,'release_status':'research_preview',
         'source_snapshot_sha256':digest(snapshot.read_bytes()),'records_sha256':digest(data['records']),
         'input_sha256':data['input_sha256'],'annotations_sha256':digest(annotations.read_bytes()),
         'review':batch.model_dump(exclude={'measures','records_sha256','contract_version','series_reviews'}),
@@ -271,7 +322,7 @@ def export_metrics(snapshot: Path, annotations: Path, source_dir: Path, out: Pat
     write_json(out/'annotations.schema.json',MetricAnnotations.model_json_schema())
     write_json(out/'source-snapshot.json',data)
     (out/'index.html').write_text(render_preview(result),encoding='utf-8')
-    write_json(out/'manifest.json',{'contract_version':METRICS_VERSION,'files':{p.name:digest(p.read_bytes()) for p in sorted(out.iterdir())}})
+    write_json(out/'manifest.json',{'contract_version':version,'files':{p.name:digest(p.read_bytes()) for p in sorted(out.iterdir())}})
     return result
 
 
@@ -295,6 +346,10 @@ class ExportMeasure(CardMeasure):
     source_date_warning: bool
     superseded: bool
     context_id: str
+
+
+class ExportPercentagePointMeasure(PercentagePointMeasure, ExportMeasure):
+    pass
 
 
 class ExportRecord(StrictModel):
@@ -371,7 +426,7 @@ class ExportCoverage(StrictModel):
 
 
 class MetricsExport(StrictModel):
-    contract_version: Literal['0.2.0']
+    contract_version: Literal['0.2.0','0.3.0','0.4.0','0.5.0']
     software_version: str
     release_status: Literal['research_preview']
     source_snapshot_sha256: str
@@ -381,7 +436,7 @@ class MetricsExport(StrictModel):
     review: ExportReview
     window: ExportWindow
     records: list[ExportRecord]
-    measures: list[ExportMeasure]
+    measures: list[ExportMeasure | ExportPercentagePointMeasure]
     findings: list[ExportFinding]
     conflicts: list[ExportConflict]
     series: list[ExportSeries]
@@ -389,6 +444,32 @@ class MetricsExport(StrictModel):
     panels: list[ExportPanel]
     coverage: ExportCoverage
 
+    @model_validator(mode='after')
+    def ratio_version(self):
+        if self.contract_version not in {'0.4.0','0.5.0'} and any(m.qualifier in {'more_than','less_than'} for m in self.measures):
+            raise ValueError('Strict bounds require metric contract 0.4.0')
+        if self.contract_version not in {'0.3.0','0.4.0','0.5.0'} and any(m.unit in EXTENDED_RATIO_UNITS for m in self.measures):
+            raise ValueError('Change and target ratios require metric contract 0.3.0')
+        if self.contract_version != '0.5.0' and any(m.unit == 'percentage_points' for m in self.measures):
+            raise ValueError('Percentage-point differences require metric contract 0.5.0')
+        return self
+
+
+MetricsExportV04 = create_model('MetricsExport', __base__=MetricsExport,
+    contract_version=(Literal['0.2.0','0.3.0','0.4.0'], ...), measures=(list[ExportMeasure], ...))
+
+
+ExportMeasureV02 = create_model('ExportMeasure', __base__=ExportMeasure,
+    unit=(Observation.model_fields['unit'].annotation, ...),
+    qualifier=(Observation.model_fields['qualifier'].annotation, 'unknown'))
+MetricsExportV02 = create_model('MetricsExport', __base__=MetricsExport,
+    contract_version=(Literal['0.2.0'], ...), measures=(list[ExportMeasureV02], ...))
+
+
+ExportMeasureV03 = create_model('ExportMeasure', __base__=ExportMeasure,
+    qualifier=(Observation.model_fields['qualifier'].annotation, 'unknown'))
+MetricsExportV03 = create_model('MetricsExport', __base__=MetricsExport,
+    contract_version=(Literal['0.2.0','0.3.0'], ...), measures=(list[ExportMeasureV03], ...))
 
 def render_preview(bundle):
     esc=lambda value:html.escape(str(value))

@@ -17,7 +17,7 @@ Every relationship names two observations and one exact source assertion describ
 | Vector involvement | A reviewed vector observation and the source-described relationship | Separate vector detection, exposure and a source assessment of transmission. |
 | Environmental association | An environmental observation and an explicit source relationship | Preserve the sampled matrix, ecological scope and source hypothesis. |
 
-Shared pathogen names, overlapping dates, proximity and appearances in the same bulletin are candidate lookup information. They supply no relationship by themselves. Background observations cannot supply episode relationships. Negative detection cannot establish transmission. Foodborne toxin exposure has `agent_kind: toxin` and is distinct from pathogen infection.
+Shared pathogen names, overlapping dates, proximity and appearances in the same bulletin are candidate lookup information. They supply no relationship by themselves. An explicit genomic comparison can reference detected isolates recorded as background observations, including historical comparators. Their scope and dates remain intact; they do not become members of the reported outbreak. Both endpoints require detected-agent evidence and an undirected, source-described genomic comparison. Background observations cannot supply exposure, transmission or other episode relationships. Negative detection cannot establish transmission. Foodborne toxin exposure has `agent_kind: toxin` and is distinct from pathogen infection.
 
 ## Review and export
 

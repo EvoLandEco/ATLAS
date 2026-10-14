@@ -67,14 +67,16 @@ def build_snapshot(store: Store, config: dict, as_of: str, *, report_date: str |
     identity_times={}
     accepted_keys={r["event_key"] for r in accepted}
     accepted_ids={r["id"] for r in accepted}
+    eligible_candidate_ids={r['id'] for r in store.records('candidate',as_of) if r['payload']['document_id'] in docs}
     for r in store.records("review",as_of):
         if r["payload"]["action"]=="accept":
             key=r["payload"]["event_key"]
-            if window and key not in accepted_keys:continue
+            if r['payload']['candidate_id'] not in eligible_candidate_ids or (window and key not in accepted_keys):continue
             identity_times.setdefault(key,r["recorded_at"])
     for key,first in sorted(identity_times.items()):
         data["event_identities"].append({"event_id":uid("evt",key),"event_key":key,"first_assigned_at":first,
             "current_candidate_count":sum(r["event_key"]==key for r in accepted)})
+    eligible_event_ids={e['event_id'] for e in data['event_identities']}
     grouped=defaultdict(list);observations=[]
     for row in accepted:
         m=row["payload"]["mention"];doc=docs[row["payload"]["document_id"]]["payload"]
@@ -102,7 +104,7 @@ def build_snapshot(store: Store, config: dict, as_of: str, *, report_date: str |
     prior_observations={o["observation_id"] for o in (previous or {}).get("tables",{}).get("observations",[])
                         if in_publication_window({"published_at":o["source_publication"]},window)}
     old_metrics={r["series_id"]:r for r in (previous or {}).get("tables",{}).get("event_metrics",[])
-                 if not window or set(r["supporting_observation_ids"]) <= prior_observations}
+                 if set(r["supporting_observation_ids"]) <= prior_observations}
     for series,rows in sorted(byseries.items()):
         dated=[r for r in rows if r["period_end"]]
         asof_dated=[r for r in rows if r["as_of"]]
@@ -181,13 +183,13 @@ def build_snapshot(store: Store, config: dict, as_of: str, *, report_date: str |
         data["events"].append(event)
     present={e["event_id"] for e in data["events"]}
     for old_id in sorted(set(old_events)-present):
-        if window and not in_publication_window({'published_at':old_events[old_id]['last_source_publication']},window):continue
+        if not in_publication_window({'published_at':old_events[old_id]['last_source_publication']},window):continue
         data["changes"].append({"event_id":old_id,"change_type":"removed_after_review",
                                 "description":"The current editorial assignment or acceptance changed; earlier sealed snapshots retain their original representation."})
     for row in store.records("relation",as_of):
         r=row["payload"]
-        if window and (r["evidence_candidate_id"] not in accepted_ids or
-                       not {uid("evt",r["from_event_key"]),uid("evt",r["to_event_key"])} <= present):continue
+        if (r["evidence_candidate_id"] not in (accepted_ids if window else eligible_candidate_ids) or
+                not {uid("evt",r["from_event_key"]),uid("evt",r["to_event_key"])} <= (present if window else eligible_event_ids)):continue
         data["relationships"].append({"relationship_id":row["id"],"from_event_id":uid("evt",r["from_event_key"]),
             "to_event_id":uid("evt",r["to_event_key"]),"relation":r["relation"],"basis":r["basis"],
             "evidence_candidate_id":r["evidence_candidate_id"],"rationale":r["rationale"],"recorded_at":row["recorded_at"]})
@@ -227,7 +229,7 @@ def build_snapshot(store: Store, config: dict, as_of: str, *, report_date: str |
     # Preserve triaged opportunities even after their motivating tag is superseded.
     existing_opportunities={o["opportunity_id"] for o in data["opportunities"]}
     for oid,old in old_opportunities.items():
-        if window and old["event_id"] not in present:continue
+        if old["event_id"] not in (present if window else eligible_event_ids):continue
         if oid not in existing_opportunities:
             retained=dict(old);decision=opportunity_decisions.get(oid,{})
             retained["status"]=decision.get("status",retained["status"])
@@ -249,7 +251,7 @@ def build_snapshot(store: Store, config: dict, as_of: str, *, report_date: str |
             "discovered":p.get("discovered",0),"retrieved":p.get("retrieved",0),"new_documents":p.get("new_documents",0),
             "oldest_publication":p.get("oldest_publication"),"newest_publication":p.get("newest_publication"),"notes":notes})
     data["event_history"]=[h for h in (previous or {}).get("tables",{}).get("event_history",[])
-                           if not window or (h["event_id"] in present and window[0] <= h["report_date"] <= window[1])]+[
+                           if h["event_id"] in (present if window else eligible_event_ids) and (not window or window[0] <= h["report_date"] <= window[1])]+[
         {"report_id":run_id,"report_date":report_date,"knowledge_cutoff":as_of,"event_id":e["event_id"],
          "lifecycle_status":e["lifecycle_status"],"update_class":e["update_class"],"summary":e["summary"]} for e in data["events"]]
     queue=review_queue(store,as_of,document_ids=set(docs))

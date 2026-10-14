@@ -35,6 +35,21 @@ def test_html_captured_main():
     assert '12 cases' in text and 'do_bad' not in text and 'Skip' not in text
     assert title=='Example'
 
+@pytest.mark.parametrize('filename',['atlas.yaml','backfill.yaml'])
+def test_france_article_keeps_heading_and_intro_without_related_navigation(filename):
+    root=Path(__file__).resolve().parents[1]
+    source=next(s for s in load_config(root/'config'/filename)['sources'] if s['id']=='france_spf')
+    text,title,published,precision=html_text((root/'tests/fixtures/france-spf-article.html').read_bytes(),
+        content_selector=source['content_selector'],title_selector=source['title_selector'],
+        content_exclude_selector=source.get('content_exclude_selector'))
+    assert title=='Investigation of an imported infection'
+    for expected in [title,'An imported case visited two regions before diagnosis.','Contact tracing is under way.',
+                     'https://www.santepubliquefrance.fr/evidence']:
+        assert expected in text
+    for excluded in ['Archive navigation','Print this page','Share this page','social.example','Related disease dossier','Other news articles']:
+        assert excluded not in text
+    assert published=='2026-08-07T12:06:01.000000Z' and precision=='instant'
+
 def test_image_only_pdf_queued():
     pdf=PdfWriter();pdf.add_blank_page(612,792);b=io.BytesIO();pdf.write(b)
     text,status=pdf_text(b.getvalue())
@@ -54,6 +69,25 @@ def test_robots_honored():
     def handler(req):return httpx.Response(200,text='User-agent: *\nDisallow: /private')
     f=Fetcher(['example.org'],user_agent='Test',client=client(handler),resolve=lambda h:None,min_interval=0)
     with pytest.raises(SourceError):f.get('https://example.org/private')
+
+@pytest.mark.parametrize('redirect',[False,True])
+def test_robots_utf8_bom_blocks_direct_and_redirected_requests(redirect):
+    raw=(Path(__file__).parent/'fixtures/robots-utf8-bom.txt').read_bytes()
+    assert raw.startswith(b'\xef\xbb\xbf')
+    calls=[]
+    def handler(req):
+        calls.append(str(req.url))
+        if req.url.path=='/robots.txt':
+            return httpx.Response(200,content=raw if req.url.host=='blocked.example' else b'User-agent: *\nAllow: /')
+        if req.url.path=='/start':return httpx.Response(302,headers={'location':'https://blocked.example/private'})
+        return httpx.Response(200,text='restricted source')
+    f=Fetcher(['example.org','blocked.example'],user_agent='Test',client=client(handler),resolve=lambda h:None,min_interval=0)
+    try:
+        with pytest.raises(SourceError,match='different access route'):
+            f.get('https://example.org/start' if redirect else 'https://blocked.example/private')
+        assert 'https://blocked.example/robots.txt' in calls
+        assert 'https://blocked.example/private' not in calls
+    finally:f.close()
 
 def test_response_size_bound():
     def handler(req):return httpx.Response(404) if req.url.path=='/robots.txt' else httpx.Response(200,text='x'*100)
@@ -158,7 +192,7 @@ def test_budget_queue_and_cached_model_result(store,config,monkeypatch):
     config['limits']['max_model_calls']=1
     for i in range(2):
         text=('Synthetic source content. '*10)+str(i)
-        save_document(store,config['sources'][0],text=text,raw=text.encode(),url=f'https://example.org/{i}',content_url=f'https://example.org/{i}',title=f'Doc {i}',at='2026-09-09T06:00:00Z')
+        save_document(store,config['sources'][0],text=text,raw=text.encode(),url=f'https://example.org/{i}',content_url=f'https://example.org/{i}',title=f'Doc {i}',at='2026-09-09T06:00:00Z',published_at='2026-09-09',publication_precision='day')
     first=extract_pending(store,config,'openai','fixture')
     assert first['calls']==1 and first['queued_chunks']==1
     second=extract_pending(store,config,'openai','fixture')

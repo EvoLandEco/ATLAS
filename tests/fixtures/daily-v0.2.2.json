@@ -1,0 +1,263 @@
+{
+  "acquisition_sha256": "0650f3dad6f59ca7b4bc09e49661568b5bee1a5b9f507e0790e0d1775d4be4f5",
+  "annotations_sha256": "d7ce4529a66444cb1a8d7b00d855b29d92f30370495d12ad47b21166acc904e7",
+  "base_manifest_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "base_map_snapshot_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "base_site_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "base_source_export_id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "daily_id": "8f7babb53245b88a92ae95b848c09a008201a371adb1545a79f454b751913e8d",
+  "daily_version": "0.2.2",
+  "documents": [
+    {
+      "base_document_ids": [],
+      "capture": "2026-10-02T00:00:00Z",
+      "channel_id": null,
+      "content_url": "https://health.example/report",
+      "country_codes": [
+        "NA"
+      ],
+      "finding_ids": [
+        "daily_finding_7afce491454265aca4369317"
+      ],
+      "id": "doc_one",
+      "language_tag": "en",
+      "limitations": [
+        "The source does not establish a cause."
+      ],
+      "modified_at": null,
+      "outcome": "relevant",
+      "parse_status": "text_ready",
+      "processing_status": "weekly_review_pending",
+      "publication": "2026-10-01",
+      "publication_precision": "day",
+      "raw_sha256": "2b5789c3b6f6e151e7296691748aa9cd1f1943105760e9687a70db252fa63097",
+      "review_id": "daily_review_d042653eb6b43050588afeb5",
+      "review_state": "source_checked_draft",
+      "reviewed_at": "2026-10-03T00:00:00Z",
+      "reviewed_by": "Source reviewer",
+      "source_id": "national",
+      "source_name": "Health authority",
+      "source_role": "official_national_reporting",
+      "source_text_sha256": "2b5789c3b6f6e151e7296691748aa9cd1f1943105760e9687a70db252fa63097",
+      "title": "Investigation",
+      "title_translation": null,
+      "url": "https://health.example/report"
+    }
+  ],
+  "evidence": [
+    {
+      "document_id": "doc_one",
+      "end": 93,
+      "id": "daily_evidence_c28e5cd75100996898cbfb43",
+      "language_tag": "en",
+      "offset_basis": "unicode_code_points_half_open",
+      "quote": "An unusual exposure is under active investigation.",
+      "quote_sha256": "5696841331e360708784930bb97dd2bc25325d156649fa0c996696deb85e5cc8",
+      "source_text_sha256": "2b5789c3b6f6e151e7296691748aa9cd1f1943105760e9687a70db252fa63097",
+      "start": 43,
+      "translation": null
+    },
+    {
+      "document_id": "doc_one",
+      "end": 42,
+      "id": "daily_evidence_dada4608574fb91163c61c90",
+      "language_tag": "en",
+      "offset_basis": "unicode_code_points_half_open",
+      "quote": "The authority reported 0 cases in Namibia.",
+      "quote_sha256": "a035ad3b879793ec3c088fbe98bd4e637eb602b29a2882992fc8629bcabd713e",
+      "source_text_sha256": "2b5789c3b6f6e151e7296691748aa9cd1f1943105760e9687a70db252fa63097",
+      "start": 0,
+      "translation": null
+    }
+  ],
+  "findings": [
+    {
+      "attribution": {
+        "status": "reported",
+        "value": "Health authority"
+      },
+      "document_id": "doc_one",
+      "evidence_ids": [
+        "daily_evidence_c28e5cd75100996898cbfb43",
+        "daily_evidence_dada4608574fb91163c61c90"
+      ],
+      "id": "daily_finding_7afce491454265aca4369317",
+      "key": "cases",
+      "kind": "reported_count",
+      "observation_period": {
+        "status": "not_reported",
+        "value": null
+      },
+      "places": [
+        {
+          "country_code": "NA",
+          "name": "Namibia",
+          "role": "reporting_scope"
+        }
+      ],
+      "review_id": "daily_review_d042653eb6b43050588afeb5",
+      "review_state": "source_checked_draft",
+      "reviewed_at": "2026-10-03T00:00:00Z",
+      "reviewed_by": "Source reviewer",
+      "statement_kind": "source_statement",
+      "status": "reported",
+      "text": "The authority reports 0 cases in Namibia and is investigating an unusual exposure."
+    }
+  ],
+  "generated_at": "2026-10-14T00:00:00Z",
+  "knowledge_cutoff": "2026-10-03T00:00:00.000000Z",
+  "publication_from": "2026-09-30",
+  "publication_until": "2026-10-06",
+  "reconciliations": [],
+  "selection_policy": "all_supporting_documents_in_window",
+  "software_version": "0.1.0a49",
+  "source_coverage": [
+    {
+      "checked_at": null,
+      "documents": 1,
+      "notes": [
+        "Source was not checked in this run."
+      ],
+      "pending": 0,
+      "relevant": 1,
+      "reviewed": 1,
+      "source_id": "national",
+      "source_name": "Health authority",
+      "source_role": "official_national_reporting",
+      "status": "not_checked"
+    }
+  ],
+  "timezone": "Europe/Amsterdam",
+  "watch_assessments": [
+    {
+      "attention": "watch",
+      "counterevidence_finding_keys": [],
+      "criteria": [
+        {
+          "finding_keys": [
+            "doc_one:cases"
+          ],
+          "kind": "unusual_event",
+          "reason": "Synthetic unusual-event review for the selector fixture."
+        }
+      ],
+      "date_basis": "source_event_date",
+      "decision_reason": "Source evidence requires follow-up review.",
+      "development_date": "2026-10-01",
+      "development_finding_keys": [
+        "doc_one:cases"
+      ],
+      "diagnostic_label": "Cause unknown",
+      "document_ids": [
+        "doc_one"
+      ],
+      "event_identity": "not_assigned",
+      "evidence_ids": [
+        "daily_evidence_c28e5cd75100996898cbfb43",
+        "daily_evidence_dada4608574fb91163c61c90"
+      ],
+      "finding_ids": [
+        "daily_finding_7afce491454265aca4369317"
+      ],
+      "finding_keys": [
+        "doc_one:cases"
+      ],
+      "follow_up_finding_keys": [
+        "doc_one:cases"
+      ],
+      "follow_up_question": "Has the authority reported a cause?",
+      "id": "daily_watch_ec3f4d91d89128c2a3cdaa4d",
+      "key": "investigation",
+      "key_facts": [
+        {
+          "finding_ids": [
+            "daily_finding_7afce491454265aca4369317"
+          ],
+          "finding_keys": [
+            "doc_one:cases"
+          ],
+          "label": "Cases",
+          "text": "0 cases reported"
+        }
+      ],
+      "label": "Cause under investigation",
+      "latest_capture": "2026-10-02T00:00:00Z",
+      "latest_publication": "2026-10-01",
+      "location_label": "Namibia",
+      "method_version": "daily-watch-1.0.2",
+      "reason_for_attention": "The cause remains under investigation.",
+      "review_due_at": "2026-10-04T00:00:00Z",
+      "review_state": "source_checked_draft",
+      "reviewed_at": "2026-10-03T00:00:00Z",
+      "reviewed_by": "Source reviewer",
+      "scope_kind": "report_selection",
+      "temporal_status": "current"
+    }
+  ],
+  "watch_items": [
+    {
+      "attention": "watch",
+      "counterevidence_finding_keys": [],
+      "criteria": [
+        {
+          "finding_keys": [
+            "doc_one:cases"
+          ],
+          "kind": "unusual_event",
+          "reason": "Synthetic unusual-event review for the selector fixture."
+        }
+      ],
+      "date_basis": "source_event_date",
+      "decision_reason": "Source evidence requires follow-up review.",
+      "development_date": "2026-10-01",
+      "development_finding_keys": [
+        "doc_one:cases"
+      ],
+      "diagnostic_label": "Cause unknown",
+      "document_ids": [
+        "doc_one"
+      ],
+      "event_identity": "not_assigned",
+      "evidence_ids": [
+        "daily_evidence_c28e5cd75100996898cbfb43",
+        "daily_evidence_dada4608574fb91163c61c90"
+      ],
+      "finding_ids": [
+        "daily_finding_7afce491454265aca4369317"
+      ],
+      "finding_keys": [
+        "doc_one:cases"
+      ],
+      "follow_up_finding_keys": [
+        "doc_one:cases"
+      ],
+      "follow_up_question": "Has the authority reported a cause?",
+      "id": "daily_watch_ec3f4d91d89128c2a3cdaa4d",
+      "key": "investigation",
+      "key_facts": [
+        {
+          "finding_ids": [
+            "daily_finding_7afce491454265aca4369317"
+          ],
+          "finding_keys": [
+            "doc_one:cases"
+          ],
+          "label": "Cases",
+          "text": "0 cases reported"
+        }
+      ],
+      "label": "Cause under investigation",
+      "latest_capture": "2026-10-02T00:00:00Z",
+      "latest_publication": "2026-10-01",
+      "location_label": "Namibia",
+      "method_version": "daily-watch-1.0.2",
+      "reason_for_attention": "The cause remains under investigation.",
+      "review_due_at": "2026-10-04T00:00:00Z",
+      "review_state": "source_checked_draft",
+      "reviewed_at": "2026-10-03T00:00:00Z",
+      "reviewed_by": "Source reviewer",
+      "scope_kind": "report_selection",
+      "temporal_status": "current"
+    }
+  ]
+}

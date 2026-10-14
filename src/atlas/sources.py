@@ -20,7 +20,7 @@ from .store import Store
 from .config import publication_window, in_publication_window
 from .util import canonical_url, digest, stamp, uid, utcnow, canonical
 
-ADAPTER_VERSION = "0.3.0"
+ADAPTER_VERSION = "0.3.6"
 
 
 class SourceError(RuntimeError):
@@ -96,7 +96,7 @@ class Fetcher:
         if origin not in self.robots:
             try:
                 raw,_,_,_=self._request(origin+"/robots.txt")
-                parser=Protego.parse(raw.decode("utf-8",errors="replace"))
+                parser=Protego.parse(raw.decode("utf-8-sig",errors="replace"))
                 self.robots[origin]=parser
             except httpx.HTTPStatusError as exc:
                 if exc.response.status_code in (404,410):
@@ -140,9 +140,12 @@ def parse_date(value: str | None) -> tuple[str | None,str]:
         return None,"unknown"
 
 
-def html_text(raw: bytes | str, *, main_only: bool = True, content_selector: str | None = None) -> tuple[str,str,str | None,str]:
+def html_text(raw: bytes | str, *, main_only: bool = True, content_selector: str | None = None,
+              title_selector: str | None = None, content_exclude_selector: str | None = None) -> tuple[str,str,str | None,str]:
     soup=BeautifulSoup(raw,"html.parser")
-    title_node=soup.find("h1") or soup.find("title")
+    title_node=soup.select_one(title_selector) if title_selector else soup.find("h1") or soup.find("title")
+    if title_selector and (title_node is None or not title_node.get_text(" ",strip=True)):
+        raise SourceError("Source title selector requires adapter review")
     title=title_node.get_text(" ",strip=True) if title_node else "Untitled source document"
     published=None; precision="unknown"
     time_node=soup.select_one("time[datetime]")
@@ -168,12 +171,35 @@ def html_text(raw: bytes | str, *, main_only: bool = True, content_selector: str
             raise SourceError("Source content selector requires adapter review")
     for node in content.select("script,style,nav,footer,header,form,noscript,svg"):
         node.decompose()
+    if content_exclude_selector:
+        for node in content.select(content_exclude_selector):
+            node.decompose()
     links=sorted({urljoin("",a.get("href","")) for a in content.select("a[href]")
                   if a.get("href","").startswith("https://")})
     text="\n".join(line.strip() for line in content.get_text("\n",strip=True).splitlines() if line.strip())
     if links:
         text += "\n\nSOURCE LINKS\n"+"\n".join(links)
     return text,title,published,precision
+
+
+def video_text(raw: bytes, url: str) -> tuple[str,str,str,str]:
+    """Read the publisher's transcript bound to the exact video page."""
+    videos=[]
+    for node in BeautifulSoup(raw,"html.parser").select("script[type='application/ld+json']"):
+        obj=json.loads(node.string or "{}")
+        for item in obj if isinstance(obj,list) else [obj]:
+            if not isinstance(item,dict) or item.get('@type')!='VideoObject':continue
+            page=item.get('mainEntityOfPage')
+            page=page.get('@id') if isinstance(page,dict) else page
+            if page and canonical_url(page)==canonical_url(url):videos.append(item)
+    if len(videos)!=1:
+        raise SourceError('Video transcript requires one exact publisher page binding')
+    item=videos[0]
+    if any(not isinstance(item.get(k),str) or not item[k].strip() for k in ['name','transcript','uploadDate']):
+        raise SourceError('Publisher video transcript, title or upload date is absent')
+    published,precision=parse_date(item['uploadDate'])
+    if published is None:raise SourceError('Video transcript upload date requires review')
+    return item['transcript'],item['name'],published,precision
 
 
 def pdf_text(raw: bytes) -> tuple[str,str]:
@@ -312,6 +338,22 @@ def discover_sitemap(source: dict, fetcher: Fetcher, since: str, limits: dict) -
 
 def discover(source: dict, fetcher: Fetcher, since: str, limits: dict) -> tuple[list[dict],list[str]]:
     adapter=source["adapter"]; notes=[]
+    if adapter=='cdc_mmwr':
+        raw,_,final,_=fetcher.get(source['index_url'])
+        soup=BeautifulSoup(raw,'html.parser');blocks=soup.select('.syndicate > p, .syndicate > ul')
+        if not blocks:raise SourceError('CDC MMWR archive requires its publication list')
+        entries=[];published=None;headings=0
+        for block in blocks:
+            label=block.get_text(' ',strip=True)
+            if block.name=='p' and block.find('strong') and ' / No. ' in label:
+                published=datetime.strptime(label.split(' / No. ')[0],'%B %d, %Y').date().isoformat();headings+=1
+            for a in block.select('a[href]'):
+                if not re.fullmatch(r'/mmwr/volumes/\d+/wr/mm\d+[a-z]\d+\.htm',urlsplit(a['href']).path):continue
+                if published is None:raise SourceError('CDC MMWR article lacks a publisher date heading')
+                if published>=since[:10]:entries.append(dict(url=urljoin(final,a['href']),title=a.get_text(' ',strip=True),
+                    published_at=published,publication_precision='day'))
+        if not headings:raise SourceError('CDC MMWR archive date headings require review')
+        return entries,notes
     if adapter=="who_sitreps":
         entries=[]; previous=None
         for page in range(limits.get('max_index_pages',5)):
@@ -448,8 +490,20 @@ def discover(source: dict, fetcher: Fetcher, since: str, limits: dict) -> tuple[
 def retrieve_entry(store: Store, source: dict, entry: dict, fetcher: Fetcher) -> str | None:
     if source.get('adapter')=='who_sitreps' and not entry.get('download_url'):
         raise SourceError('WHO situation report has no published PDF download')
+    if source.get('adapter') == 'who_odata' and 'who_item' not in entry:
+        slug = urlsplit(entry['url']).path.rstrip('/').rsplit('/', 1)[-1]
+        query = urlencode({'$filter': "UrlName eq '" + slug.replace("'", "''") + "'", '$top': 2})
+        raw, _, _, _ = fetcher.get(source['index_url'] + '?' + query)
+        rows = json.loads(raw).get('value')
+        if not isinstance(rows, list) or len(rows) != 1 or rows[0].get('UrlName', '').lstrip('/') != slug:
+            raise SourceError('WHO revision lookup requires exactly one matching item')
+        item = rows[0]
+        entry = {**entry, 'who_item': item, 'published_at': item.get('PublicationDateAndTime')}
     if "who_item" in entry:
         item=entry["who_item"]
+        if not any(html_text(item.get(k) or '', main_only=False)[0].strip()
+                   for k in ['Summary', 'Overview', 'Epidemiology', 'Assessment', 'Response', 'Advice']):
+            raise SourceError('WHO item has no source article content')
         pieces=[f"<h1>{item.get('OverrideTitle') or item.get('Title','WHO DON')}</h1>"]
         pieces.extend(f"<h2>{key}</h2>"+(item.get(key) or "") for key in
                       ["Summary","Overview","Epidemiology","Assessment","Response","Advice","FurtherInformation"])
@@ -482,7 +536,10 @@ def retrieve_entry(store: Store, source: dict, entry: dict, fetcher: Fetcher) ->
     if mime=="application/pdf" or raw.startswith(b"%PDF"):
         text,parse_status=pdf_text(raw); mime="application/pdf"
     else:
-        text,parsed_title,parsed_date,parsed_precision=html_text(raw,content_selector=source.get("content_selector"))
+        if source.get('video_url_pattern') and re.search(source['video_url_pattern'],final):
+            text,parsed_title,parsed_date,parsed_precision=video_text(raw,final)
+        else:
+            text,parsed_title,parsed_date,parsed_precision=html_text(raw,content_selector=source.get("content_selector"),title_selector=source.get("title_selector"),content_exclude_selector=source.get("content_exclude_selector"))
         title=parsed_title if parsed_title!="Untitled source document" and source.get("adapter")!="static" else title
         if parsed_date:
             published,precision=parsed_date,parsed_precision
@@ -529,8 +586,11 @@ def retrieve_entry(store: Store, source: dict, entry: dict, fetcher: Fetcher) ->
     return doc
 
 
-def collect(store: Store, config: dict, since: str, *, missing_only: bool = False) -> dict:
-    window=publication_window(config)
+def collect(store: Store, config: dict, since: str, *, missing_only: bool = False, until: str | None = None) -> dict:
+    window=(since,until) if until else publication_window(config)
+    if until:
+        from datetime import date
+        if date.fromisoformat(since)>date.fromisoformat(until):raise ValueError('Publication window is reversed')
     if window:since=max(since,window[0])
     totals={"documents_seen":0,"documents_new":0,"sources":[]}
     for source in config["sources"]:

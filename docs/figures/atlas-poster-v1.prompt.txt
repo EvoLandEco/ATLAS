@@ -1,0 +1,28 @@
+Generator: built-in image_gen
+
+Use case: ads-marketing
+Asset type: Finished portrait advertising poster for ATLAS, a research project. A flat, edge-to-edge poster artwork, not a photo of a poster or a wall mockup. Portrait 2:3 composition, high resolution, aim for 2048 x 3072 pixels.
+Primary request: Advertise ATLAS and attract scientific interest, contributors, collaborators and research support. Clean, futuristic, unmistakably AI-inspired, restrained and elegant. Art direction: premium science and technology editorial design, immaculate Swiss typography, generous negative space, sophisticated materials, quiet confidence.
+Brand context: ATLAS means Agentic Tracking and Longitudinal Analysis for Surveillance. It is an open source research preview for One Health outbreak intelligence across sources, places and time. It collects reports, extracts source evidence, prepares longitudinal analysis and research datasets, with human review of scientific decisions. No clinical or prediction claims.
+
+Scene and visual: Deep midnight teal backdrop (#081e26 to #123d4b), subtly illuminated in the center, smooth and uncluttered. One striking abstract scientific object occupies the middle: a delicate globe-like sphere constructed from sparse luminous teal meridians and fine translucent optical layers, with a small number of warm champagne points and precise hairline connections suspended INSIDE its volume. Polished glass and brushed platinum highlights, muted ice aqua (#7fb9bf), tiny champagne accents (#eab76b). Make the geometry feel like carefully organized evidence in an AI research instrument, with beautiful depth and restrained light. The sphere has no continents, no geographic endpoints, no arrows, no values, and no purported outbreak data. It is an abstract conceptual motif. Keep it aesthetically rich but visually simple.
+
+Composition: A disciplined editorial grid and broad margins. Top: small uppercase status line, then a very large crisp ATLAS wordmark that commands the page. Its size should feel confident and architectural. Use a modern precise sans serif in warm white with carefully controlled spacing; preserve normal readable letter shapes. Small full-name expansion under the wordmark in two balanced lines. Beneath that, a prominent two-line purpose statement. Central third to half: luminous sphere, with abundant dark breathing room, never interfering with text. Just under sphere: one short line about AI and human review. Lower section: three compact capability labels, each aligned on the same baseline, separated with restrained hairline dividers. Bottom: large inviting call to action; a small line inviting review, contributions and research support; then two legible project addresses. Typography must be sharp, accurately spelled, highly readable, and properly spaced. Make the poster look like a finished designed campaign, with a balanced text-to-image ratio and no tiny paragraphs.
+
+Text, verbatim (these are the only words to render; line breaks can be balanced):
+"OPEN SOURCE / RESEARCH PREVIEW"
+"ATLAS"
+"Agentic Tracking and Longitudinal Analysis for Surveillance"
+"One Health"
+"outbreak intelligence."
+"Across sources, places and time."
+"AI assisted. Human reviewed."
+"Source evidence"
+"Longitudinal analysis"
+"Research datasets"
+"Build with us."
+"Scientific review, contributions and research support welcome."
+"Explore  qtj.me/atlas"
+"Contribute  github.com/EvoLandEco/ATLAS"
+
+Constraints: Render all copy exactly. Clearly subordinate the full name to the ATLAS wordmark. Footer addresses must be large enough to read, not microscopic. Use only the provided project brand and URLs. No fabricated endorsements, partner logos, metrics, statistics, badges or QR code. No robot, brain, face, hand, circuit board, DNA helix, pathogen illustration, cluttered dashboard, cyberpunk city or excessive neon. No extra copy. No ornamental pseudo-text. No watermark. No gradients in text, no distorted letters. The atmosphere is refined, purposeful, advanced, scientific and inviting.

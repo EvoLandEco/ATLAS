@@ -1,5 +1,5 @@
 const assert = require('node:assert/strict');
-const { validateMapLinks, mapLinks, windowRecords } = require('../scripts/map_links.js');
+const { validateMapLinks, mapLinks, windowRecords } = require('../scripts/map_links.cjs');
 const records = [
  {id:'a',publication:'2026-07-01',capture:'2026-09-25T12:00:00Z',claims:[{claim_index:0,quotes:['Source statement.']}]},
  {id:'b',publication:'2026-07-31T23:59:59Z',capture:'2026-09-26',claims:[{claim_index:1,quotes:['Follow-up.']}]},

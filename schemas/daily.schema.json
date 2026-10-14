@@ -1,0 +1,1175 @@
+{
+  "$defs": {
+    "DailyCoverage": {
+      "additionalProperties": false,
+      "properties": {
+        "checked_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Checked At"
+        },
+        "documents": {
+          "title": "Documents",
+          "type": "integer"
+        },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Notes",
+          "type": "array"
+        },
+        "pending": {
+          "title": "Pending",
+          "type": "integer"
+        },
+        "relevant": {
+          "title": "Relevant",
+          "type": "integer"
+        },
+        "reviewed": {
+          "title": "Reviewed",
+          "type": "integer"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_role": {
+          "title": "Source Role",
+          "type": "string"
+        },
+        "status": {
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "source_name",
+        "source_role",
+        "status",
+        "notes",
+        "checked_at",
+        "documents",
+        "reviewed",
+        "relevant",
+        "pending"
+      ],
+      "title": "DailyCoverage",
+      "type": "object"
+    },
+    "DailyDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "base_document_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Base Document Ids",
+          "type": "array"
+        },
+        "capture": {
+          "title": "Capture",
+          "type": "string"
+        },
+        "channel_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Channel Id"
+        },
+        "content_url": {
+          "title": "Content Url",
+          "type": "string"
+        },
+        "country_codes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Country Codes",
+          "type": "array"
+        },
+        "finding_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Finding Ids",
+          "type": "array"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "language_tag": {
+          "title": "Language Tag",
+          "type": "string"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "modified_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Modified At"
+        },
+        "outcome": {
+          "enum": [
+            "pending",
+            "relevant",
+            "no_relevant_content",
+            "needs_review"
+          ],
+          "title": "Outcome",
+          "type": "string"
+        },
+        "parse_status": {
+          "title": "Parse Status",
+          "type": "string"
+        },
+        "processing_status": {
+          "enum": [
+            "weekly_review_pending",
+            "weekly_reviewed"
+          ],
+          "title": "Processing Status",
+          "type": "string"
+        },
+        "publication": {
+          "title": "Publication",
+          "type": "string"
+        },
+        "publication_precision": {
+          "title": "Publication Precision",
+          "type": "string"
+        },
+        "raw_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Raw Sha256",
+          "type": "string"
+        },
+        "review_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Review Id"
+        },
+        "review_state": {
+          "enum": [
+            "not_reviewed",
+            "source_checked_draft"
+          ],
+          "title": "Review State",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reviewed At"
+        },
+        "reviewed_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reviewed By"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "source_role": {
+          "title": "Source Role",
+          "type": "string"
+        },
+        "source_text_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Text Sha256",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "title_translation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Translation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source_id",
+        "channel_id",
+        "base_document_ids",
+        "source_name",
+        "source_role",
+        "url",
+        "content_url",
+        "title",
+        "title_translation",
+        "language_tag",
+        "publication",
+        "publication_precision",
+        "modified_at",
+        "capture",
+        "source_text_sha256",
+        "raw_sha256",
+        "parse_status",
+        "review_id",
+        "review_state",
+        "reviewed_at",
+        "reviewed_by",
+        "outcome",
+        "processing_status",
+        "finding_ids",
+        "country_codes",
+        "limitations"
+      ],
+      "title": "DailyDocument",
+      "type": "object"
+    },
+    "DailyEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "document_id": {
+          "title": "Document Id",
+          "type": "string"
+        },
+        "end": {
+          "minimum": 1,
+          "title": "End",
+          "type": "integer"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "language_tag": {
+          "title": "Language Tag",
+          "type": "string"
+        },
+        "offset_basis": {
+          "const": "unicode_code_points_half_open",
+          "title": "Offset Basis",
+          "type": "string"
+        },
+        "quote": {
+          "title": "Quote",
+          "type": "string"
+        },
+        "quote_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Quote Sha256",
+          "type": "string"
+        },
+        "source_text_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Text Sha256",
+          "type": "string"
+        },
+        "start": {
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        },
+        "translation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Translation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "document_id",
+        "source_text_sha256",
+        "quote_sha256",
+        "quote",
+        "start",
+        "end",
+        "offset_basis",
+        "language_tag",
+        "translation"
+      ],
+      "title": "DailyEvidence",
+      "type": "object"
+    },
+    "DailyFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "attribution": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "document_id": {
+          "title": "Document Id",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "suspected_disease",
+            "diagnostic_status",
+            "reported_count",
+            "geographic_extent",
+            "spatial_link",
+            "response_measure",
+            "potential_source",
+            "development"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "observation_period": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "places": {
+          "items": {
+            "$ref": "#/$defs/PlaceInput"
+          },
+          "title": "Places",
+          "type": "array"
+        },
+        "review_id": {
+          "title": "Review Id",
+          "type": "string"
+        },
+        "review_state": {
+          "const": "source_checked_draft",
+          "title": "Review State",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "statement_kind": {
+          "enum": [
+            "source_statement",
+            "attributed_hypothesis",
+            "analyst_hypothesis"
+          ],
+          "title": "Statement Kind",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "reported",
+            "source_suspected",
+            "source_probable",
+            "source_confirmed",
+            "source_ruled_out",
+            "unconfirmed",
+            "disputed",
+            "unresolved"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "key",
+        "document_id",
+        "review_id",
+        "kind",
+        "text",
+        "status",
+        "statement_kind",
+        "attribution",
+        "observation_period",
+        "places",
+        "evidence_ids",
+        "reviewed_at",
+        "reviewed_by",
+        "review_state"
+      ],
+      "title": "DailyFinding",
+      "type": "object"
+    },
+    "DailyWatch": {
+      "additionalProperties": false,
+      "properties": {
+        "attention": {
+          "enum": [
+            "urgent",
+            "heightened",
+            "watch",
+            "not_selected"
+          ],
+          "title": "Attention",
+          "type": "string"
+        },
+        "counterevidence_finding_keys": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Counterevidence Finding Keys",
+          "type": "array"
+        },
+        "criteria": {
+          "items": {
+            "$ref": "#/$defs/WatchCriterion"
+          },
+          "title": "Criteria",
+          "type": "array"
+        },
+        "date_basis": {
+          "enum": [
+            "source_event_date",
+            "source_report_date",
+            "unknown"
+          ],
+          "title": "Date Basis",
+          "type": "string"
+        },
+        "decision_reason": {
+          "maxLength": 500,
+          "minLength": 12,
+          "title": "Decision Reason",
+          "type": "string"
+        },
+        "development_date": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Development Date"
+        },
+        "development_finding_keys": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Development Finding Keys",
+          "type": "array"
+        },
+        "diagnostic_label": {
+          "maxLength": 100,
+          "title": "Diagnostic Label",
+          "type": "string"
+        },
+        "document_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Document Ids",
+          "type": "array"
+        },
+        "event_identity": {
+          "const": "not_assigned",
+          "title": "Event Identity",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "finding_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Finding Ids",
+          "type": "array"
+        },
+        "finding_keys": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Finding Keys",
+          "type": "array"
+        },
+        "follow_up_finding_keys": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Follow Up Finding Keys",
+          "type": "array"
+        },
+        "follow_up_question": {
+          "minLength": 12,
+          "title": "Follow Up Question",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "key_facts": {
+          "items": {
+            "$ref": "#/$defs/DailyWatchFact"
+          },
+          "title": "Key Facts",
+          "type": "array"
+        },
+        "label": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "latest_capture": {
+          "title": "Latest Capture",
+          "type": "string"
+        },
+        "latest_publication": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Latest Publication"
+        },
+        "location_label": {
+          "maxLength": 80,
+          "title": "Location Label",
+          "type": "string"
+        },
+        "method_version": {
+          "const": "daily-watch-1.0.2",
+          "title": "Method Version",
+          "type": "string"
+        },
+        "reason_for_attention": {
+          "maxLength": 260,
+          "minLength": 12,
+          "title": "Reason For Attention",
+          "type": "string"
+        },
+        "review_due_at": {
+          "title": "Review Due At",
+          "type": "string"
+        },
+        "review_state": {
+          "const": "source_checked_draft",
+          "title": "Review State",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "scope_kind": {
+          "const": "report_selection",
+          "title": "Scope Kind",
+          "type": "string"
+        },
+        "temporal_status": {
+          "enum": [
+            "current",
+            "routine",
+            "retrospective",
+            "unknown",
+            "resolved"
+          ],
+          "title": "Temporal Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "finding_keys",
+        "reason_for_attention",
+        "follow_up_question",
+        "temporal_status",
+        "development_date",
+        "date_basis",
+        "development_finding_keys",
+        "follow_up_finding_keys",
+        "counterevidence_finding_keys",
+        "criteria",
+        "decision_reason",
+        "location_label",
+        "diagnostic_label",
+        "key_facts",
+        "review_due_at",
+        "reviewed_at",
+        "reviewed_by",
+        "review_state",
+        "id",
+        "finding_ids",
+        "evidence_ids",
+        "document_ids",
+        "scope_kind",
+        "event_identity",
+        "latest_publication",
+        "latest_capture",
+        "attention",
+        "method_version"
+      ],
+      "title": "DailyWatch",
+      "type": "object"
+    },
+    "DailyWatchFact": {
+      "additionalProperties": false,
+      "properties": {
+        "finding_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Finding Ids",
+          "type": "array"
+        },
+        "finding_keys": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Finding Keys",
+          "type": "array"
+        },
+        "label": {
+          "maxLength": 28,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 110,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label",
+        "text",
+        "finding_keys",
+        "finding_ids"
+      ],
+      "title": "DailyWatchFact",
+      "type": "object"
+    },
+    "PlaceInput": {
+      "additionalProperties": false,
+      "properties": {
+        "country_code": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Country Code"
+        },
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "reporting_scope",
+            "occurrence",
+            "exposure",
+            "travel_origin",
+            "travel_destination",
+            "context"
+          ],
+          "title": "Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "country_code",
+        "role"
+      ],
+      "title": "PlaceInput",
+      "type": "object"
+    },
+    "Reconciliation": {
+      "additionalProperties": false,
+      "properties": {
+        "disposition": {
+          "enum": [
+            "integrated",
+            "reviewed_not_exported",
+            "pending"
+          ],
+          "title": "Disposition",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 12,
+          "title": "Reason",
+          "type": "string"
+        },
+        "record_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Record Ids",
+          "type": "array"
+        },
+        "review_id": {
+          "title": "Review Id",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "weekly_export_id": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Weekly Export Id",
+          "type": "string"
+        },
+        "weekly_inbox_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Weekly Inbox Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "review_id",
+        "weekly_export_id",
+        "record_ids",
+        "disposition",
+        "reason",
+        "reviewed_at",
+        "reviewed_by",
+        "weekly_inbox_sha256"
+      ],
+      "title": "Reconciliation",
+      "type": "object"
+    },
+    "Status": {
+      "enum": [
+        "reported",
+        "not_reported",
+        "unknown",
+        "not_applicable",
+        "pending_verification",
+        "conflicting",
+        "not_extracted",
+        "not_comparable",
+        "access_restricted"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "TextValue": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "title": "TextValue",
+      "type": "object"
+    },
+    "Translation": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "minLength": 1,
+          "title": "Created By",
+          "type": "string"
+        },
+        "language_tag": {
+          "const": "en",
+          "default": "en",
+          "title": "Language Tag",
+          "type": "string"
+        },
+        "method_version": {
+          "minLength": 1,
+          "title": "Method Version",
+          "type": "string"
+        },
+        "origin": {
+          "enum": [
+            "atlas_generated",
+            "publisher_provided"
+          ],
+          "title": "Origin",
+          "type": "string"
+        },
+        "pairing_evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Pairing Evidence Ids",
+          "type": "array"
+        },
+        "publisher_text_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Publisher Text Id"
+        },
+        "review_note": {
+          "minLength": 1,
+          "title": "Review Note",
+          "type": "string"
+        },
+        "review_status": {
+          "enum": [
+            "unreviewed",
+            "source_checked",
+            "human_approved"
+          ],
+          "title": "Review Status",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reviewed At"
+        },
+        "reviewed_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reviewed By"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "origin",
+        "created_at",
+        "created_by",
+        "method_version",
+        "review_status",
+        "reviewed_at",
+        "reviewed_by",
+        "review_note"
+      ],
+      "title": "Translation",
+      "type": "object"
+    },
+    "WatchCriterion": {
+      "additionalProperties": false,
+      "properties": {
+        "finding_keys": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Finding Keys",
+          "type": "array"
+        },
+        "kind": {
+          "enum": [
+            "severe_impact",
+            "spread_change",
+            "unusual_event",
+            "response_gap",
+            "time_sensitive_action"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 240,
+          "minLength": 12,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "finding_keys",
+        "reason"
+      ],
+      "title": "WatchCriterion",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "acquisition_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Acquisition Sha256",
+      "type": "string"
+    },
+    "annotations_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Annotations Sha256",
+      "type": "string"
+    },
+    "base_manifest_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Base Manifest Sha256",
+      "type": "string"
+    },
+    "base_map_snapshot_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Base Map Snapshot Sha256",
+      "type": "string"
+    },
+    "base_site_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Base Site Sha256",
+      "type": "string"
+    },
+    "base_source_export_id": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Base Source Export Id",
+      "type": "string"
+    },
+    "daily_id": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Daily Id",
+      "type": "string"
+    },
+    "daily_version": {
+      "const": "0.2.2",
+      "title": "Daily Version",
+      "type": "string"
+    },
+    "documents": {
+      "items": {
+        "$ref": "#/$defs/DailyDocument"
+      },
+      "title": "Documents",
+      "type": "array"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/DailyEvidence"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/DailyFinding"
+      },
+      "title": "Findings",
+      "type": "array"
+    },
+    "generated_at": {
+      "title": "Generated At",
+      "type": "string"
+    },
+    "knowledge_cutoff": {
+      "title": "Knowledge Cutoff",
+      "type": "string"
+    },
+    "publication_from": {
+      "title": "Publication From",
+      "type": "string"
+    },
+    "publication_until": {
+      "title": "Publication Until",
+      "type": "string"
+    },
+    "reconciliations": {
+      "items": {
+        "$ref": "#/$defs/Reconciliation"
+      },
+      "title": "Reconciliations",
+      "type": "array"
+    },
+    "selection_policy": {
+      "const": "all_supporting_documents_in_window",
+      "title": "Selection Policy",
+      "type": "string"
+    },
+    "software_version": {
+      "title": "Software Version",
+      "type": "string"
+    },
+    "source_coverage": {
+      "items": {
+        "$ref": "#/$defs/DailyCoverage"
+      },
+      "title": "Source Coverage",
+      "type": "array"
+    },
+    "timezone": {
+      "const": "Europe/Amsterdam",
+      "title": "Timezone",
+      "type": "string"
+    },
+    "watch_assessments": {
+      "items": {
+        "$ref": "#/$defs/DailyWatch"
+      },
+      "title": "Watch Assessments",
+      "type": "array"
+    },
+    "watch_items": {
+      "items": {
+        "$ref": "#/$defs/DailyWatch"
+      },
+      "title": "Watch Items",
+      "type": "array"
+    }
+  },
+  "required": [
+    "daily_version",
+    "daily_id",
+    "software_version",
+    "generated_at",
+    "base_source_export_id",
+    "base_site_sha256",
+    "base_manifest_sha256",
+    "base_map_snapshot_sha256",
+    "acquisition_sha256",
+    "annotations_sha256",
+    "publication_from",
+    "publication_until",
+    "knowledge_cutoff",
+    "timezone",
+    "selection_policy",
+    "documents",
+    "evidence",
+    "findings",
+    "watch_items",
+    "watch_assessments",
+    "reconciliations",
+    "source_coverage"
+  ],
+  "title": "DailyExport",
+  "type": "object"
+}

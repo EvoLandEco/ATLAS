@@ -1,6 +1,7 @@
 """Reviewed source assertions and indexed memberships for static research views."""
 from __future__ import annotations
 
+from calendar import monthrange
 from collections import defaultdict
 from copy import deepcopy
 from bisect import bisect_right
@@ -17,11 +18,11 @@ import yaml
 from pydantic import Field, model_validator, create_model
 
 from . import __version__
-from .metrics import MetricsExport
+from .metrics import MetricsExport, MetricsExportV02, MetricsExportV03, MetricsExportV04
 from .models import StrictModel, TextValue, DateValue
-from .util import canonical_url, digest, read_json, stamp, uid, utcnow, write_json
+from .util import atomic_write, canonical, canonical_url, digest, read_json, stamp, uid, utcnow, write_json
 
-SITE_VERSION = '1.5.0'
+SITE_VERSION = '1.9.0'
 
 
 class Eligibility(StrictModel):
@@ -134,6 +135,47 @@ class AssertionInput(StrictModel):
     value: TextValue = Field(default_factory=TextValue)
     observation_date: DateValue = Field(default_factory=DateValue)
     evidence: list[EvidenceInput] = Field(min_length=1)
+
+
+class ReportAssessmentDetails(StrictModel):
+    record_id: str
+    kind: Literal['source_authenticity','diagnostic_status','authority_response','expert_appraisal']
+    status: Literal['authenticated','unresolved','unconfirmed','source_suspected','source_probable','source_confirmed','source_ruled_out','disputed','attributed']
+    authority: TextValue
+    label: str = Field(min_length=1,max_length=120)
+    scope: str = Field(min_length=12)
+    reason: str = Field(min_length=12)
+    source_text_sha256: str = Field(pattern=r'^[a-f0-9]{64}$')
+    reviewed_at: str
+    reviewed_by: str = Field(min_length=1)
+    review_state: Literal['source_checked_draft'] = 'source_checked_draft'
+
+    @model_validator(mode='after')
+    def meaning(self):
+        stamp(self.reviewed_at)
+        states={'source_authenticity':{'authenticated','unresolved'},
+                'diagnostic_status':{'unconfirmed','source_suspected','source_probable','source_confirmed','source_ruled_out','disputed'},
+                'authority_response':{'attributed'},'expert_appraisal':{'attributed'}}
+        if self.status not in states[self.kind]:raise ValueError('Assessment status differs from its kind')
+        if (self.kind in {'authority_response','expert_appraisal'} or self.status in {'authenticated','source_confirmed','source_ruled_out'}) and self.authority.status!='reported':
+            raise ValueError('Attributed assessment requires a named authority')
+        return self
+
+
+class ReportAssessmentInput(ReportAssessmentDetails):
+    key: str = Field(min_length=1)
+    assertions: list[str] = Field(min_length=1)
+    evidence: list[EvidenceInput] = Field(min_length=1)
+    supersedes: list[str] = Field(default_factory=list)
+
+
+class ReportAssessment(ReportAssessmentDetails):
+    id: str
+    document_id: str
+    assertion_ids: list[str] = Field(min_length=1)
+    evidence_ids: list[str] = Field(min_length=1)
+    eligibility: Eligibility
+    supersedes: list[str]
 
 
 class ComparisonInput(StrictModel):
@@ -587,7 +629,7 @@ class ObservationTime(StrictModel):
     extent: Literal['point','closed_interval','open_interval','unknown'] = 'unknown'
     start: TextValue
     end: TextValue
-    precision: Literal['day','month','year','unknown']
+    precision: Literal['day','month','year','mixed','unknown']
     certainty: Literal['exact','approximately','uncertain','unknown']
     label: str = Field(min_length=1)
     reason: str = Field(min_length=1)
@@ -601,12 +643,19 @@ class ObservationTime(StrictModel):
         if self.extent=='open_interval' and len(values)!=1:raise ValueError('An open interval requires one known bound')
         if values and self.precision=='unknown':
             raise ValueError('A panel date needs its precision')
+        if self.precision=='mixed' and (self.extent!='closed_interval' or len({len(v) for v in values})!=2):
+            raise ValueError('Mixed precision requires two differently precise interval boundaries')
         for value in values:
-            pattern={'day':r'\d{4}-\d{2}-\d{2}','month':r'\d{4}-\d{2}','year':r'\d{4}'}[self.precision]
+            precision = {4:'year',7:'month',10:'day'}.get(len(value)) if self.precision=='mixed' else self.precision
+            if precision is None:raise ValueError('Panel date precision differs')
+            pattern={'day':r'\d{4}-\d{2}-\d{2}','month':r'\d{4}-\d{2}','year':r'\d{4}'}[precision]
             if not re.fullmatch(pattern,value):raise ValueError('Panel date precision differs')
-            date.fromisoformat(value+{'day':'','month':'-01','year':'-01-01'}[self.precision])
-        if self.start.value and self.end.value and self.start.value>self.end.value:
-            raise ValueError('Panel date interval is reversed')
+            date.fromisoformat(value+{'day':'','month':'-01','year':'-01-01'}[precision])
+        if self.start.value and self.end.value:
+            lower = date.fromisoformat(self.start.value + {4:'-01-01',7:'-01',10:''}[len(self.start.value)])
+            end = self.end.value
+            upper = date.fromisoformat(end + ('-12-31' if len(end)==4 else f'-{monthrange(int(end[:4]),int(end[5:7]))[1]:02d}' if len(end)==7 else ''))
+            if lower>upper:raise ValueError('Panel date interval is reversed')
         return self
 
 
@@ -647,6 +696,12 @@ class SamplingDetails(OneHealthPanelReview):
     pooling: TextValue
     clustering: TextValue
     repeated_sampling: TextValue
+
+    @model_validator(mode='after')
+    def matched_scope(self):
+        if self.pair_status == 'matched' and any(getattr(self, key).value is None for key in ['unit', 'frame', 'population', 'target']):
+            raise ValueError('Matched sampling requires a defined unit, frame, population and target')
+        return self
 
 
 class OneHealthSamplingInput(SamplingDetails):
@@ -692,7 +747,7 @@ class OneHealthContext(ContextDetails, ChainSupport):
 
 
 class SiteAnnotations(StrictModel):
-    contract_version: Literal['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0']
+    contract_version: Literal['1.0.0', '1.1.0', '1.2.0', '1.3.0', '1.4.0', '1.5.0']
     records_sha256: str
     reviewed_at: str
     reviewed_by: str
@@ -708,6 +763,7 @@ class SiteAnnotations(StrictModel):
     reviewed_chains: list[ChainInput] = Field(default_factory=list)
     diseases: list[Disease] = Field(default_factory=list)
     disease_reviews: list[DiseaseReviewInput] = Field(default_factory=list)
+    report_assessments: list[ReportAssessmentInput] = Field(default_factory=list)
 
     one_health_reviews: list[OneHealthReviewInput] = Field(default_factory=list)
     one_health_nodes: list[OneHealthNodeInput] = Field(default_factory=list)
@@ -720,12 +776,14 @@ class SiteAnnotations(StrictModel):
     def chain_version(self):
         if self.reviewed_chains and self.contract_version == '1.0.0':
             raise ValueError('Chain annotations require contract 1.1.0 or 1.2.0')
-        if (self.diseases or self.disease_reviews) and self.contract_version not in {'1.2.0','1.3.0','1.4.0'}:
+        if (self.diseases or self.disease_reviews) and self.contract_version not in {'1.2.0','1.3.0','1.4.0','1.5.0'}:
             raise ValueError('Disease annotations require contract 1.2.0')
-        if (self.one_health_reviews or self.one_health_nodes or self.one_health_relations) and self.contract_version not in {'1.3.0','1.4.0'}:
+        if (self.one_health_reviews or self.one_health_nodes or self.one_health_relations) and self.contract_version not in {'1.3.0','1.4.0','1.5.0'}:
             raise ValueError('One Health annotations require contract 1.3.0 or 1.4.0')
-        if (self.one_health_timings or self.one_health_sampling_assessments or self.one_health_contexts) and self.contract_version!='1.4.0':
+        if (self.one_health_timings or self.one_health_sampling_assessments or self.one_health_contexts) and self.contract_version not in {'1.4.0','1.5.0'}:
             raise ValueError('One Health panel annotations require contract 1.4.0')
+        if self.report_assessments and self.contract_version!='1.5.0':
+            raise ValueError('Report assessments require annotation contract 1.5.0')
         return self
 
 
@@ -757,7 +815,7 @@ class Snapshot(StrictModel):
 
 
 class SiteBundle(StrictModel):
-    contract_version: Literal['1.5.0']
+    contract_version: Literal['1.9.0']
     software_version: str
     release_status: Literal['research_preview']
     snapshot: Snapshot
@@ -772,6 +830,7 @@ class SiteBundle(StrictModel):
     assertions: list[Assertion]
     evidence: list[EvidenceSpan]
     comparisons: list[Comparison]
+    report_assessments: list[ReportAssessment]
     location_memberships: list[LocationMembership]
     relationships: list[SourceRelation]
     diseases: list[Disease]
@@ -788,21 +847,53 @@ class SiteBundle(StrictModel):
     limitations: list[str]
 
 
+ObservationTimeV15 = create_model('ObservationTime', __base__=ObservationTime,
+    precision=(Literal['day','month','year','unknown'], ...))
+LEGACY_PANELS = {name: list[create_model(model.__name__, __base__=model,
+    time=(ObservationTimeV15, ...))] for name,model in [
+    ('one_health_timings',OneHealthTiming),
+    ('one_health_sampling_assessments',OneHealthSamplingAssessment),
+    ('one_health_contexts',OneHealthContext)]}
+
+
 # Contract 1.2 shares the scientific models and excludes disease reviews.
 # The released schema digest prevents shared model changes from altering it.
 SiteBundleV12 = create_model('SiteBundle', __base__=StrictModel,
     contract_version=(Literal['1.2.0'], ...),
-    **{name: (field.annotation, deepcopy(field)) for name, field in SiteBundle.model_fields.items()
-       if name not in {'contract_version', 'diseases', 'disease_reviews', 'one_health_reviews', 'one_health_nodes', 'one_health_relations','one_health_timings','one_health_sampling_assessments','one_health_contexts'}})
+    **{name: (MetricsExportV02 if name == 'metrics' else field.annotation, deepcopy(field)) for name, field in SiteBundle.model_fields.items()
+       if name != 'report_assessments' and name not in {'contract_version', 'diseases', 'disease_reviews', 'one_health_reviews', 'one_health_nodes', 'one_health_relations','one_health_timings','one_health_sampling_assessments','one_health_contexts'}})
 SiteBundleV13 = create_model('SiteBundle', __base__=StrictModel,
     contract_version=(Literal['1.3.0'], ...),
-    **{name: (field.annotation, deepcopy(field)) for name, field in SiteBundle.model_fields.items()
-       if name not in {'contract_version','one_health_reviews','one_health_nodes','one_health_relations','one_health_timings','one_health_sampling_assessments','one_health_contexts'}})
+    **{name: (MetricsExportV02 if name == 'metrics' else field.annotation, deepcopy(field)) for name, field in SiteBundle.model_fields.items()
+       if name != 'report_assessments' and name not in {'contract_version','one_health_reviews','one_health_nodes','one_health_relations','one_health_timings','one_health_sampling_assessments','one_health_contexts'}})
 SiteBundleV14 = create_model('SiteBundle', __base__=StrictModel,
     contract_version=(Literal['1.4.0'], ...),
-    **{name: (field.annotation, deepcopy(field)) for name, field in SiteBundle.model_fields.items()
-       if name not in {'contract_version','one_health_timings','one_health_sampling_assessments','one_health_contexts'}})
-SITE_MODELS = {'1.2.0': SiteBundleV12, '1.3.0': SiteBundleV13, '1.4.0': SiteBundleV14, SITE_VERSION: SiteBundle}
+    **{name: (MetricsExportV02 if name == 'metrics' else field.annotation, deepcopy(field)) for name, field in SiteBundle.model_fields.items()
+       if name != 'report_assessments' and name not in {'contract_version','one_health_timings','one_health_sampling_assessments','one_health_contexts'}})
+SiteBundleV15 = create_model('SiteBundle', __base__=StrictModel,
+    contract_version=(Literal['1.5.0'], ...),
+    **{name: (MetricsExportV02 if name == 'metrics' else LEGACY_PANELS.get(name,field.annotation), deepcopy(field)) for name, field in SiteBundle.model_fields.items()
+       if name not in {'contract_version','report_assessments'}})
+SiteBundleV16 = create_model('SiteBundle', __base__=StrictModel,
+    contract_version=(Literal['1.6.0'], ...),
+    **{name: (MetricsExportV03 if name == 'metrics' else LEGACY_PANELS.get(name,field.annotation), deepcopy(field)) for name, field in SiteBundle.model_fields.items()
+       if name not in {'contract_version','report_assessments'}})
+SiteBundleV17 = create_model('SiteBundle', __base__=StrictModel,
+    contract_version=(Literal['1.7.0'], ...),
+    **{name: (MetricsExportV04 if name == 'metrics' else field.annotation, deepcopy(field)) for name, field in SiteBundle.model_fields.items()
+       if name not in {'contract_version','report_assessments'}})
+SiteBundleV18 = create_model('SiteBundle', __base__=StrictModel,
+    contract_version=(Literal['1.8.0'], ...),
+    **{name: (MetricsExportV04 if name == 'metrics' else field.annotation, deepcopy(field))
+       for name, field in SiteBundle.model_fields.items() if name != 'contract_version'})
+V18_SCHEMA_SHA256 = '2016b46a48d7068727ac2d731016e62fe4247c293fc3e72da2e48f494b680e7e'
+V18_ANNOTATIONS_SHA256 = '654822045fcd47185ab6f0e7292c50e8cd01a2dc2198bbaeff61fe7e2b02eeb1'
+SITE_MODELS = {'1.2.0': SiteBundleV12, '1.3.0': SiteBundleV13, '1.4.0': SiteBundleV14, '1.5.0': SiteBundleV15, '1.6.0': SiteBundleV16, '1.7.0': SiteBundleV17, '1.8.0': SiteBundleV18, SITE_VERSION: SiteBundle}
+V17_SCHEMA_SHA256 = 'fc817006872290409239ff7cb905b30a663ea0573b68de5a4c0991f7fa15112f'
+V17_ANNOTATIONS_SHA256 = '0bd34e89dde3e3e92c39f1e4dec9b2a5a386613b9a66b872f0af627a2b2c9a00'
+V16_SCHEMA_SHA256 = '4df4dd9d67276da8f6d4ace0eff7137e1dd85baf743f28f21cd0620d1c76920f'
+V15_ANNOTATIONS_SHA256 = 'cd1386dfa50ee3f63a385faa9db69f4ceefb097579a4c4634eedcfe87ff578f6'
+V15_SCHEMA_SHA256 = '13b7f19568ce56658c919c443dacfda345c7270e9b96220b89010a4cd621950b'
 V14_SCHEMA_SHA256 = 'a902b28d61bd3a23567136f97b7fb9613866c5ffea793e33de7e2c70e0534824'
 V14_ANNOTATIONS_SHA256 = '12aa5226c3c8c7d91f3e9d6312447cab6e069c3160876bf047da20aadbc691d0'
 V13_SCHEMA_SHA256 = '28496cbe0699c432d703a8b752bc09106f253ae17e8f40f0242cedbd4384a867'
@@ -821,6 +912,14 @@ def site_model(version):
         raise ValueError('Contract 1.3 validation model differs from its sealed schema')
     if version == '1.4.0' and digest(model.model_json_schema()) != V14_SCHEMA_SHA256:
         raise ValueError('Contract 1.4 validation model differs from its sealed schema')
+    if version == '1.5.0' and digest(model.model_json_schema()) != V15_SCHEMA_SHA256:
+        raise ValueError('Contract 1.5 validation model differs from its sealed schema')
+    if version == '1.6.0' and digest(model.model_json_schema()) != V16_SCHEMA_SHA256:
+        raise ValueError('Contract 1.6 validation model differs from its sealed schema')
+    if version == '1.7.0' and digest(model.model_json_schema()) != V17_SCHEMA_SHA256:
+        raise ValueError('Contract 1.7 validation model differs from its sealed schema')
+    if version == '1.8.0' and digest(model.model_json_schema()) != V18_SCHEMA_SHA256:
+        raise ValueError('Contract 1.8 validation model differs from its sealed schema')
     return model
 
 
@@ -904,6 +1003,26 @@ def validate_bundle(data):
             expected={(e['record_id'],e['claim_index'],q) for e in m['evidence_references'] for q in e['quote_indexes']}
             actual={(ix['evidence'][e]['record_id'],ix['evidence'][e]['claim_index'],ix['evidence'][e]['quote_index']) for e in a['evidence_ids']}
             if expected!=actual:raise ValueError('Metric evidence reference mismatch')
+    assessments=_index(data.get('report_assessments',[]))
+    for a in assessments.values():
+        require('records',[a['record_id']]);require('assertions',a['assertion_ids']);require('evidence',a['evidence_ids'])
+        r=ix['records'][a['record_id']]
+        if a['document_id']!=r['document_id'] or a['source_text_sha256']!=data['snapshot']['source_text_hashes'][r['document_id']]:
+            raise ValueError('Assessment source binding differs from its record')
+        if any(ix['assertions'][aid]['record_id']!=r['id'] for aid in a['assertion_ids']):
+            raise ValueError('Assessment assertions must belong to its record')
+        support={ix['evidence'][eid]['record_id'] for eid in a['evidence_ids']}
+        if r['id'] not in support:raise ValueError('Assessment requires evidence from its record')
+        for aid in a['assertion_ids']:support.update(ix['assertions'][aid]['eligibility']['record_ids'])
+        rule(a,support)
+        if any(stamp(a['reviewed_at'])<stamp(ix['records'][rid]['capture']) for rid in support):
+            raise ValueError('Assessment review precedes its source capture')
+        if len(set(a['supersedes']))!=len(a['supersedes']):raise ValueError('Duplicate assessment supersession')
+        for aid in a['supersedes']:
+            old=assessments[aid]
+            if (old['record_id'],old['kind'],old['scope'],set(old['assertion_ids']))!=(a['record_id'],a['kind'],a['scope'],set(a['assertion_ids'])):
+                raise ValueError('Assessment supersession requires the same claim scope')
+            if stamp(old['reviewed_at'])>=stamp(a['reviewed_at']):raise ValueError('Assessment supersession requires a later review')
     edges=defaultdict(list)
     for c in data['comparisons']:
         require('assertions',c['participant_ids']);require('evidence',c['evidence_ids'])
@@ -1001,8 +1120,8 @@ def planned_update(captured_at: str, schedule: Path):
 
 
 def export_site(snapshot: Path, results: Path, metrics_path: Path, annotations: Path, source_dir: Path, out: Path, schedule: Path, *, max_input_bytes: int = 64_000_000):
-    if type(max_input_bytes) is not int or not 0 < max_input_bytes <= 128_000_000:
-        raise ValueError('Site input budget must be an integer from 1 to 128000000 bytes')
+    if type(max_input_bytes) is not int or not 0 < max_input_bytes <= 2_000_000_000:
+        raise ValueError('Site input budget must be an integer from 1 to 2000000000 bytes')
     if out.exists() and any(out.iterdir()):raise ValueError('Site export target must be empty')
     for path in [snapshot,results,metrics_path,annotations]:
         if path.stat().st_size>max_input_bytes:raise ValueError('Site export input exceeds the file budget')
@@ -1068,6 +1187,19 @@ def export_site(snapshot: Path, results: Path, metrics_path: Path, annotations: 
         ids=evrefs(a.evidence)
         add_assertion(a.key,dict(record_id=r['id'],document_id=r['document_id'],claim_index=a.claim_index,kind=a.kind,text=a.text,value=a.value.model_dump(mode='json'),observation_date=a.observation_date.model_dump(mode='json'),evidence_ids=ids,eligibility=evidence_rule(ids),review_state='source_checked_draft'))
     ai=_index(assertions);comparisons=[]
+    assessment_inputs=_index([a.model_dump(mode='json') for a in ann.report_assessments],'key')
+    assessment_ids={key:uid('report_assessment',key,row) for key,row in assessment_inputs.items()}
+    report_assessments=[]
+    for a in ann.report_assessments:
+        r=rs[a.record_id]
+        if a.source_text_sha256!=hashes[r['document_id']]:raise ValueError('Assessment source hash differs from captured source')
+        ids=evrefs(a.evidence);aids=[keys[key] for key in a.assertions]
+        support={evidence[e]['record_id'] for e in ids}
+        for aid in aids:support.update(ai[aid]['eligibility']['record_ids'])
+        row=a.model_dump(mode='json',exclude={'key','assertions','evidence','supersedes'})
+        report_assessments.append(dict(row,id=assessment_ids[a.key],document_id=r['document_id'],
+            assertion_ids=aids,evidence_ids=ids,eligibility=Eligibility(record_ids=sorted(support)).model_dump(),
+            supersedes=[assessment_ids[key] for key in a.supersedes]))
     for c in ann.comparisons:
         ids=evrefs(c.evidence);participants=[keys[k] for k in c.participants]
         if len(c.participant_labels)!=len(participants):raise ValueError('Comparison label count differs from participants')
@@ -1147,10 +1279,10 @@ def export_site(snapshot: Path, results: Path, metrics_path: Path, annotations: 
             evidence_ids=ids, eligibility=dict(record_ids=sorted({evidence[e]['record_id'] for e in ids}))))
     from .one_health import prepare_one_health
     oh=prepare_one_health(ann, evrefs, evidence, rs, keys, ai, metrics['measures'])
-    bundle=SiteBundle.model_validate(dict(contract_version=SITE_VERSION,software_version=__version__,release_status='research_preview',snapshot=meta,organizations=[o.model_dump() for o in ann.organizations],channels=[c.model_dump() for c in ann.channels],areas=[a.model_dump() for a in ann.areas],places=places,display_groups=display,topics=topics,documents=documents,records=records,assertions=assertions,evidence=list(evidence.values()),comparisons=comparisons,location_memberships=memberships,relationships=relations,source_coverage=coverage,metrics=metrics,reviewed_chains=chains,diseases=[d.model_dump() for d in ann.diseases],disease_reviews=disease_reviews,**oh,limitations=ann.limitations)).model_dump(mode='json')
+    bundle=SiteBundle.model_validate(dict(contract_version=SITE_VERSION,software_version=__version__,release_status='research_preview',snapshot=meta,organizations=[o.model_dump() for o in ann.organizations],channels=[c.model_dump() for c in ann.channels],areas=[a.model_dump() for a in ann.areas],places=places,display_groups=display,topics=topics,documents=documents,records=records,assertions=assertions,evidence=list(evidence.values()),comparisons=comparisons,report_assessments=report_assessments,location_memberships=memberships,relationships=relations,source_coverage=coverage,metrics=metrics,reviewed_chains=chains,diseases=[d.model_dump() for d in ann.diseases],disease_reviews=disease_reviews,**oh,limitations=ann.limitations)).model_dump(mode='json')
     validate_bundle(bundle)
     out.mkdir(parents=True,exist_ok=True)
-    write_json(out/'atlas-site.json',bundle);write_json(out/'atlas-site.schema.json',SiteBundle.model_json_schema())
+    atomic_write(out/'atlas-site.json',canonical(bundle)+'\n');write_json(out/'atlas-site.schema.json',SiteBundle.model_json_schema())
     write_json(out/'annotations.schema.json',SiteAnnotations.model_json_schema())
     (out/'review.html').write_text(render_review(bundle),encoding='utf-8')
     (out/'view.mjs').write_text(files('atlas').joinpath('assets/site_view.js').read_text(),encoding='utf-8')
@@ -1165,9 +1297,9 @@ def verify_site(path: Path):
     for name,sha in manifest['files'].items():
         if digest((path/name).read_bytes())!=sha:raise ValueError('Bundle checksum mismatch: '+name)
     if read_json(path/'atlas-site.schema.json')!=model.model_json_schema():raise ValueError('Unsupported site schema')
-    expected_annotations={'1.2.0':V12_ANNOTATIONS_SHA256,'1.3.0':V13_ANNOTATIONS_SHA256,'1.4.0':V14_ANNOTATIONS_SHA256}.get(version,digest(SiteAnnotations.model_json_schema()))
+    expected_annotations={'1.2.0':V12_ANNOTATIONS_SHA256,'1.3.0':V13_ANNOTATIONS_SHA256,'1.4.0':V14_ANNOTATIONS_SHA256,'1.5.0':V15_ANNOTATIONS_SHA256,'1.6.0':V15_ANNOTATIONS_SHA256,'1.7.0':V17_ANNOTATIONS_SHA256,'1.8.0':V18_ANNOTATIONS_SHA256}.get(version,digest(SiteAnnotations.model_json_schema()))
     if digest(read_json(path/'annotations.schema.json'))!=expected_annotations:raise ValueError('Unsupported annotation schema')
-    selector={'1.2.0':'assets/site_view_v1_2.js','1.3.0':'assets/site_view_v1_3.js','1.4.0':'assets/site_view_v1_4.js'}.get(version,'assets/site_view.js')
+    selector={'1.2.0':'assets/site_view_v1_2.js','1.3.0':'assets/site_view_v1_3.js','1.4.0':'assets/site_view_v1_4.js','1.5.0':'assets/site_view_v1_5.js','1.6.0':'assets/site_view_v1_6.js','1.7.0':'assets/site_view_v1_7.js','1.8.0':'assets/site_view_v1_8.js'}.get(version,'assets/site_view.js')
     if (path/'view.mjs').read_bytes()!=files('atlas').joinpath(selector).read_bytes():raise ValueError('Unsupported view rules')
     data=read_json(path/'atlas-site.json')
     if data.get('contract_version')!=version:raise ValueError('Manifest and data contract versions differ')

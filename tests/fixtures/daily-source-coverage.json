@@ -1,0 +1,7 @@
+[
+  {"name":"carried check keeps its time","enabled":true,"check":{"status":"partial","checked_at":"2026-10-01T12:00:00Z"},"status":"partial","checked_at":"2026-10-01T12:00:00Z"},
+  {"name":"unknown check time stays unknown","enabled":true,"check":{"status":"ok"},"status":"ok","checked_at":null},
+  {"name":"saved capture is not a live check","enabled":true,"check":{"status":"reused_capture"},"status":"reused_capture","checked_at":null},
+  {"name":"enabled source excluded from acquisition","enabled":true,"check":{"status":"disabled","enabled":false,"checked_at":"2026-10-01T12:00:00Z"},"status":"not_checked","checked_at":null},
+  {"name":"disabled profile retains its status","enabled":false,"check":{"status":"disabled","checked_at":"2026-10-01T12:00:00Z"},"status":"disabled","checked_at":"2026-10-01T12:00:00Z"}
+]

@@ -1,0 +1,189 @@
+{
+  "$defs": {
+    "TextReview": {
+      "additionalProperties": false,
+      "properties": {
+        "language_basis": {
+          "enum": [
+            "text_review",
+            "publisher_metadata",
+            "unresolved"
+          ],
+          "title": "Language Basis",
+          "type": "string"
+        },
+        "language_note": {
+          "minLength": 1,
+          "title": "Language Note",
+          "type": "string"
+        },
+        "language_tag": {
+          "pattern": "^[a-z]{2,3}$",
+          "title": "Language Tag",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "text_id": {
+          "title": "Text Id",
+          "type": "string"
+        },
+        "translation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Translation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "text_id",
+        "language_tag",
+        "language_basis",
+        "language_note",
+        "reviewed_at",
+        "reviewed_by"
+      ],
+      "title": "TextReview",
+      "type": "object"
+    },
+    "Translation": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "title": "Created At",
+          "type": "string"
+        },
+        "created_by": {
+          "minLength": 1,
+          "title": "Created By",
+          "type": "string"
+        },
+        "language_tag": {
+          "const": "en",
+          "default": "en",
+          "title": "Language Tag",
+          "type": "string"
+        },
+        "method_version": {
+          "minLength": 1,
+          "title": "Method Version",
+          "type": "string"
+        },
+        "origin": {
+          "enum": [
+            "atlas_generated",
+            "publisher_provided"
+          ],
+          "title": "Origin",
+          "type": "string"
+        },
+        "pairing_evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Pairing Evidence Ids",
+          "type": "array"
+        },
+        "publisher_text_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Publisher Text Id"
+        },
+        "review_note": {
+          "minLength": 1,
+          "title": "Review Note",
+          "type": "string"
+        },
+        "review_status": {
+          "enum": [
+            "unreviewed",
+            "source_checked",
+            "human_approved"
+          ],
+          "title": "Review Status",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reviewed At"
+        },
+        "reviewed_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Reviewed By"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "origin",
+        "created_at",
+        "created_by",
+        "method_version",
+        "review_status",
+        "reviewed_at",
+        "reviewed_by",
+        "review_note"
+      ],
+      "title": "Translation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "reviews": {
+      "items": {
+        "$ref": "#/$defs/TextReview"
+      },
+      "title": "Reviews",
+      "type": "array"
+    },
+    "text_version": {
+      "const": "0.1.0",
+      "title": "Text Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "text_version",
+    "reviews"
+  ],
+  "title": "TextAnnotations",
+  "type": "object"
+}

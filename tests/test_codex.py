@@ -55,7 +55,7 @@ def test_codex_provider_budget_cache_and_review(store, config, monkeypatch):
     for i in range(2):
         save_document(store,config['sources'][0],text='Source '+str(i),raw=b'text',
                       url=f'https://example.org/{i}',content_url=f'https://example.org/{i}',
-                      title='Document',at='2026-09-25T00:00:00Z')
+                      title='Document',at='2026-09-25T00:00:00Z',published_at='2026-09-25',publication_precision='day')
     first=extraction.extract_pending(store,config,'codex','fixture')
     assert first['calls']==1 and first['queued_chunks']==1
     assert extraction.extract_pending(store,config,'codex','fixture')['calls']==1
@@ -80,7 +80,7 @@ def test_failed_attempt_retains_diagnostics_and_progress(store, config, monkeypa
         return SimpleNamespace(returncode=1)
     monkeypatch.setattr(codex.subprocess,'run',run)
     save_document(store,config['sources'][0],text='Captured source',raw=b'text',url='https://example.org/failure',
-                  content_url='https://example.org/failure',title='Document',at='2026-09-25T00:00:00Z')
+                  content_url='https://example.org/failure',title='Document',at='2026-09-25T00:00:00Z',published_at='2026-09-25',publication_precision='day')
     result=extraction.extract_pending(store,config,'codex')
     assert result['failed_chunks']==1
     attempts=store.records('extraction_attempt')

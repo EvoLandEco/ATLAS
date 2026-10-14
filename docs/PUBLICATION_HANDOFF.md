@@ -1,5 +1,7 @@
 # Export handoff
 
+Report eligibility requires a source-supported publication, issue or release date. Exclude undated reports from extraction, review queues, dated counts, exports and watch selections. Keep captures and review history private with a missing-publication exclusion. Capture, observation and URL dates do not supply publication dates. Notification and sampling datasets retain their own date semantics. Public handoffs omit undated source supplements and collections.
+
 The handoff identifies a validated local export for a consumer. It separates completion of the three weekly jobs, unresolved editorial questions and distribution approval. It does not collect sources, call a model, accept findings or upload files.
 
 ## Example interface and agent coordination
@@ -55,6 +57,8 @@ An export reference contains absolute local paths and SHA-256 references for `ma
 
 Recheck file hashes immediately before upload and publish a consumer pointer only after all referenced data objects are available. Keep executable selector code in the consumer's trusted codebase. Compare its SHA-256 with `selector.sha256`; a mismatch requires a reviewed code import, not execution of remotely supplied JavaScript. Preserve immutable export identities so a partial upload cannot replace a working dataset.
 
+Browser consumers also require the [browser transport handoff](BROWSER_TRANSPORT.md#producer-handoff) for this exact export. Generate its partitions and run the verifier with both source files and `--every-record`. The resulting receipt's `browser` field binds the manifest and all assets to the scientific source identities. Stage it alongside the canonical archive and matching analysis attachments; missing transport or incomplete consumer tests block browser activation. A weekly sync must retain the active browser release until these checks pass.
+
 The handoff is a private control file containing local paths. A public data pointer should contain storage URLs and hashes rather than those paths. `publication_approval: "not_evaluated"` means the handoff checks technical readiness; it does not create distribution approval or change a `research_preview` into an accepted dataset. Apply the distribution route's approval requirements to the exact exported content.
 
 ## Initial publication
@@ -89,6 +93,38 @@ A correction outside the weekly schedule has its own authorization record. It na
 Keep this control file private. Its authorization records the user's distribution decision; it is not a digital signature or scientific acceptance. The consumer validates the complete export, exact source snapshot, geographic coverage and trusted selector. Immediately before publishing, recheck the authorization bytes, referenced file hashes and current export ID. Replace the pointer only if it still identifies `replaces_export_id`. A mismatch requires review of the intervening release.
 
 Preserve the replaced release's initial or weekly provenance. Add a correction reference containing `replaces_export_id` and the authorization file's SHA-256. Keep both immutable exports available. A correction does not create weekly receipts, complete an unfinished cycle, resolve unanswered editorial questions or change research drafts into accepted outbreak events.
+
+## Analysis attachment
+
+The Analysis panel requires an Intelligence contract `0.2.0` export from the exact site bundle being released. Its `source_export_id`, `input_identity.site_sha256` and `input_identity.selector_sha256` must match the release identity, site file and trusted selector. A base export without this matching attachment leaves Analysis unavailable. Never carry an analysis descriptor across a source change without regeneration and validation.
+
+For each authorized release that includes Analysis, run the [Intelligence producer and replay checks](INTELLIGENCE_EXPERIMENT.md#reproduce-and-validate) against the selected bundle. Use saved inputs and retain existing scientific decisions. Verify model eligibility, source evidence, component outputs and historical availability; retain partial coverage and retrospective labels. Record the experiment ID, schema version, file sizes, SHA-256 values and validation receipt in the content-bound publication authorization.
+
+The consumer stages `intelligence.json` and `contract.schema.json` under `intelligence/EXPERIMENT_ID/`. Its release descriptor includes:
+
+```json
+{
+  "intelligence": {
+    "experiment_id": "EXPERIMENT_ID",
+    "schema_version": "0.2.0",
+    "asset": { "sha256": "INTELLIGENCE_FILE_SHA256", "bytes": 12345 }
+  }
+}
+```
+
+The example byte count is illustrative; use the actual file length. Consumers verify bytes, schema, experiment identity and all three source bindings before displaying results. A release containing network analysis must also have a transport descriptor bound to the same site export. Stage every referenced asset and complete consumer checks before activating the pointer. A base-only sync does not publish these attachments. Keep the sealed release descriptor and record public activation separately from staging or local adoption.
+
+An authorized partial release can include reviewed outputs while other review remains pending. Export that coverage explicitly. Publishing saved results does not resume collection, extraction or weekly jobs, accept scientific findings, or remove an execution hold.
+
+## Presentation attachments
+
+English source text and reviewed watch selections use separate attachments bound to the exact scientific export. Follow [Source text](SOURCE_TEXT.md) and [Watch](WATCH.md) to generate and independently verify their files. Preserve the full text catalogue, annotations and review history privately. The browser text payload is `source-text-display.json` with `source-text-display.schema.json`; the watch payload is `watch.json` with `watch.schema.json`.
+
+Each attachment's `pointer_descriptor` contains `version`, `source_export_id`, `path`, `schema_path`, `sha256`, `bytes` and `schema_sha256`. For source text, `version` is the display contract version, and `catalogue_sha256` binds the complete parent text file through the payload's `source_text_sha256`. For watch, `version` is `watch_version`. Paths name the payload and schema within the attachment directory. Hashes and byte counts describe the exact staged files.
+
+The content-bound publication authorization carries `presentation.source_text` and `presentation.watch`. Each contains its `pointer_descriptor`, a `data` file reference and a `schema` file reference. Each file reference includes its local `path`, `sha256` and `bytes`. Stage the immutable files beneath `releases/EXPORT_ID/presentation/PAYLOAD_SHA256/`. Validate both schemas, their matching source export IDs and their exact bytes before pointer activation. Vendor the reviewed watch selector in consumer code; do not execute a downloaded selector.
+
+ATLAS-generated translations retain their original text, provenance and draft review label. Text lookup follows scientific selection. A watch item requires all supporting records and its review to satisfy the selection; apply any display limit afterwards. Record consumer checks and adoption separately from artifact delivery and public activation. Approval names the exact attachments as well as the scientific release.
 
 ## TypeScript consumers
 

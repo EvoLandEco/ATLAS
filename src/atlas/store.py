@@ -2,6 +2,7 @@
 from __future__ import annotations
 import json
 import sqlite3
+from contextlib import contextmanager
 from pathlib import Path
 from .util import canonical, digest, stamp, atomic_write, uid
 
@@ -28,12 +29,21 @@ class Store:
     def close(self):
         self.db.close()
 
+    @contextmanager
+    def transaction(self):
+        """Commit a group of ledger appends together."""
+        if self.db.in_transaction:
+            yield
+        else:
+            with self.db:
+                self.db.execute("BEGIN IMMEDIATE")
+                yield
+
     def append(self, kind: str, payload: dict, recorded_at: str, record_id: str | None = None) -> str:
         at = stamp(recorded_at)
         record_id = record_id or uid(kind, at, payload)
         encoded = canonical(payload)
-        with self.db:
-            self.db.execute("BEGIN IMMEDIATE")
+        with self.transaction():
             old = self.db.execute("SELECT * FROM records WHERE id=?", (record_id,)).fetchone()
             if old:
                 if old["payload"] != encoded or old["kind"] != kind:

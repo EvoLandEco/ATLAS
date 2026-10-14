@@ -18,7 +18,7 @@ class Claim(StrictModel):
 
 class Item(StrictModel):
     title: str = Field(min_length=1,max_length=160)
-    kind: Literal['outbreak','single_case','surveillance','prevention','research']
+    kind: Literal['outbreak','single_case','surveillance','prevention','research','signal']
     claims: list[Claim] = Field(min_length=1)
     urls: list[str]
 

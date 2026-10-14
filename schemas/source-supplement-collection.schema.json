@@ -1,0 +1,193 @@
+{
+  "$defs": {
+    "CatalogueFile": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "exclusiveMinimum": 0,
+          "maximum": 8000000,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "path": {
+          "const": "source-supplement-catalogue.json",
+          "title": "Path",
+          "type": "string"
+        },
+        "schema_path": {
+          "const": "source-supplement-catalogue.schema.json",
+          "title": "Schema Path",
+          "type": "string"
+        },
+        "schema_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Schema Sha256",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "bytes",
+        "schema_path",
+        "schema_sha256"
+      ],
+      "title": "CatalogueFile",
+      "type": "object"
+    },
+    "Component": {
+      "additionalProperties": false,
+      "properties": {
+        "bytes": {
+          "exclusiveMinimum": 0,
+          "maximum": 16000000,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "counts": {
+          "$ref": "#/$defs/Counts"
+        },
+        "id": {
+          "pattern": "^supplement_[a-f0-9]{24}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "path": {
+          "const": "source-supplement.json",
+          "title": "Path",
+          "type": "string"
+        },
+        "schema_path": {
+          "const": "source-supplement.schema.json",
+          "title": "Schema Path",
+          "type": "string"
+        },
+        "schema_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Schema Sha256",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "source_export_id": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Export Id",
+          "type": "string"
+        },
+        "version": {
+          "const": "0.1.0",
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "source_export_id",
+        "path",
+        "schema_path",
+        "sha256",
+        "bytes",
+        "schema_sha256",
+        "counts"
+      ],
+      "title": "Component",
+      "type": "object"
+    },
+    "Counts": {
+      "additionalProperties": false,
+      "properties": {
+        "claims": {
+          "minimum": 0,
+          "title": "Claims",
+          "type": "integer"
+        },
+        "documents": {
+          "minimum": 0,
+          "title": "Documents",
+          "type": "integer"
+        },
+        "evidence": {
+          "minimum": 0,
+          "title": "Evidence",
+          "type": "integer"
+        },
+        "measures": {
+          "minimum": 0,
+          "title": "Measures",
+          "type": "integer"
+        },
+        "records": {
+          "minimum": 0,
+          "title": "Records",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "documents",
+        "records",
+        "claims",
+        "measures",
+        "evidence"
+      ],
+      "title": "Counts",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "catalogue": {
+      "$ref": "#/$defs/CatalogueFile"
+    },
+    "collection_version": {
+      "const": "0.1.0",
+      "title": "Collection Version",
+      "type": "string"
+    },
+    "components": {
+      "items": {
+        "$ref": "#/$defs/Component"
+      },
+      "maxItems": 128,
+      "minItems": 1,
+      "title": "Components",
+      "type": "array"
+    },
+    "counts": {
+      "$ref": "#/$defs/Counts"
+    },
+    "generated_at": {
+      "title": "Generated At",
+      "type": "string"
+    },
+    "selection_policy": {
+      "const": "outside_dated_selection",
+      "title": "Selection Policy",
+      "type": "string"
+    },
+    "source_export_id": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Source Export Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "collection_version",
+    "source_export_id",
+    "generated_at",
+    "selection_policy",
+    "components",
+    "counts",
+    "catalogue"
+  ],
+  "title": "SupplementCollection",
+  "type": "object"
+}

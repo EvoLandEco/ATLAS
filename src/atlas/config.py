@@ -30,7 +30,7 @@ def publication_window(config: dict, as_of: str | None = None) -> tuple[str, str
 
 def in_publication_window(document: dict, window: tuple[str,str] | None) -> bool:
     published=document.get("published_at")
-    return window is None or bool(published and window[0] <= published[:10] <= window[1])
+    return bool(published and (window is None or window[0] <= published[:10] <= window[1]))
 
 
 def assets(name: str) -> str:
@@ -47,7 +47,7 @@ def load_config(path: Path) -> dict:
         raise ValueError("Source IDs must be unique")
     publication_window(data)
     for s in data["sources"]:
-        if s["adapter"] not in {"who_odata","rss_discovery","html_index","sitemap","static","manual","ncdc_sitreps","who_sitreps"}:
+        if s["adapter"] not in {"who_odata","rss_discovery","html_index","sitemap","static","manual","ncdc_sitreps","who_sitreps","cdc_mmwr"}:
             raise ValueError("Unknown source adapter")
         if not s.get("allowed_hosts"):
             raise ValueError(f"{s['id']} requires an explicit host allowlist")

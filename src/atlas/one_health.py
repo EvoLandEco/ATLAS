@@ -118,8 +118,9 @@ def validate_one_health(data, ix):
         if key in relation_keys or proposition in pairs:raise ValueError('Duplicate One Health proposition')
         relation_keys.add(key);pairs.add(proposition)
         if assertion['kind'] not in {'finding','statement'}:raise ValueError('One Health relation needs a source proposition')
-        if 'background' in {a['scope'],b['scope']}:raise ValueError('Background cannot supply an episode relation')
         kind=relation['kind']
+        if kind!='genomic_association' and 'background' in {a['scope'],b['scope']}:
+            raise ValueError('Background cannot supply an episode relation')
         if kind=='cross_species_transmission':
             if any(n['domain'] not in {'human','animal'} or n['agent_kind']!='pathogen' or 'host' not in n['roles'] or not n['taxon']['value'] for n in (a,b)):
                 raise ValueError('Cross-species transmission needs identified pathogen hosts')

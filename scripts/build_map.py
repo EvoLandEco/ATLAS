@@ -37,7 +37,7 @@ def render(snapshot, bundle, source_dir, land_path, out, coverage):
     for r in data['records']:
         if not (source_dir/(r['document_id']+'.txt')).is_file():raise ValueError('Missing captured text')
     page=assets('map_demo.html')
-    replacements={'__DATA__':json.dumps(data).replace('<','\\u003c'), '__LINKS__':Path('scripts/map_links.js').read_text(),
+    replacements={'__DATA__':json.dumps(data).replace('<','\\u003c'), '__LINKS__':Path('scripts/map_links.cjs').read_text(),
         '__LAND__':''.join('<path d="'+p+'"/>' for p in paths),'__DAYS__':str(days),'__SINCE__':window[0],'__UNTIL__':window[1],
         '__WINDOW_LABEL__':' – '.join(window),'__SOURCE_URL__':escape(source_url,quote=True),
         '__COVERAGE_URL__':escape(os.path.relpath(coverage.resolve(),out.resolve()),quote=True)}

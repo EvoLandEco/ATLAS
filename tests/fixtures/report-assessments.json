@@ -1,0 +1,13 @@
+{
+  "claims": [
+    "A hospital reported a fatal pneumonia illness in North Province. Its cause is unconfirmed.",
+    "The health authority reports no pathogen detected in the contacts tested. The patient's diagnosis remains under investigation.",
+    "An epidemiologist described the regional risk as low on the evidence available."
+  ],
+  "assessments": [
+    {"key":"publisher","kind":"source_authenticity","status":"authenticated","authority":{"value":"Example newsroom","status":"reported"},"label":"Publisher authenticated","scope":"The named newsroom publication and its captured source text.","reason":"The article was captured from the configured publisher URL.","claim_index":0},
+    {"key":"diagnosis","kind":"diagnostic_status","status":"unconfirmed","authority":{"value":"Example newsroom","status":"reported"},"label":"Cause unconfirmed","scope":"The pathogen responsible for the patient's fatal pneumonia.","reason":"The publication describes an illness with an unresolved cause.","claim_index":0},
+    {"key":"response","kind":"authority_response","status":"attributed","authority":{"value":"Example health authority","status":"reported"},"label":"Official response","scope":"Pathogen findings among the contacts who were tested.","reason":"The negative statement concerns tested contacts, not the patient's diagnosis.","claim_index":1},
+    {"key":"appraisal","kind":"expert_appraisal","status":"attributed","authority":{"value":"Example epidemiologist","status":"reported"},"label":"Expert appraisal","scope":"Regional risk assessed from the evidence available.","reason":"An attributed risk assessment does not confirm a diagnosis.","claim_index":2}
+  ]
+}

@@ -181,13 +181,13 @@ def test_explicit_site_input_budget_preserves_export(tmp_path):
     from atlas.site_export import export_site
     paths,_=site_inputs(tmp_path)
     expected=export_site(**paths,out=tmp_path/'small')
-    with paths['metrics_path'].open('a') as stream:stream.write(' '*64_000_000)
+    with paths['metrics_path'].open('a') as stream:stream.write(' '*128_000_000)
     with pytest.raises(ValueError,match='file budget'):
         export_site(**paths,out=tmp_path/'default')
-    actual=export_site(**paths,out=tmp_path/'larger',max_input_bytes=128_000_000)
+    actual=export_site(**paths,out=tmp_path/'larger',max_input_bytes=2_000_000_000)
     for key in ['contract_version','records','assertions','comparisons','metrics','relationships']:
         assert actual[key]==expected[key]
     export_site(**paths,out=tmp_path/'exact',max_input_bytes=paths['metrics_path'].stat().st_size)
-    for limit in [0,128_000_001,True,1.5]:
+    for limit in [0,2_000_000_001,True,1.5]:
         with pytest.raises(ValueError,match='input budget'):
             export_site(**paths,out=tmp_path/'invalid',max_input_bytes=limit)

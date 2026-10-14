@@ -1,0 +1,391 @@
+{
+  "$defs": {
+    "Eligibility": {
+      "additionalProperties": false,
+      "properties": {
+        "partial": {
+          "const": "hide_relationship_keep_visible_assertions",
+          "default": "hide_relationship_keep_visible_assertions",
+          "title": "Partial",
+          "type": "string"
+        },
+        "record_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Record Ids",
+          "type": "array"
+        },
+        "rule": {
+          "const": "all_supporting_records_in_window",
+          "default": "all_supporting_records_in_window",
+          "title": "Rule",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record_ids"
+      ],
+      "title": "Eligibility",
+      "type": "object"
+    },
+    "Status": {
+      "enum": [
+        "reported",
+        "not_reported",
+        "unknown",
+        "not_applicable",
+        "pending_verification",
+        "conflicting",
+        "not_extracted",
+        "not_comparable",
+        "access_restricted"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "TextValue": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/Status",
+          "default": "not_reported"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "title": "TextValue",
+      "type": "object"
+    },
+    "WatchItem": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Assertion Ids",
+          "type": "array"
+        },
+        "diagnostic_assessment_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Diagnostic Assessment Id"
+        },
+        "diagnostic_authority": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "diagnostic_label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Diagnostic Label"
+        },
+        "diagnostic_status": {
+          "$ref": "#/$defs/TextValue"
+        },
+        "document_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Document Ids",
+          "type": "array"
+        },
+        "eligibility": {
+          "$ref": "#/$defs/Eligibility"
+        },
+        "event_identity": {
+          "const": "not_assigned",
+          "title": "Event Identity",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "follow_up_question": {
+          "minLength": 12,
+          "title": "Follow Up Question",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "latest_capture": {
+          "title": "Latest Capture",
+          "type": "string"
+        },
+        "latest_publication": {
+          "title": "Latest Publication",
+          "type": "string"
+        },
+        "reason_for_attention": {
+          "minLength": 12,
+          "title": "Reason For Attention",
+          "type": "string"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "record_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Record Ids",
+          "type": "array"
+        },
+        "review_state": {
+          "const": "source_checked_draft",
+          "default": "source_checked_draft",
+          "title": "Review State",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "scope_kind": {
+          "const": "single_report",
+          "title": "Scope Kind",
+          "type": "string"
+        },
+        "selection_status": {
+          "const": "selected",
+          "title": "Selection Status",
+          "type": "string"
+        },
+        "source_text_hashes": {
+          "additionalProperties": {
+            "pattern": "^[a-f0-9]{64}$",
+            "type": "string"
+          },
+          "title": "Source Text Hashes",
+          "type": "object"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/WatchSource"
+          },
+          "title": "Sources",
+          "type": "array"
+        }
+      },
+      "required": [
+        "key",
+        "record_id",
+        "label",
+        "reason_for_attention",
+        "follow_up_question",
+        "assertion_ids",
+        "evidence_ids",
+        "diagnostic_assessment_id",
+        "source_text_hashes",
+        "reviewed_at",
+        "reviewed_by",
+        "id",
+        "scope_kind",
+        "selection_status",
+        "event_identity",
+        "diagnostic_status",
+        "diagnostic_label",
+        "diagnostic_authority",
+        "record_ids",
+        "document_ids",
+        "eligibility",
+        "sources",
+        "latest_publication",
+        "latest_capture"
+      ],
+      "title": "WatchItem",
+      "type": "object"
+    },
+    "WatchSource": {
+      "additionalProperties": false,
+      "properties": {
+        "capture": {
+          "title": "Capture",
+          "type": "string"
+        },
+        "channel_id": {
+          "title": "Channel Id",
+          "type": "string"
+        },
+        "document_id": {
+          "title": "Document Id",
+          "type": "string"
+        },
+        "publication": {
+          "title": "Publication",
+          "type": "string"
+        },
+        "publication_basis": {
+          "title": "Publication Basis",
+          "type": "string"
+        },
+        "publication_precision": {
+          "title": "Publication Precision",
+          "type": "string"
+        },
+        "record_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Record Ids",
+          "type": "array"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document_id",
+        "record_ids",
+        "title",
+        "url",
+        "channel_id",
+        "publication",
+        "publication_precision",
+        "publication_basis",
+        "capture"
+      ],
+      "title": "WatchSource",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "annotations_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Annotations Sha256",
+      "type": "string"
+    },
+    "generated_at": {
+      "title": "Generated At",
+      "type": "string"
+    },
+    "items": {
+      "items": {
+        "$ref": "#/$defs/WatchItem"
+      },
+      "title": "Items",
+      "type": "array"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "map_snapshot_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Map Snapshot Sha256",
+      "type": "string"
+    },
+    "ordering": {
+      "const": "review_input_order_no_risk_rank",
+      "title": "Ordering",
+      "type": "string"
+    },
+    "review_scope": {
+      "title": "Review Scope",
+      "type": "string"
+    },
+    "selection_policy": {
+      "const": "all_supporting_records_and_review_cutoff",
+      "title": "Selection Policy",
+      "type": "string"
+    },
+    "software_version": {
+      "title": "Software Version",
+      "type": "string"
+    },
+    "source_export_id": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Source Export Id",
+      "type": "string"
+    },
+    "source_manifest_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Source Manifest Sha256",
+      "type": "string"
+    },
+    "source_site_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Source Site Sha256",
+      "type": "string"
+    },
+    "watch_version": {
+      "const": "0.1.0",
+      "title": "Watch Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "watch_version",
+    "software_version",
+    "generated_at",
+    "source_export_id",
+    "source_site_sha256",
+    "source_manifest_sha256",
+    "map_snapshot_sha256",
+    "annotations_sha256",
+    "review_scope",
+    "limitations",
+    "selection_policy",
+    "ordering",
+    "items"
+  ],
+  "title": "WatchExport",
+  "type": "object"
+}

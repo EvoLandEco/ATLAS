@@ -2,7 +2,7 @@
 
 ATLAS produces structured, analysis-ready outputs for evidence review, research and visualization. A versioned bundle connects documents, source assertions, measurements, comparisons and reporting locations through stable identifiers and exact evidence. This shared representation lets researchers and applications reuse the prepared data with consistent scientific definitions.
 
-The structured export contract is **1.5.0** and embeds metric contract **0.2.0**. A `research_preview` release contains extracted findings and annotations checked against captured sources, with editorial acceptance pending. Review status and coverage describe which uses the data can support. Statistical analysis requires an assessment of measurement compatibility and completeness for the research question.
+The structured export contract is **1.9.0** and embeds metric contract **0.5.0**. A `research_preview` release contains extracted findings and annotations checked against captured sources, with editorial acceptance pending. Review status and coverage describe which uses the data can support. Statistical analysis requires an assessment of measurement compatibility and completeness for the research question.
 
 ## Build and validate
 
@@ -157,7 +157,7 @@ Use `selectView(...).reviewed_series` for Trends. Draw only its explicit connect
 
 `selectView(...).numeric_coverage` supplies selected record, measurement-coverage, reviewed-series and connection counts. `records_without_reviewed_measures` means unknown numeric review coverage, not no cases or no numeric information. Do not label these records as reviewed without numbers or unavailable. Count distinct document IDs separately for collection coverage.
 
-The TypeScript declarations describe site 1.5.0 and metrics 0.2.0. The selector also accepts site 1.0.0, 1.1.0, 1.2.0, 1.3.0 and 1.4.0, returning empty lists for chain or series fields absent from those contracts. Bundle verification dispatches by the declared contract, checks agreement between the manifest and data, and applies the matching schema plus scientific validation. Consumers must explicitly support each accepted schema version. See [Longitudinal analysis](LONGITUDINAL_ANALYSIS.md) for review and maintenance rules.
+The TypeScript declarations describe site 1.6.0 and metrics 0.3.0. The selector also accepts site 1.0.0, 1.1.0, 1.2.0, 1.3.0, 1.4.0 and 1.5.0, returning empty lists for chain or series fields absent from those contracts. Bundle verification dispatches by the declared contract, checks agreement between the manifest and data, and applies the matching schema plus scientific validation. Consumers must explicitly support each accepted schema version. See [Longitudinal analysis](LONGITUDINAL_ANALYSIS.md) for review and maintenance rules.
 
 ## Selection cost
 
@@ -236,3 +236,42 @@ Panel selection excludes corrected primary propositions and corrected bound meas
 A source may supply a calendar date without identifying its epidemiological meaning. Preserve that value and precision with `kind: unknown` and explain the unresolved meaning in `reason`. The selector keeps it in the undated list, outside the dated timeline. Week labels remain source wording unless their calendar bounds are established by the source.
 
 The network analysis sidecar uses contract `0.2.0`. Consumers distinguish assessment coverage from resolved repeat-report membership and use the source-reviewed movement category for human-travel eligibility. Product shipments, human remains and vessel-only itineraries remain available in general reporting-network summaries. See [Network analysis](NETWORK_ANALYSIS.md) for selection, category definitions, uncertainty and transport verification.
+
+### Reported changes and target achievement
+
+Metric contract `0.3.0` distinguishes ordinary percentages (`percent`, from 0 to 100), signed relative changes (`percent_change`, at least −100) and administrative target achievement (`percent_of_target`, nonnegative and able to exceed 100). A relative change compares a nonnegative quantity against a positive baseline. Target achievement compares the reported quantity against a positive administrative target; it is not population coverage or prevalence. Both require an explicit source-reported ratio, exact evidence, a label identifying the quantity and comparison context, and missingness for unavailable period or denominator details. ATLAS does not calculate either ratio from separate counts. Consumers preserve these unit labels and do not clamp values.
+
+Structured site contract `1.6.0` retains the field layout. Consumers must accept metric contract `0.3.0` before ingesting these units; readers also accept saved metric `0.2.0` bundles. Existing count and ordinary percentage definitions remain fixed. Relative changes and target ratios are individual observations outside the reviewed case/death count series.
+
+### Repeated selection
+
+`prepareView(bundle)` returns a selector with the same arguments and results as `selectView(bundle, ...)`, with the bundle argument omitted. It retains record, measure and review indexes and the exact canonical compact-figure signatures. Keep the validated bundle immutable for this selector's lifetime. Comparison eligibility and disputed-figure separation are evaluated for each selection; preparation does not accept or join observations. Releasing the returned function releases its retained indexes. The ordinary `selectView` entry point reads its input on each call.
+
+### Browser transport
+
+The experimental [browser transport](BROWSER_TRANSPORT.md) provides a compact selection index and independently verified detail partitions for site contracts `1.5.0` and `1.6.0`. It preserves the canonical scientific downloads and source export identity. Its selector, schemas and types have a separate version; consumer adoption requires reconstruction, selection parity and browser runtime checks.
+
+## Source bounds and calendar precision
+
+Metric contract 0.4.0 distinguishes `more_than` (>) and `less_than` (<) from inclusive `at_least` and `at_most`. The value is the reported boundary, not an exact count. Site contract 1.7.0 supports panel intervals with `precision: mixed`; the ISO representation of each endpoint retains its own year, month or day precision. Selection includes the complete calendar extent of each coarse boundary without exporting an invented exact date.
+
+## Report assessments
+
+Site 1.8.0 and annotations 1.5.0 provide `report_assessments`. Each assessment names a report record, exact assertions and evidence, source text hash, scope, reviewer and review time. Four kinds keep publisher authentication, reported diagnostic status, an authority response and an attributed expert appraisal distinct. Authentication identifies the captured publisher document. Diagnostic statuses describe the source statement; expert opinions and official responses retain their named authority.
+
+Use `selectView().report_assessments` for presentation. All supporting records must pass the selected date and record filters, and review time must precede the knowledge cutoff. Explicit `supersedes` references apply to an earlier assessment of the same record, kind, scope and assertion set. Both records remain in the export; the selector returns the eligible current assessments and `superseded_report_assessment_ids`.
+
+A denial must name its proposition and scope. A statement about regional movement restrictions cannot retract a report about a hospital ward. Negative contact tests cannot establish the cause of a patient death. These assessments do not assign outbreak identity, authorize a numerical comparison or create a geographic relationship. Measurement and relationship reviews retain their own evidence requirements.
+
+## Source language and translations
+
+The [source text contract](SOURCE_TEXT.md) binds English presentation to the exact scientific export. It preserves original document and report-entry titles, evidence IDs, quotations and attribution. Language reviews and explicit translation pairs can be reused across report assessments, comparisons, relationships, chains and One Health. The sidecar carries its own provenance, coverage, schema and file hashes. Scientific selection runs before text presentation.
+
+The compact text display retains reviewed language rows, exact claim bindings and every translation. Its declared unlisted state preserves unreviewed language. The [watch contract](WATCH.md) carries explicit report selections, source support and review dates. Both attachments bind this export and have separate schemas and validation receipts; neither modifies scientific records or assigns event identity.
+
+
+## Percentage-point differences
+
+Metric contract 0.5.0 represents a source-reported difference between percentages with `unit: percentage_points` and a finite value in [−100, 100]. `percentage_point_comparison` names the `comparison` and `baseline`; its operation is `comparison_minus_baseline`. These ordered contexts travel with the exact source and context references. A difference has no ratio denominator and is not calculated from separate percentage observations. Ordinary percentages, relative percentage changes and target attainment retain their own unit definitions.
+
+`PercentagePointMeasure` extends the reviewed measurement model. Metric annotations and exports accept this variant; the extraction `Observation` and ordinary `CardMeasure` schemas retain their fields. Site 1.9.0 and browser transport 0.4.0 include the comparison context in compact figure identity. Percentage-point observations remain outside reviewed case and death count series. Readers of sealed site 1.8.0, metrics 0.4.0 and browser 0.3.0 artifacts use their pinned schemas and runtimes.

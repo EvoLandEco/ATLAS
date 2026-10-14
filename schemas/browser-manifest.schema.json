@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "assets": {
+      "additionalProperties": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "kind": {
+            "enum": [
+              "core",
+              "map-core",
+              "detail",
+              "detail-index",
+              "selector",
+              "types",
+              "schema"
+            ]
+          },
+          "sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sha256",
+          "bytes",
+          "kind"
+        ],
+        "type": "object"
+      },
+      "type": "object"
+    },
+    "core": {
+      "type": "string"
+    },
+    "detail_index": {
+      "type": "string"
+    },
+    "map_core": {
+      "type": "string"
+    },
+    "partitions": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "owner": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "rows": {
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "path",
+          "owner",
+          "rows"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "reconstruction": {
+      "additionalProperties": false,
+      "properties": {
+        "collections": {
+          "additionalProperties": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "type": "object"
+        },
+        "metadata": {
+          "additionalProperties": false,
+          "properties": {
+            "map": {
+              "type": "object"
+            },
+            "site": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "site",
+            "map"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "metadata",
+        "collections"
+      ],
+      "type": "object"
+    },
+    "selector": {
+      "type": "string"
+    },
+    "source": {
+      "additionalProperties": false,
+      "properties": {
+        "manifest": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "path": {
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes"
+          ],
+          "type": "object"
+        },
+        "map": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "path": {
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes"
+          ],
+          "type": "object"
+        },
+        "metrics_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "selector": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "path": {
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes"
+          ],
+          "type": "object"
+        },
+        "site": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "path": {
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "path",
+            "sha256",
+            "bytes"
+          ],
+          "type": "object"
+        },
+        "site_contract_version": {
+          "enum": [
+            "1.5.0",
+            "1.6.0",
+            "1.7.0",
+            "1.8.0",
+            "1.9.0"
+          ]
+        }
+      },
+      "required": [
+        "manifest",
+        "site",
+        "map",
+        "metrics_sha256",
+        "site_contract_version",
+        "selector"
+      ],
+      "type": "object"
+    },
+    "source_export_id": {
+      "pattern": "^[a-f0-9]{64}$",
+      "type": "string"
+    },
+    "transport_version": {
+      "const": "0.4.0"
+    }
+  },
+  "required": [
+    "transport_version",
+    "source_export_id",
+    "source",
+    "core",
+    "map_core",
+    "detail_index",
+    "selector",
+    "assets",
+    "partitions",
+    "reconstruction"
+  ],
+  "title": "ATLAS browser manifest 0.4.0",
+  "type": "object"
+}
