@@ -4,10 +4,13 @@ import {connectParent} from '../public/embedded.js';
 
 test('embedded theme messages require the ATLAS parent and an exact theme', () => {
   const originalWindow = globalThis.window, originalDocument = globalThis.document;
-  const listeners = new Map(), announcements = [], themes = [];
+  const listeners = new Map(), announcements = [], themes = [], closeListeners = new Map();
   const parent = {postMessage: (...args) => announcements.push(args)};
   globalThis.window = {parent, addEventListener: (type, handler) => listeners.set(type, handler)};
-  globalThis.document = {documentElement: {dataset: {}}};
+  globalThis.document = {documentElement: {dataset: {}}, getElementById: id => {
+    assert.equal(id, 'close-review');
+    return {addEventListener: (type, handler) => closeListeners.set(type, handler)};
+  }};
   try {
     connectParent(theme => themes.push(theme));
     assert.equal(document.documentElement.dataset.embedded, 'true');
@@ -22,6 +25,8 @@ test('embedded theme messages require the ATLAS parent and an exact theme', () =
     listeners.get('pagehide')();
     listeners.get('pageshow')();
     assert.deepEqual(announcements, [true, false, true].map(ready => [{type: 'atlas-review-ready', ready}, 'https://qtj.me']));
+    closeListeners.get('click')();
+    assert.deepEqual(announcements.at(-1), [{type: 'atlas-review-close'}, 'https://qtj.me']);
   } finally {
     globalThis.window = originalWindow;
     globalThis.document = originalDocument;

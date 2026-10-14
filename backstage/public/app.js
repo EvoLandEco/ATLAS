@@ -24,6 +24,7 @@ function time(value){return new Date(value).toLocaleString(undefined,{dateStyle:
 function metadata(text){return el('p',text,'meta');}
 function showList(){
   const search=$('search').value.toLowerCase(),kind=$('kind').value,filter=$('status').value;
+  document.querySelector('.filter-dot').hidden=!kind&&!filter;
   const items=state.issues.filter(i=>(!kind||i.kind===kind)&&(!filter||status(i)===filter)&&`${i.title} ${i.question} ${i.issue_id}`.toLowerCase().includes(search));
   $('issues').replaceChildren();$('count').textContent=state.issues.length;
   if(!items.length)$('issues').append(el('p','No issues match this view.','meta'));
@@ -67,7 +68,7 @@ function showIssue(issue){
     try{await api('decisions',{...input,decision_id:retry.id});message('Decision saved. Application and validation receipts will appear here.');await refresh();}catch(error){message(error.message,true);submit.disabled=false;}
   };detail.append(form);
 }
-function selectTab(tab){state.tab=tab;for(const name of ['inbox','history']){$(`${name}-view`).hidden=name!==tab;$(`${name}-tab`).classList.toggle('selected',name===tab);$(`${name}-tab`).setAttribute('aria-pressed',String(name===tab));}}
+function selectTab(tab){state.tab=tab;$('search').hidden=tab!=='inbox';$('filters-menu').hidden=tab!=='inbox';for(const name of ['inbox','history']){$(`${name}-view`).hidden=name!==tab;$(`${name}-tab`).classList.toggle('selected',name===tab);$(`${name}-tab`).setAttribute('aria-pressed',String(name===tab));}}
 let historyIssue=null;
 async function showHistory(issueId=null,append=false){
   selectTab('history');if(!append){$('history').replaceChildren();state.historyCursor=null;historyIssue=issueId;}
@@ -80,4 +81,10 @@ async function refresh(){
 }
 $('refresh').onclick=refresh;for(const id of ['search','kind','status'])$(id).addEventListener('input',showList);
 $('inbox-tab').onclick=()=>selectTab('inbox');$('history-tab').onclick=()=>showHistory();$('older').onclick=()=>showHistory(historyIssue,true);
+
+for (const menu of document.querySelectorAll('.control-menu')) {
+  document.addEventListener('pointerdown', event => { if (!menu.contains(event.target)) menu.open=false; });
+  menu.addEventListener('keydown', event => { if (event.key==='Escape') { menu.open=false; menu.querySelector('summary').focus(); } });
+}
+
 try{const me=await api('me');$('identity').textContent=me.email;await refresh();}catch(error){$('identity').textContent='Access unavailable';message(error.message,true);}

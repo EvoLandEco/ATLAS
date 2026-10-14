@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.0a58
+
+- Backstage 1.0.4 groups review navigation, search, filters, account and Close in one toolbar. The embedded content fills the Reports panel width. Close messages require the authenticated frame and its exact origin.
+
 ## 0.1.0a57
 
 - Backstage 1.0.3 provides an authenticated completion page for reviewer sign-in from ATLAS. Cloudflare verification runs in a separate window before the portal loads inside Reports. The completion signal contains no credentials or reviewer data.
