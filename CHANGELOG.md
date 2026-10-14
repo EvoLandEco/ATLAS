@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.0a54
+
+- Validated dependency pins cover Pydantic 2.13.5 and core 2.46.5, Beautiful Soup 4.15.0, pycountry 26.2.16, tzdata 2026.4 and setuptools 84.0.0. Package requirements and lockfiles must agree; installation checks verify the dependency closure.
+- GitHub workflows use pinned checkout 7.0.1 and setup-python 7.0.0 actions.
+
 ## 0.1.0a53
 
 - Reviewer inbox contract 1.0.0 carries historical questions, captured evidence, exact issue revisions, attributed decisions and application receipts. ATLAS exports private packets, imports decisions through its scientific review paths, and commits registry edits with their receipts in one transaction.

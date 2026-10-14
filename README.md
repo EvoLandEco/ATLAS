@@ -4,13 +4,13 @@
 
 One Health outbreak intelligence across sources, places, and time.
 
-![Release](https://img.shields.io/badge/release-v0.1.0--alpha.53-orange)
+![Release](https://img.shields.io/badge/release-v0.1.0--alpha.54-orange)
 ![Stage](https://img.shields.io/badge/stage-research_preview-orange)
 [![Tests](https://github.com/EvoLandEco/ATLAS/actions/workflows/ci.yml/badge.svg)](https://github.com/EvoLandEco/ATLAS/actions/workflows/ci.yml)
 ![Export contract](https://img.shields.io/badge/export_contract-1.9.0-blue)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-Python package `0.1.0a53` · Core data schema `0.1.2` · Metrics contract `0.5.0` · Inbox contract `1.0.0`
+Python package `0.1.0a54` · Core data schema `0.1.2` · Metrics contract `0.5.0` · Inbox contract `1.0.0`
 
 ATLAS collects outbreak and surveillance reports, extracts evidence, and prepares reviewed research datasets. It follows reported counts, geographic relationships and One Health evidence across publications. People resolve scientific questions, assign outbreak identities and approve releases.
 
