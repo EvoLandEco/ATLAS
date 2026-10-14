@@ -79,8 +79,8 @@ function safeResponse(response) {
   headers.set('Cache-Control', 'private, no-store');
   headers.set('X-Content-Type-Options', 'nosniff');
   headers.set('Referrer-Policy', 'no-referrer');
-  headers.set('X-Frame-Options', 'DENY');
-  headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
+  headers.delete('X-Frame-Options');
+  headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors https://qtj.me; form-action 'self'");
   return new Response(response.body, {status: response.status, headers});
 }
 async function active(db) { return db.prepare('SELECT s.* FROM active_snapshot a JOIN snapshots s USING(snapshot_id)').first(); }

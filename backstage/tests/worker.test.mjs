@@ -21,6 +21,14 @@ class R2 {
 function env(){return {DB:new D1(),EVIDENCE:new R2(),ASSETS:{fetch:async()=>new Response('interface')},INBOX_ORIGIN:origin,INBOX_PATH:base,ATLAS_ARCHIVE_ID:'atlas',REVIEWER_EMAILS:'tianjian.qin@wur.nl',ACCESS_ISSUER:'https://atlas-test.cloudflareaccess.com',ACCESS_AUD:'review-app',SYNC_SERVICE_TOKEN_ID:'sync-service'};}
 function request(path,body,method=body?'POST':'GET'){return new Request(origin+base+path,{method,headers:body?{'Content-Type':'application/json',Origin:origin,'X-Atlas-Review':'1'}:{},body:body?JSON.stringify(body):undefined});}
 const reviewer={service:false,email:'tianjian.qin@wur.nl'}, service={service:true};
+test('only ATLAS can frame the inbox and embedding does not bypass sign-in', async()=>{
+  const response=await worker.fetch(new Request(origin+base,{headers:{Origin:'https://another.example'}}),env());
+  assert.equal(response.status,401);
+  assert.equal(response.headers.get('Cache-Control'),'private, no-store');
+  assert.equal(response.headers.get('X-Frame-Options'),null);
+  assert.match(response.headers.get('Content-Security-Policy'),/frame-ancestors https:\/\/qtj\.me;/);
+  assert.doesNotMatch(response.headers.get('Content-Security-Policy'),/another\.example/);
+});
 async function seed(e){
   const text='The source reports twelve cases.', hash=await sha256(text);
   await e.EVIDENCE.put(`evidence/${hash}.txt`,text,{customMetadata:{sha256:hash}});

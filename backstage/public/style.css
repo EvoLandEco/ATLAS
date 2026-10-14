@@ -81,3 +81,12 @@ footer{font-size:11px;color:var(--muted-foreground);border-top:1px solid var(--b
 [hidden]{display:none!important}
 @media(max-width:850px){.review-grid{grid-template-columns:1fr;gap:16px}.review-grid aside{position:static;max-height:320px}.detail{border-left:0;border-top:1px solid var(--border);padding:24px 0}.filters{flex-wrap:wrap}.filters label:first-child{flex-basis:100%}.filters label{flex:1}.workspace-label{display:none}.masthead,main{padding-inline:20px}.heading{align-items:flex-start}.atlas-link{display:none}h1{font-size:30px}.account{font-size:11px;gap:10px}.account #identity{max-width:170px;overflow-wrap:anywhere}.brand{font-size:24px}.brand img{width:32px;height:32px}.empty{margin:55px auto}.tab{font-size:13px;padding-inline:10px}}
 @media(prefers-reduced-motion:reduce){button{transition:none}}
+:root[data-embedded] .masthead{padding:12px 20px 8px}
+:root[data-embedded] .brand,:root[data-embedded] .workspace-label,:root[data-embedded] .heading,:root[data-embedded] footer,:root[data-embedded] #theme{display:none}
+:root[data-embedded] main{padding:0 20px 20px}
+:root[data-embedded] .account{font-size:11px}
+:root[data-embedded] .filters{gap:12px;padding:18px 0}
+:root[data-embedded] .review-grid{grid-template-columns:minmax(200px,30%) minmax(0,1fr);gap:20px}
+:root[data-embedded] .detail{padding-left:20px}
+:root[data-embedded] *{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--primary) 35%,transparent) transparent}
+@media(max-width:700px){:root[data-embedded] .review-grid{grid-template-columns:1fr}:root[data-embedded] .detail{padding-left:0}:root[data-embedded] .masthead,:root[data-embedded] main{padding-inline:12px}}

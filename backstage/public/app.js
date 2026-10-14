@@ -1,3 +1,4 @@
+import {connectParent} from './embedded.js';
 const $ = id => document.getElementById(id);
 function setTheme(dark) {
   document.documentElement.dataset.theme=dark?'dark':'light';
@@ -5,6 +6,7 @@ function setTheme(dark) {
   $('theme').title=dark?'Switch to light mode':'Switch to dark mode';
 }
 setTheme(matchMedia('(prefers-color-scheme: dark)').matches);
+connectParent(setTheme);
 $('theme').onclick=()=>setTheme($('theme').getAttribute('aria-checked')!=='true');
 const labels = {pending:'Needs a decision',submitted:'Submitted',recorded:'Awaiting application',applied:'Awaiting validation',deferred:'Deferred',stale:'Evidence changed',invalid:'Needs attention',completed:'Completed'};
 const kinds = {registry:'Event registry',geography:'Geography',longitudinal:'Numerical comparisons',chain:'Chains',one_health:'One Health',extraction:'Extraction',source:'Sources',research:'Research'};

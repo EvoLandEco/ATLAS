@@ -107,6 +107,8 @@ npm run deploy
 
 The service uses the protected `workers.dev` hostname with preview URLs disabled. The Worker accepts `/atlas/review/` and its descendants. The interface uses the ATLAS logo, self-hosted Geist fonts, shared color values and light and dark themes. A route on `qtj.me` requires that domain to be proxied through Cloudflare; its DNS remains managed separately. Every request, including static assets and evidence downloads, requires a verified Access JWT. Human requests require membership in `REVIEWER_EMAILS`; synchronization requires the named service identity. Browser writes require the configured origin and review header. Responses use private no-store caching and a restrictive content policy.
 
+The Reports panel embeds the reviewer interface. Cloudflare Access must allow iframe use and set its application cookie to `SameSite=None` with `HttpOnly` enabled. The Worker limits framing to `https://qtj.me`; review requests still require their own origin and the review header. The enclosing page exchanges theme and readiness messages only. Browsers that block cross-site cookies can prevent embedded sign-in. Closing the panel restores the report view and preserves an unsubmitted draft for the current page session.
+
 Before loading research data, check that an unauthenticated request is denied, the named reviewer can sign in, another identity is denied, and the service token can synchronize a synthetic packet but cannot submit human decisions. Then upload the selected private research packet. Keep D1 recovery and periodic database exports configured according to the account's retention policy; retain the producer ledger and packet archive independently.
 
 ## Validation
