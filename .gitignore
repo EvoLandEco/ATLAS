@@ -3,7 +3,6 @@
 !/.env.example
 !/.github/
 !/.gitignore
-!/AGENTS.md
 !/CHANGELOG.md
 !/CITATION.cff
 !/CONTRIBUTING.md
