@@ -19,7 +19,7 @@ dependencies = [
 Repository = "https://github.com/EvoLandEco/ATLAS"
 Issues = "https://github.com/EvoLandEco/ATLAS/issues"
 [project.optional-dependencies]
-dev = ["pytest==9.0.2", "pytest-cov==7.0.0"]
+dev = ["pytest==9.2.0", "pytest-cov==7.0.0"]
 [project.scripts]
 atlas = "atlas.cli:main"
 [tool.setuptools.packages.find]
